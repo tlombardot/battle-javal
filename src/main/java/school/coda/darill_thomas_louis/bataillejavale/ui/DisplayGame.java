@@ -9,8 +9,10 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.CreateDB;
@@ -37,41 +39,56 @@ public class DisplayGame extends GameApplication {
      * */
     protected void initUI() {
         getGameScene().getRoot().setCursor(Cursor.DEFAULT);
-        // Le Titre du jeu
-        Text title = new Text("LA BATAILLE JAVALE");
-        title.setFont(Font.font("Arial", 48));
-        title.setFill(Color.DARKBLUE);
-        title.setTranslateX(150);
+
+        Rectangle fond = new Rectangle(1280, 720, Color.web("#0a0f18"));
+        FXGL.addUINode(fond);
+
+
+        //Notre Titre
+        Text title = new Text("JAVALE\nBATTLE");
+        title.setFont(Font.font("Impact", 80));
+        title.setFill(Color.WHITE);
+        title.setTranslateX(100);
         title.setTranslateY(150);
+        FXGL.addUINode(title);
 
+        //Notre Menu
+        VBox completeMenuBox = new VBox(20);
+        completeMenuBox.setTranslateX(100);
+        completeMenuBox.setTranslateY(350);
 
-        // Les crédits
-        Text credits = new Text("Créé par Darill, Thomas et Louis");
-        credits.setFont(Font.font("Arial", 16));
-        credits.setFill(Color.GRAY);
-        credits.setTranslateX(250);
-        credits.setTranslateY(550);
-
-        // Le bouton pour lancer la partie
-        Button btnJouer = new Button("Lancer une nouvelle partie");
-        btnJouer.setTranslateX(300);
-        btnJouer.setTranslateY(300);
-        btnJouer.setPrefSize(200, 50);
-
-        // L'action du bouton quand on clique dessus
-        btnJouer.setOnAction(_ -> {
+        //Utiliser notre fonction pour créer les buttons
+        Node btnPlay = createButtonMenu("Start Game", ()-> {
+            IO.println("Lancement de la partie.");
             FXGL.getGameScene().clearUINodes();
             GrilleUI grilleOcean = new GrilleUI();
             grilleOcean.setTranslateX(50);
             grilleOcean.setTranslateY(50);
             FXGL.addUINode(grilleOcean);
-
         });
 
-        // On ajoute tout ça à l'écran
-        FXGL.addUINode(title);
+        Node btnMultiPlay = createButtonMenu("Multiparty game", ()-> {
+            IO.println("Lancement de la partie multijoueur.");
+        });
+
+        Node btnOptions = createButtonMenu("Settings", ()-> {
+            IO.println("Ouverture des paramètres.");
+        });
+
+        Node btnQuit = createButtonMenu("Exit", ()-> {
+            FXGL.getGameController().exit();
+        });
+
+        completeMenuBox.getChildren().addAll(btnPlay, btnMultiPlay, btnOptions, btnQuit);
+        FXGL.addUINode(completeMenuBox);
+
+        // Les crédits
+        Text credits = new Text("Created by KING_Darill | CYBER080Thomas | SMART_Louis");
+        credits.setFont(Font.font("Arial", 12));
+        credits.setFill(Color.GRAY);
+        credits.setTranslateX(100);
+        credits.setTranslateY(680);
         FXGL.addUINode(credits);
-        FXGL.addUINode(btnJouer);
     }
 
     private Node createButtonMenu(String texte, Runnable action) {
