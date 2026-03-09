@@ -1,0 +1,48 @@
+package school.coda.darill_thomas_louis.bataillejavale.core.model;
+
+public class GrilleOcean implements Grille {
+    private final int tailleX;
+    private final int tailleY;
+
+    private final Vaisseau[][] plateau;
+
+    public GrilleOcean() {
+        this.tailleX = 10;
+        this.tailleY = 10;
+        this.plateau = new Vaisseau[tailleX][tailleY];
+    }
+
+    @Override
+    public int getTailleX() { return tailleX; }
+    @Override
+    public int getTailleY() { return tailleY; }
+
+    public boolean estPlacementValide(Vaisseau vaisseau, int startX, int startY, boolean horizontal) {
+        if (horizontal && startX + vaisseau.getTaille() > tailleX) return false;
+        if (!horizontal && startY + vaisseau.getTaille() > tailleY) return false;
+
+        for (int i = 0; i < vaisseau.getTaille(); i++) {
+            int x = horizontal ? startX + i : startX;
+            int y = !horizontal ? startY + i : startY;
+            if (plateau[x][y] != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean placerVaisseau(Vaisseau vaisseau, int startX, int startY, boolean horizontal) {
+        if (!estPlacementValide(vaisseau, startX, startY, horizontal)) {
+            return false;
+        }
+
+        for (int i = 0; i < vaisseau.getTaille(); i++) {
+            int x = horizontal ? startX + i : startX;
+            int y = !horizontal ? startY + i : startY;
+            plateau[x][y] = vaisseau;
+        }
+        return true;
+    }
+
+    public Vaisseau[][] getPlateau() { return plateau; }
+}

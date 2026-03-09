@@ -4,16 +4,21 @@ public class Vaisseau {
 
     private final String nom;
     private final int taille;
+    private int casesTouchees = 0;
 
     public Vaisseau(String nom, int taille) {
         this.nom = nom;
         this.taille = taille;
     }
 
+    public String getNom() { return nom; }
+    public int getTaille() { return taille; }
+
     public boolean estCoule(){
-        return true;//TODO : To Change
+        return casesTouchees >= taille;
     }
     public boolean recevoirDegat(int x, int y){
-        return true;//TODO : To Change
+        casesTouchees++;
+        return estCoule();
     }
 }
