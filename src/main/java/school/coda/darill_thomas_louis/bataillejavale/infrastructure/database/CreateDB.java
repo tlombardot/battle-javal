@@ -11,7 +11,7 @@ public class CreateDB {
         initDatabase();
     }
 
-    private static final String URL = "jdbc:postgresql://db:5432/bataille_javale";
+    private static final String URL = "jdbc:postgresql://localhost:5432/bataille_javale";
     private static final String USER = "postgres";
     private static final String PASSWORD = "root";
 
@@ -32,7 +32,7 @@ public class CreateDB {
                 pseudo VARCHAR(50) UNIQUE NOT NULL,
                 mot_de_passe VARCHAR(255) NOT NULL,
                 preferences JSONB default '{}',
-                succes_debloques JSONB default '[]',
+                succes_debloques JSONB default '{}',
                 stats JSONB default '{}',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
@@ -44,8 +44,10 @@ public class CreateDB {
                 joueur1_id INT REFERENCES joueurs(id),
                 joueur2_id INT REFERENCES joueurs(id),
                 tour_courant INT DEFAULT 1,
-                etat_jeu JSONB,
-                statut VARCHAR(20) DEFAULT 'EN_ATTENTE'
+                etat_jeu JSONB NOT NULL,
+                statut VARCHAR(20) DEFAULT 'EN_ATTENTE',
+                winner_id INT REFERENCES joueurs(id),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """;
 
