@@ -12,7 +12,6 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -24,8 +23,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
-import school.coda.darill_thomas_louis.bataillejavale.core.model.Vaisseau;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.CreateDB;
 
 import java.util.ArrayList;
@@ -39,14 +36,18 @@ public class DisplayGame extends GameApplication {
     private int currentSelection = 0;
     private boolean inMenu = true;
 
-    private EtatJeu etatJeuBackend;
 
+    /**
+     * Configure tout ce qui les paramètres de l'application
+     * @param gameSettings
+     * les paramètres de l'app
+     */
     @Override
     protected void initSettings(GameSettings gameSettings) {
         gameSettings.setWidth(1280);
         gameSettings.setHeight(720);
         gameSettings.setTitle("Javale-Battle");
-        gameSettings.setVersion("0.1");
+        gameSettings.setVersion("Test-Version");
     }
 
     /**
@@ -56,7 +57,7 @@ public class DisplayGame extends GameApplication {
     protected void initInput() {
         FXGL.getInput().addAction(new UserAction("Up") {
             @Override
-            protected void onActionBegin() {
+            protected void onAction() {
                 if(!inMenu) return;
                 currentSelection = (currentSelection == 0) ? (menuButtons.size() - 1) : (currentSelection - 1);
                 updateSelection();
@@ -89,8 +90,8 @@ public class DisplayGame extends GameApplication {
         getGameScene().getRoot().setCursor(Cursor.DEFAULT);
         try {
             String path = getClass().getResource("/assets/textures/naval_ocean.gif").toExternalForm();
-            Image gif = new javafx.scene.image.Image(path);
-            ImageView background = new javafx.scene.image.ImageView(gif);
+            Image gif = new Image(path);
+            ImageView background = new ImageView(gif);
 
             background.setFitWidth(1280);
             background.setFitHeight(720);
@@ -177,7 +178,7 @@ public class DisplayGame extends GameApplication {
         loadingText.setTranslateX(100);
         loadingText.setTranslateY(650);
 
-        FadeTransition blink = new FadeTransition(javafx.util.Duration.seconds(0.5), loadingText);
+        FadeTransition blink = new FadeTransition(Duration.seconds(0.5), loadingText);
         blink.setFromValue(1.0);
         blink.setToValue(0.2);
         blink.setCycleCount(Animation.INDEFINITE);
@@ -189,7 +190,8 @@ public class DisplayGame extends GameApplication {
         FXGL.getGameTimer().runOnceAfter(() -> {
             FXGL.getGameScene().clearUINodes();
             IO.println("Lancement de la partie.");
-            demarrerPhasePlacement();
+            PlateauDeJeu plateau = new PlateauDeJeu();
+            FXGL.addUINode(plateau.getRacineVisuelle());
         }, Duration.seconds(3.0));
     }
 
@@ -255,45 +257,10 @@ public class DisplayGame extends GameApplication {
         }
     }
 
-    private void demarrerPhasePlacement() {
-        etatJeuBackend = new EtatJeu();
-
-        GrilleUI vueOcean = new GrilleUI();
-
-        vueOcean.setOnCaseClicked((x, y) -> {
-            IO.println("Clic sur l'Océan aux coordonnées : " + x + ", " + y);
-
-            Vaisseau navire = new Vaisseau("Patrouilleur", 2);
-            boolean success = etatJeuBackend.getOceanJoueur1().placerVaisseau(navire, x, y, true);
-
-            if (success) {
-                for (int i = 0; i < navire.getTaille(); i++) {
-                    vueOcean.colorierCase(x + i, y, Color.DARKGRAY);
-                }
-            } else {
-                IO.println("Placement invalide (Chevauchement ou hors grille) !");
-            }
-        });
-
-
-        GrilleUI vueRadar = new GrilleUI();
-        vueRadar.setOnCaseClicked((x, y) -> IO.println("Clic sur le Radar aux coordonnées : " + x + ", " + y));
-
-        VBox conteneurOcean = new VBox(10, new Text("Grille Océan (Mes bateaux)"), vueOcean);
-        conteneurOcean.setAlignment(Pos.CENTER);
-
-        VBox conteneurRadar = new VBox(10, new Text("Grille Radar (Mes tirs)"), vueRadar);
-        conteneurRadar.setAlignment(Pos.CENTER);
-
-        HBox plateauDeJeu = new HBox(50, conteneurOcean, conteneurRadar);
-        plateauDeJeu.setAlignment(Pos.CENTER);
-
-        plateauDeJeu.setTranslateX((1280 - 850) / 2.0);
-        plateauDeJeu.setTranslateY((720 - 400) / 2.0);
-
-        FXGL.addUINode(plateauDeJeu);
-    }
-
+    /**
+     * Création de le Database et lancement du jeu
+     * @param args
+     */
     static void main(String[] args) {
         new CreateDB();
         launch(args);
