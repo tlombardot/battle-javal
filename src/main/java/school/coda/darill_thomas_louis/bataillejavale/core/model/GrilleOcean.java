@@ -1,5 +1,7 @@
 package school.coda.darill_thomas_louis.bataillejavale.core.model;
 
+import school.coda.darill_thomas_louis.bataillejavale.core.event.ResultatTir;
+
 public class GrilleOcean implements Grille {
     private final int tailleX;
     private final int tailleY;
@@ -45,4 +47,15 @@ public class GrilleOcean implements Grille {
     }
 
     public Vaisseau[][] getPlateau() { return plateau; }
+
+    public ResultatTir recevoirTir(int x, int y) {
+        Vaisseau cible = plateau[x][y];
+
+        if (cible == null) {
+            return ResultatTir.RATE; // À l'eau ! (Torpille blanche)
+        } else {
+            boolean estCoule = cible.recevoirDegat(x, y);
+            return estCoule ? ResultatTir.COULE : ResultatTir.TOUCHE; // Torpille rouge !
+        }
+    }
 }
