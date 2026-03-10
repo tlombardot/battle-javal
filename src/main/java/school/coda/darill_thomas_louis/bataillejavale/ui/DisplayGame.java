@@ -49,6 +49,9 @@ public class DisplayGame extends GameApplication {
         gameSettings.setVersion("0.1");
     }
 
+    /**
+     *Gère la "communication" entre le clavier, les périphériques externe et l'interface utilisateur
+     */
     @Override
     protected void initInput() {
         FXGL.getInput().addAction(new UserAction("Up") {
@@ -62,7 +65,7 @@ public class DisplayGame extends GameApplication {
 
         FXGL.getInput().addAction(new UserAction("Down") {
             @Override
-            protected void onActionBegin() {
+            protected void onAction() {
                 if(!inMenu) return;
                 currentSelection = (currentSelection == menuButtons.size() - 1) ? 0 : (currentSelection + 1);
                 updateSelection();
@@ -78,10 +81,12 @@ public class DisplayGame extends GameApplication {
         }, KeyCode.ENTER);
     }
 
+    /**
+     *Crée l'interface du menu avec l'arrière-plan, le logo, les boutons et les crédits
+     */
     @Override
     protected void initUI() {
         getGameScene().getRoot().setCursor(Cursor.DEFAULT);
-
         try {
             String path = getClass().getResource("/assets/textures/naval_ocean.gif").toExternalForm();
             Image gif = new javafx.scene.image.Image(path);
@@ -91,32 +96,36 @@ public class DisplayGame extends GameApplication {
             background.setFitHeight(720);
             FXGL.addUINode(background);
 
-            IO.println("SUCCÈS : Le GIF est chargé !");
         } catch (NullPointerException e) {
 
-            IO.println("ERREUR CRITIQUE : Fichier introuvable à l'adresse /assets/textures/naval_ocean.gif");
-            Rectangle fond = new Rectangle(1280, 720, javafx.scene.paint.Color.web("#0a0f18"));
+            IO.println("Ficher interface introuvable : " + e.getMessage());
+            Rectangle fond = new Rectangle(1280, 720, Color.web("#0a0f18"));
             FXGL.addUINode(fond);
 
         } catch (Exception e) {
             IO.println("AUTRE ERREUR lors du chargement de l'image : " + e.getMessage());
         }
 
-        Text title = new Text("JAVALE\nBATTLE");
-        title.setFont(Font.font("Impact", 80));
-        title.setFill(Color.WHITE);
-        title.setTranslateX(100);
-        title.setTranslateY(100);
-        FXGL.addUINode(title);
+        try {
+            String pathLogo = getClass().getResource("/assets/textures/main_logo.png").toExternalForm();
+            ImageView logoTitle = new ImageView(new Image(pathLogo));
+            logoTitle.setFitWidth(520);
+            logoTitle.setPreserveRatio(true);
+            logoTitle.setTranslateX(50);
+            logoTitle.setTranslateY(10);
+            FXGL.addUINode(logoTitle);
+        } catch (Exception _) {
+            IO.println("Logo non trouvé.");
+        }
 
         VBox completeMenuBox = new VBox(20);
         completeMenuBox.setTranslateX(100);
         completeMenuBox.setTranslateY(350);
 
-        menuButtons.add(new TechButton("Start Game", this::lancerEcranLoading));
-        menuButtons.add(new TechButton("Multiparty game", () -> IO.println("Mode en développement.")));
-        menuButtons.add(new TechButton("Settings", () -> IO.println("Ouverture paramètres.")));
-        menuButtons.add(new TechButton("Exit", () -> FXGL.getGameController().exit()));
+        menuButtons.add(new TechButton("START GAME_", this::lancerEcranLoading));
+        menuButtons.add(new TechButton("MULTIPLAYER MODE_", () -> IO.println("Mode en développement.")));
+        menuButtons.add(new TechButton("SETTINGS_", () -> IO.println("Ouverture paramètres.")));
+        menuButtons.add(new TechButton("EXIT_", () -> FXGL.getGameController().exit()));
 
         for(TechButton btn : menuButtons){
             completeMenuBox.getChildren().add(btn.visual);
@@ -125,21 +134,26 @@ public class DisplayGame extends GameApplication {
         FXGL.addUINode(completeMenuBox);
 
         Text credits = new Text("Created by KING_Darill | CYBER080Thomas | SMART_Louis");
-        credits.setFont(Font.font("Arial", 12));
-        credits.setFill(Color.GRAY);
+        credits.setFont(Font.font("Arial", 15));
+        credits.setFill(Color.WHITE);
         credits.setTranslateX(100);
         credits.setTranslateY(680);
         FXGL.addUINode(credits);
 
         updateSelection();
     }
-
+    /**
+     *Mets à jour le bouton qui est sélecetionné
+     */
     private void updateSelection() {
         for(int i = 0; i < menuButtons.size(); i++){
             menuButtons.get(i).setActive(i == currentSelection);
         }
     }
 
+    /**
+     * Lance l'écran de chargement
+     */
     private void lancerEcranLoading() {
         inMenu = false;
         FXGL.getGameScene().clearUINodes();
@@ -179,6 +193,9 @@ public class DisplayGame extends GameApplication {
         }, Duration.seconds(3.0));
     }
 
+    /**
+     * 
+     */
     private class TechButton {
         StackPane visual;
         Polygon techBand;
@@ -198,9 +215,10 @@ public class DisplayGame extends GameApplication {
             );
 
             Stop[] stops = new Stop[] {
-                    new Stop(0, Color.web("#001a1a", 0.7)),
-                    new Stop(1, Color.web("#00e6e6", 0.9))
+                    new Stop(0, Color.web("#00ffff", 0.15)),
+                    new Stop(1, Color.web("#00ffff", 0.35))
             };
+
             LinearGradient gradient = new LinearGradient(0, 0, 1, 0, true, CycleMethod.NO_CYCLE, stops);
             techBand.setFill(gradient);
 
@@ -209,7 +227,7 @@ public class DisplayGame extends GameApplication {
             techBand.setVisible(false);
 
             textNode = new Text(text);
-            textNode.setFont(Font.font("Times", 30));
+            textNode.setFont(Font.font("Consolas", 30));
             textNode.setFill(Color.web("#a0a0a0"));
             textNode.setTranslateX(20);
 
