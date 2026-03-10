@@ -59,14 +59,16 @@ public class MenuUI extends Pane {
             ImageView logoTitle = new ImageView(new Image(pathLogo));
             logoTitle.setFitWidth(520);
             logoTitle.setPreserveRatio(true);
-            logoTitle.setTranslateX(50);
+            logoTitle.setTranslateX(40);
             logoTitle.setTranslateY(10);
             getChildren().add(logoTitle);
         } catch (Exception _) {
             System.out.println("Logo non trouvé.");
         }
     }
-
+    /**
+     * Construction des boutons dans le menu principal
+     */
     private void buildButtons() {
         VBox completeMenuBox = new VBox(20);
         completeMenuBox.setTranslateX(100);
@@ -82,11 +84,13 @@ public class MenuUI extends Pane {
         }
         getChildren().add(completeMenuBox);
     }
-
+    /**
+     * Construction des crédits
+     */
     private void buildCredits() {
         Text credits = new Text("Created by KING_Darill | CYBER080Thomas | SMART_Louis");
         credits.setFont(Font.font("Arial", 15));
-        credits.setFill(Color.WHITE);
+        credits.setFill(Color.web("#dddddd"));
         credits.setTranslateX(100);
         credits.setTranslateY(680);
         getChildren().add(credits);
@@ -117,8 +121,8 @@ public class MenuUI extends Pane {
     }
 
     private void lancerEcranLoading() {
-        isActive = false; // Bloque le menu
-        getChildren().clear(); // Efface le menu
+        isActive = false;
+        getChildren().clear();
 
         Rectangle blackScreen = new Rectangle(1280, 720, Color.BLACK);
         getChildren().add(blackScreen);
@@ -148,7 +152,6 @@ public class MenuUI extends Pane {
         getChildren().add(loadingText);
 
         FXGL.getGameTimer().runOnceAfter(() -> {
-            // Nettoie l'écran principal de FXGL et lance le jeu
             FXGL.getGameScene().clearUINodes();
             System.out.println("Lancement de la partie.");
             PlateauDeJeu plateau = new PlateauDeJeu();

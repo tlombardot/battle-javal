@@ -35,12 +35,6 @@ public class JoueurPlay implements Joueur {
 
     @Override
     public boolean aPerdu() {
-        if (flotte.isEmpty()) return false;
-        for (Vaisseau v : flotte) {
-            if (!v.estCoule()) {
-                return false;
-            }
-        }
-        return true;
+        return flotte.stream().allMatch(Vaisseau::estCoule);
     }
 }

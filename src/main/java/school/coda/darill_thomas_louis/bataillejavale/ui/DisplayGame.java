@@ -34,14 +34,14 @@ public class DisplayGame extends GameApplication {
     protected void initInput() {
         FXGL.getInput().addAction(new UserAction("Up") {
             @Override
-            protected void onAction() {
+            protected void onActionBegin() {
                 if (mainMenu != null) mainMenu.selectUp();
             }
         }, KeyCode.UP);
 
         FXGL.getInput().addAction(new UserAction("Down") {
             @Override
-            protected void onAction() {
+            protected void onActionBegin() {
                 if (mainMenu != null) mainMenu.selectDown();
             }
         }, KeyCode.DOWN);

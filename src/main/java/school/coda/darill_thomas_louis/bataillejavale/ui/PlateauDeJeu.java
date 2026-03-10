@@ -112,16 +112,30 @@ public class PlateauDeJeu {
                     return;
                 }
 
+                if (etatJeuBackend.getJoueur1().getGrilleRadar().getHistoriqueTirs()[x][y] != null) {
+                    IO.println("Status du tir : " + ResultatTir.DEJA_TIRE + " ! Choisissez une autre case.");
+                    return; // On annule l'action, on ne déclenche pas le tour de l'ordi
+                }
+
                 ResultatTir resultat = etatJeuBackend.getJoueur2().getGrilleOcean().recevoirTir(x, y);
                 etatJeuBackend.getJoueur1().getGrilleRadar().enregistrerTir(x, y, resultat);
 
                 if (resultat == ResultatTir.RATE) {
                     vueRadar.colorierCase(x, y, Color.WHITE);
+                    IO.println("Vous avez tiré en " + x + "," + y + " : Raté !");
                 } else {
                     vueRadar.colorierCase(x, y, Color.RED);
+                    if (resultat == ResultatTir.TOUCHE){
+                        IO.println("Vous avez tire en " + x + "," + y + " : Touché !");
+                    }else{
+                        IO.println("Vous avez tire en " + x + "," + y + " : Coulé !");
+                    }
                 }
 
+                verifierFinDePartie();
+                if (!phaseBataille) return;
                 riposteDuCPU(vueOcean);
+                verifierFinDePartie();
             }
 
             @Override public void onCaseRightClick(int x, int y) {}
@@ -149,16 +163,27 @@ public class PlateauDeJeu {
     }
 
     private void riposteDuCPU(GrilleUI vueOcean) {
-        int cibleX = random.nextInt(10);
-        int cibleY = random.nextInt(10);
+        int cibleX;
+        int cibleY;
+
+        do {
+            cibleX = random.nextInt(10);
+            cibleY = random.nextInt(10);
+        } while (etatJeuBackend.getJoueur2().getGrilleRadar().getHistoriqueTirs()[cibleX][cibleY] != null);
 
         ResultatTir resultatCPU = etatJeuBackend.getJoueur1().getGrilleOcean().recevoirTir(cibleX, cibleY);
         etatJeuBackend.getJoueur2().getGrilleRadar().enregistrerTir(cibleX, cibleY, resultatCPU);
 
         if (resultatCPU == ResultatTir.RATE) {
             vueOcean.colorierCase(cibleX, cibleY, Color.LIGHTCYAN);
+            IO.println("CPU tire en " + cibleX + "," + cibleY + " : Raté !");
         } else {
             vueOcean.colorierCase(cibleX, cibleY, Color.DARKRED);
+            if (resultatCPU == ResultatTir.TOUCHE) {
+            IO.println("CPU tire en " + cibleX + "," + cibleY + " : IL VOUS A TOUCHÉ !");
+            }else{
+                IO.println("Vous avez tire en " + cibleX + "," + cibleY + " : IL VOUS A COULÉ !");
+            }
         }
     }
 
@@ -188,5 +213,44 @@ public class PlateauDeJeu {
         HBox plateauDeJeu = new HBox(50, conteneurOcean, conteneurRadar);
         plateauDeJeu.setAlignment(Pos.CENTER);
         return plateauDeJeu;
+    }
+
+    private void verifierFinDePartie(){
+        if (etatJeuBackend.getJoueur2().aPerdu()){
+            IO.println("VICTOIRE !");
+            phaseBataille = false; // Bloque les tirs
+            afficherEcranFin("VICTOIRE ! \n" +
+                    "Vous avez détruit la flotte ennemie !", Color.LIMEGREEN);
+        } else if (etatJeuBackend.getJoueur1().aPerdu()){
+            IO.println("Défaite :( !");
+            phaseBataille = false;
+            afficherEcranFin("DÉFAITE...\n" +
+                    "Le CPU a coulé votre flotte.", Color.RED);
+        }
+    }
+
+    private void afficherEcranFin(String message, Color couleur) {
+        // On crée un voile noir semi-transparent
+        javafx.scene.shape.Rectangle voileObscur = new javafx.scene.shape.Rectangle(
+                com.almasb.fxgl.dsl.FXGL.getAppWidth(),
+                com.almasb.fxgl.dsl.FXGL.getAppHeight(),
+                Color.color(0, 0, 0, 0.8)
+        );
+
+        Text texteFin = new Text(message);
+        texteFin.setFont(javafx.scene.text.Font.font("Consolas", 40));
+        texteFin.setFill(couleur);
+        texteFin.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        javafx.scene.control.Button btnQuitter = new javafx.scene.control.Button("Quitter le jeu");
+        btnQuitter.setPrefSize(200, 50);
+        btnQuitter.setOnAction(_ -> com.almasb.fxgl.dsl.FXGL.getGameController().exit());
+
+        VBox ecranFin = new VBox(40, texteFin, btnQuitter);
+        ecranFin.setAlignment(Pos.CENTER);
+
+        // On ajoute tout ça par-dessus notre interface existante
+        com.almasb.fxgl.dsl.FXGL.addUINode(voileObscur);
+        com.almasb.fxgl.dsl.FXGL.addUINode(ecranFin);
     }
 }
