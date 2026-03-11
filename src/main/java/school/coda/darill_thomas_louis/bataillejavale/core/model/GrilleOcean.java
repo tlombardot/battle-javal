@@ -63,4 +63,24 @@ public class GrilleOcean implements Grille {
     public Vaisseau getVaisseauAt(int x, int y) {
         return plateau[x][y];
     }
+
+    // Permet de vider la grille pour le placement aléatoire
+    public void vider() {
+        for (int x = 0; x < tailleX; x++) {
+            for (int y = 0; y < tailleY; y++) {
+                plateau[x][y] = null;
+            }
+        }
+    }
+
+    // Permet d'effacer un bateau précis (pour pouvoir le déplacer)
+    public void retirerVaisseau(Vaisseau vaisseau) {
+        for (int x = 0; x < tailleX; x++) {
+            for (int y = 0; y < tailleY; y++) {
+                if (plateau[x][y] == vaisseau) {
+                    plateau[x][y] = null;
+                }
+            }
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package school.coda.darill_thomas_louis.bataillejavale.ui;
 import javafx.geometry.Pos;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -20,8 +21,10 @@ public class GrilleUI extends GridPane {
     public interface GrilleListener {
         void onCaseLeftClick(int x, int y);
         void onCaseRightClick(int x, int y);
-        void onCaseHoverEnter(int x, int y);
-        void onCaseHoverExit(int x, int y);
+        void onDragOver(int x, int y, String nomNavire, boolean estHorizontal);
+        void onDragDropped(int x, int y, String nomNavire, boolean estHorizontal);
+        void onDragExited();
+        String onDragStart(int x, int y);
     }
 
     private GrilleListener listener;
@@ -46,8 +49,12 @@ public class GrilleUI extends GridPane {
     @NotNull
     private Rectangle createCaseMer(int x, int y) {
         Rectangle caseMer = new Rectangle(TAILLE_CASE, TAILLE_CASE);
-        caseMer.setFill(Color.LIGHTBLUE);
-        caseMer.setStroke(Color.BLACK);
+        caseMer.setFill(Color.web("#0A192F", 0.7));
+        caseMer.setStroke(Color.web("#1E3A5F"));
+        caseMer.setStrokeWidth(2);
+        caseMer.setStrokeType(javafx.scene.shape.StrokeType.INSIDE);
+        caseMer.setArcWidth(8);
+        caseMer.setArcHeight(8);
         rectangles[x][y] = caseMer;
 
         final int mapX = x;
@@ -55,21 +62,54 @@ public class GrilleUI extends GridPane {
 
         caseMer.setOnMouseClicked(event -> {
             if (listener != null) {
-                if (event.getButton() == MouseButton.PRIMARY) {
-                    listener.onCaseLeftClick(mapX, mapY);
-                } else if (event.getButton() == MouseButton.SECONDARY) {
-                    listener.onCaseRightClick(mapX, mapY);
+                if (event.getButton() == MouseButton.PRIMARY) listener.onCaseLeftClick(mapX, mapY);
+                else if (event.getButton() == MouseButton.SECONDARY) listener.onCaseRightClick(mapX, mapY);
+            }
+        });
+        caseMer.setOnDragDetected(event -> {
+            if (listener != null) {
+                String dragData = listener.onDragStart(mapX, mapY);
+
+                if (dragData != null) {
+                    javafx.scene.input.Dragboard db = caseMer.startDragAndDrop(TransferMode.MOVE);
+                    javafx.scene.input.ClipboardContent content = new javafx.scene.input.ClipboardContent();
+                    content.putString(dragData); // On emballe "Nom;Orientation"
+                    db.setContent(content);
+                    event.consume();
                 }
             }
         });
 
-        caseMer.setOnMouseEntered(_ -> {
-            if (listener != null) listener.onCaseHoverEnter(mapX, mapY);
+        // --- GESTION DU DRAG & DROP ---
+        caseMer.setOnDragOver(event -> {
+            if (event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.MOVE);
+                if (listener != null) {
+                    String[] data = event.getDragboard().getString().split(";");
+                    listener.onDragOver(mapX, mapY, data[0], Boolean.parseBoolean(data[1]));
+                }
+            }
+            event.consume();
         });
 
-        caseMer.setOnMouseExited(_ -> {
-            if (listener != null) listener.onCaseHoverExit(mapX, mapY);
+        caseMer.setOnDragExited(event -> {
+            if (listener != null) listener.onDragExited();
+            event.consume();
         });
+
+        caseMer.setOnDragDropped(event -> {
+            boolean success = false;
+            if (event.getDragboard().hasString()) {
+                String[] data = event.getDragboard().getString().split(";");
+                if (listener != null) {
+                    listener.onDragDropped(mapX, mapY, data[0], Boolean.parseBoolean(data[1]));
+                    success = true;
+                }
+            }
+            event.setDropCompleted(success);
+            event.consume();
+        });
+
         return caseMer;
     }
 
@@ -77,7 +117,8 @@ public class GrilleUI extends GridPane {
     private static StackPane createLettres(int i) {
         char lettre = (char) ('A' + i);
         Text textLettre = new Text(String.valueOf(lettre));
-        textLettre.setFont(Font.font("Arial", 16));
+        textLettre.setFont(Font.font("Consolas", 16));
+        textLettre.setFill(Color.web("#00ffff"));
         StackPane conteneurLettre = new StackPane(textLettre);
         conteneurLettre.setPrefSize(TAILLE_CASE / 2.0, TAILLE_CASE);
         return conteneurLettre;
@@ -86,7 +127,8 @@ public class GrilleUI extends GridPane {
     @NotNull
     private static StackPane createChiffre(int i) {
         Text textChiffre = new Text(String.valueOf(i + 1));
-        textChiffre.setFont(Font.font("Arial", 16));
+        textChiffre.setFont(Font.font("Consolas", 16));
+        textChiffre.setFill(Color.web("#00ffff"));
         StackPane conteneurChiffre = new StackPane(textChiffre);
         conteneurChiffre.setPrefSize(TAILLE_CASE, TAILLE_CASE / 2.0);
         return conteneurChiffre;
@@ -100,18 +142,23 @@ public class GrilleUI extends GridPane {
         for (int x = 0; x < 10; x++) {
             for (int y = 0; y < 10; y++) {
                 if (ocean.getPlateau()[x][y] != null) {
-                    rectangles[x][y].setFill(Color.DARKGRAY); // Bateau officiellement placé
+                    rectangles[x][y].setFill(Color.web("#4A5A75"));
+                    rectangles[x][y].setStroke(Color.web("#00FFFF"));
+                    rectangles[x][y].setStrokeWidth(2); // Reste à 2
                 } else {
-                    rectangles[x][y].setFill(Color.LIGHTBLUE); // Eau
+                    rectangles[x][y].setFill(Color.web("#0A192F", 0.7));
+                    rectangles[x][y].setStroke(Color.web("#1E3A5F"));
+                    rectangles[x][y].setStrokeWidth(2); // Reste à 2, ne change plus !
                 }
             }
         }
     }
 
-    // Pour colorier temporairement (vert ou rouge) la prévisualisation
     public void colorierCase(int x, int y, Color couleur) {
         if (x >= 0 && x < 10 && y >= 0 && y < 10) {
             rectangles[x][y].setFill(couleur);
+            rectangles[x][y].setArcWidth(8);
+            rectangles[x][y].setArcHeight(8);
         }
     }
 }
