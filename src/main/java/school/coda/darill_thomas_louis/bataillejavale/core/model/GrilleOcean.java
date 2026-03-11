@@ -58,4 +58,9 @@ public class GrilleOcean implements Grille {
             return estCoule ? ResultatTir.COULE : ResultatTir.TOUCHE; // Torpille rouge !
         }
     }
+
+    // Permet de savoir quel bateau a été touché pour l'afficher dans les logs
+    public Vaisseau getVaisseauAt(int x, int y) {
+        return plateau[x][y];
+    }
 }

@@ -26,9 +26,12 @@ public class PlateauDeJeu {
 
     // La boîte qui contiendra tout le visuel du jeu
     private final HBox racineVisuelle;
+    private SideBarUI sideBar;
 
     public PlateauDeJeu() {
         initialiserDonneesPartie();
+
+        sideBar = new SideBarUI();
 
         GrilleUI vueOcean = creerGrilleOcean();
         GrilleUI vueRadar = creerGrilleRadar(vueOcean);
@@ -89,6 +92,7 @@ public class PlateauDeJeu {
         boolean success = etatJeuBackend.getJoueur1().getGrilleOcean().placerVaisseau(navireEnCours, x, y, estHorizontal);
 
         if (success) {
+            etatJeuBackend.getJoueur1().getFlotte().add(navireEnCours);
             flotteRestante.removeFirst();
             vueOcean.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
 
@@ -117,24 +121,31 @@ public class PlateauDeJeu {
                     return; // On annule l'action, on ne déclenche pas le tour de l'ordi
                 }
 
+                Vaisseau cibleAdverse = etatJeuBackend.getJoueur2().getGrilleOcean().getVaisseauAt(x, y);
                 ResultatTir resultat = etatJeuBackend.getJoueur2().getGrilleOcean().recevoirTir(x, y);
                 etatJeuBackend.getJoueur1().getGrilleRadar().enregistrerTir(x, y, resultat);
 
                 if (resultat == ResultatTir.RATE) {
                     vueRadar.colorierCase(x, y, Color.WHITE);
-                    IO.println("Vous avez tiré en " + x + "," + y + " : Raté !");
+                    sideBar.ajouterLog("Vous tirez en " + (char)('A' + y) + "-" + (x + 1) + " : À L'EAU !", Color.GRAY);
                 } else {
                     vueRadar.colorierCase(x, y, Color.RED);
                     if (resultat == ResultatTir.TOUCHE){
-                        IO.println("Vous avez tire en " + x + "," + y + " : Touché !");
-                    }else{
-                        IO.println("Vous avez tire en " + x + "," + y + " : Coulé !");
+                        sideBar.ajouterLog("Vous touchez un navire ennemi !", Color.ORANGE);
+                    } else {
+                        sideBar.ajouterLog("BOUM ! Vous avez coulé le " + cibleAdverse.getNom() + " ennemi !", Color.LIMEGREEN);
                     }
                 }
 
                 verifierFinDePartie();
                 if (!phaseBataille) return;
+
                 riposteDuCPU(vueOcean);
+
+                // On passe au tour suivant !
+                etatJeuBackend.setTourCourant(etatJeuBackend.getTourCourant() + 1);
+                sideBar.setTour(etatJeuBackend.getTourCourant());
+
                 verifierFinDePartie();
             }
 
@@ -158,6 +169,9 @@ public class PlateauDeJeu {
                 int y = random.nextInt(10);
                 boolean horiz = random.nextBoolean();
                 place = etatJeuBackend.getJoueur2().getGrilleOcean().placerVaisseau(navire, x, y, horiz);
+                if (place){
+                    etatJeuBackend.getJoueur2().getFlotte().add(navire);
+                }
             }
         }
     }
@@ -171,18 +185,19 @@ public class PlateauDeJeu {
             cibleY = random.nextInt(10);
         } while (etatJeuBackend.getJoueur2().getGrilleRadar().getHistoriqueTirs()[cibleX][cibleY] != null);
 
+        Vaisseau notreCible = etatJeuBackend.getJoueur1().getGrilleOcean().getVaisseauAt(cibleX, cibleY);
         ResultatTir resultatCPU = etatJeuBackend.getJoueur1().getGrilleOcean().recevoirTir(cibleX, cibleY);
         etatJeuBackend.getJoueur2().getGrilleRadar().enregistrerTir(cibleX, cibleY, resultatCPU);
 
         if (resultatCPU == ResultatTir.RATE) {
             vueOcean.colorierCase(cibleX, cibleY, Color.LIGHTCYAN);
-            IO.println("CPU tire en " + cibleX + "," + cibleY + " : Raté !");
+            sideBar.ajouterLog("CPU tire en " + (char)('A' + cibleY) + "-" + (cibleX + 1) + " : Raté !", Color.GRAY);
         } else {
             vueOcean.colorierCase(cibleX, cibleY, Color.DARKRED);
             if (resultatCPU == ResultatTir.TOUCHE) {
-            IO.println("CPU tire en " + cibleX + "," + cibleY + " : IL VOUS A TOUCHÉ !");
-            }else{
-                IO.println("Vous avez tire en " + cibleX + "," + cibleY + " : IL VOUS A COULÉ !");
+                sideBar.ajouterLog("ALERTE ! Votre navire a été touché !", Color.RED);
+            } else {
+                sideBar.ajouterLog("DÉSASTRE ! Votre " + notreCible.getNom() + " a coulé !", Color.DARKRED);
             }
         }
     }
@@ -210,7 +225,7 @@ public class PlateauDeJeu {
         VBox conteneurRadar = new VBox(10, new Text("Grille Radar (Mes tirs)"), vueRadar);
         conteneurRadar.setAlignment(Pos.CENTER);
 
-        HBox plateauDeJeu = new HBox(50, conteneurOcean, conteneurRadar);
+        HBox plateauDeJeu = new HBox(30, conteneurOcean, conteneurRadar, sideBar);
         plateauDeJeu.setAlignment(Pos.CENTER);
         return plateauDeJeu;
     }
