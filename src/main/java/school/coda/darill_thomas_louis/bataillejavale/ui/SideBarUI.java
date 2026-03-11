@@ -8,8 +8,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class SideBarUI extends VBox {
-    private Text textTour;
-    private VBox logContainer;
+    private final Text textTour;
+    private final VBox logContainer;
+    private static final String TEXT_FONT = "Consolas";
 
     public SideBarUI() {
         setPrefWidth(300);
@@ -18,11 +19,11 @@ public class SideBarUI extends VBox {
         setStyle("-fx-background-color: #1a2230; -fx-border-color: #00ffff; -fx-border-width: 2px;");
 
         Text titre = new Text("HISTORIQUE");
-        titre.setFont(Font.font("Consolas", 24));
+        titre.setFont(Font.font(TEXT_FONT, 24));
         titre.setFill(Color.WHITE);
 
         textTour = new Text("Tour courant : 1");
-        textTour.setFont(Font.font("Consolas", 18));
+        textTour.setFont(Font.font(TEXT_FONT, 18));
         textTour.setFill(Color.CYAN);
 
         logContainer = new VBox(10);
@@ -40,10 +41,10 @@ public class SideBarUI extends VBox {
 
     public void ajouterLog(String message, Color couleur) {
         Text logText = new Text(message);
-        logText.setFont(Font.font("Consolas", 14));
+        logText.setFont(Font.font(TEXT_FONT, 14));
         logText.setFill(couleur);
         logText.setWrappingWidth(240);
 
-        logContainer.getChildren().add(0, logText);
+        logContainer.getChildren().addFirst(logText);
     }
 }

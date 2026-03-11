@@ -24,19 +24,28 @@ public class PlateauDeJeu {
     private boolean phaseBataille = false;
     private final Random random = new Random();
 
-    // La boîte qui contiendra tout le visuel du jeu
+    // --- CONTENEURS D'INTERFACE ---
     private final HBox racineVisuelle;
-    private SideBarUI sideBar;
+    private final VBox conteneurOcean;
+    private final VBox conteneurRadar;
+    private final SideBarUI sideBar;
 
     public PlateauDeJeu() {
         initialiserDonneesPartie();
 
-        sideBar = new SideBarUI();
-
         GrilleUI vueOcean = creerGrilleOcean();
         GrilleUI vueRadar = creerGrilleRadar(vueOcean);
+        sideBar = new SideBarUI();
 
-        racineVisuelle = assemblerEtAfficherPlateau(vueOcean, vueRadar);
+        conteneurOcean = new VBox(10, new Text("Grille Océan (Mes bateaux)"), vueOcean);
+        conteneurOcean.setAlignment(Pos.CENTER);
+
+        conteneurRadar = new VBox(10, new Text("Grille Radar (Mes tirs)"), vueRadar);
+        conteneurRadar.setAlignment(Pos.CENTER);
+
+        racineVisuelle = new HBox(50);
+        racineVisuelle.setAlignment(Pos.CENTER);
+        racineVisuelle.getChildren().add(conteneurOcean);
     }
 
     public HBox getRacineVisuelle() {
@@ -97,13 +106,25 @@ public class PlateauDeJeu {
             vueOcean.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
 
             if (flotteRestante.isEmpty()) {
-                IO.println("FLOTTE PLACÉE ! DÉBUT DE LA BATAILLE !");
-                placerBateauxCPU();
-                phaseBataille = true;
+                passerEnModeBataille();
             } else {
                 afficherPrevisualisation(vueOcean);
             }
         }
+    }
+
+    /**
+     * Cette méthode déclenche l'apparition du Radar et des Logs
+     */
+    private void passerEnModeBataille() {
+        IO.println("FLOTTE PLACÉE ! DÉBUT DE LA BATAILLE !");
+        placerBateauxCPU();
+        phaseBataille = true;
+
+        racineVisuelle.getChildren().setAll(conteneurOcean, conteneurRadar, sideBar);
+
+        sideBar.ajouterLog("Flotte en position.", Color.CYAN);
+        sideBar.ajouterLog("La bataille commence !", Color.LIMEGREEN);
     }
 
     private GrilleUI creerGrilleRadar(GrilleUI vueOcean) {
@@ -111,14 +132,11 @@ public class PlateauDeJeu {
         vueRadar.setListener(new GrilleUI.GrilleListener() {
             @Override
             public void onCaseLeftClick(int x, int y) {
-                if (!phaseBataille) {
-                    IO.println("Placez d'abord vos bateaux !");
-                    return;
-                }
+                if (!phaseBataille) return;
 
                 if (etatJeuBackend.getJoueur1().getGrilleRadar().getHistoriqueTirs()[x][y] != null) {
                     IO.println("Status du tir : " + ResultatTir.DEJA_TIRE + " ! Choisissez une autre case.");
-                    return; // On annule l'action, on ne déclenche pas le tour de l'ordi
+                    return;
                 }
 
                 Vaisseau cibleAdverse = etatJeuBackend.getJoueur2().getGrilleOcean().getVaisseauAt(x, y);
@@ -133,7 +151,7 @@ public class PlateauDeJeu {
                     if (resultat == ResultatTir.TOUCHE){
                         sideBar.ajouterLog("Vous touchez un navire ennemi !", Color.ORANGE);
                     } else {
-                        sideBar.ajouterLog("BOUM ! Vous avez coulé le " + cibleAdverse.getNom() + " ennemi !", Color.LIMEGREEN);
+                        sideBar.ajouterLog("BOUM ! Le " + cibleAdverse.getNom() + " ennemi a coulé !", Color.LIMEGREEN);
                     }
                 }
 
@@ -142,7 +160,6 @@ public class PlateauDeJeu {
 
                 riposteDuCPU(vueOcean);
 
-                // On passe au tour suivant !
                 etatJeuBackend.setTourCourant(etatJeuBackend.getTourCourant() + 1);
                 sideBar.setTour(etatJeuBackend.getTourCourant());
 
@@ -169,7 +186,7 @@ public class PlateauDeJeu {
                 int y = random.nextInt(10);
                 boolean horiz = random.nextBoolean();
                 place = etatJeuBackend.getJoueur2().getGrilleOcean().placerVaisseau(navire, x, y, horiz);
-                if (place){
+                if (place) {
                     etatJeuBackend.getJoueur2().getFlotte().add(navire);
                 }
             }
@@ -218,34 +235,17 @@ public class PlateauDeJeu {
         }
     }
 
-    private HBox assemblerEtAfficherPlateau(GrilleUI vueOcean, GrilleUI vueRadar) {
-        VBox conteneurOcean = new VBox(10, new Text("Grille Océan (Mes bateaux)"), vueOcean);
-        conteneurOcean.setAlignment(Pos.CENTER);
-
-        VBox conteneurRadar = new VBox(10, new Text("Grille Radar (Mes tirs)"), vueRadar);
-        conteneurRadar.setAlignment(Pos.CENTER);
-
-        HBox plateauDeJeu = new HBox(30, conteneurOcean, conteneurRadar, sideBar);
-        plateauDeJeu.setAlignment(Pos.CENTER);
-        return plateauDeJeu;
-    }
-
     private void verifierFinDePartie(){
         if (etatJeuBackend.getJoueur2().aPerdu()){
-            IO.println("VICTOIRE !");
-            phaseBataille = false; // Bloque les tirs
-            afficherEcranFin("VICTOIRE ! \n" +
-                    "Vous avez détruit la flotte ennemie !", Color.LIMEGREEN);
-        } else if (etatJeuBackend.getJoueur1().aPerdu()){
-            IO.println("Défaite :( !");
             phaseBataille = false;
-            afficherEcranFin("DÉFAITE...\n" +
-                    "Le CPU a coulé votre flotte.", Color.RED);
+            afficherEcranFin("VICTOIRE ! \nVous avez détruit la flotte ennemie !", Color.LIMEGREEN);
+        } else if (etatJeuBackend.getJoueur1().aPerdu()){
+            phaseBataille = false;
+            afficherEcranFin("DÉFAITE...\nLe CPU a coulé votre flotte.", Color.RED);
         }
     }
 
     private void afficherEcranFin(String message, Color couleur) {
-        // On crée un voile noir semi-transparent
         javafx.scene.shape.Rectangle voileObscur = new javafx.scene.shape.Rectangle(
                 com.almasb.fxgl.dsl.FXGL.getAppWidth(),
                 com.almasb.fxgl.dsl.FXGL.getAppHeight(),
@@ -264,7 +264,6 @@ public class PlateauDeJeu {
         VBox ecranFin = new VBox(40, texteFin, btnQuitter);
         ecranFin.setAlignment(Pos.CENTER);
 
-        // On ajoute tout ça par-dessus notre interface existante
         com.almasb.fxgl.dsl.FXGL.addUINode(voileObscur);
         com.almasb.fxgl.dsl.FXGL.addUINode(ecranFin);
     }
