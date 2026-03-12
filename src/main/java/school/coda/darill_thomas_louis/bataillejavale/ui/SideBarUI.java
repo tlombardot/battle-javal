@@ -52,7 +52,7 @@ public class SideBarUI extends VBox {
     }
 
     /**
-     *
+     *Ajoute un style au texte
      * @param contenu
      * @param taille
      * @param couleurHex

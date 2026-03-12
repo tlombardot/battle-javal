@@ -20,6 +20,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
+import school.coda.darill_thomas_louis.bataillejavale.core.model.Session;
+import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +75,7 @@ public class MenuUI extends Pane {
     private void buildButtons() {
         VBox completeMenuBox = new VBox(20);
         completeMenuBox.setTranslateX(100);
-        completeMenuBox.setTranslateY(350);
+        completeMenuBox.setTranslateY(320);
 
         menuButtons.add(new TechButton("START GAME_", this::lancerEcranLoading));
         menuButtons.add(new TechButton("LOAD LAST GAME_", () -> {
@@ -89,18 +91,41 @@ public class MenuUI extends Pane {
                     if (sauvegarde != null) {
                         // Si la partie existe et est EN_COURS, on la lance !
                         com.almasb.fxgl.dsl.FXGL.getGameScene().clearUINodes();
-                        PlateauDeJeu plateau = new PlateauDeJeu(sauvegarde, id); // On utilise le nouveau constructeur
+                        PlateauDeJeu plateau = new PlateauDeJeu(sauvegarde, id);
                         com.almasb.fxgl.dsl.FXGL.addUINode(plateau.getRacineVisuelle());
                     } else {
                         // Si l'ID n'existe pas ou que la partie est finie : Message d'erreur !
                         com.almasb.fxgl.dsl.FXGL.getDialogService().showMessageBox("Partie introuvable ou déjà terminée !");
                     }
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException _) {
                     com.almasb.fxgl.dsl.FXGL.getDialogService().showMessageBox("Veuillez entrer un numéro valide !");
                 }
             });
         }));
-        menuButtons.add(new TechButton("MULTIPLAYER MODE_", () -> IO.println("Mode en développement.")));
+        menuButtons.add(new TechButton("HOST MULTIPLAYER_", () -> {
+            IO.println("Création d'un salon multijoueur...");
+            // TODO : On appellera PlateauDeJeu en mode "Hôte" ici !
+        }));
+
+        // --- NOUVEAU BOUTON : REJOINDRE (JOUEUR 2) ---
+        menuButtons.add(new TechButton("JOIN MULTIPLAYER_", () -> {
+            com.almasb.fxgl.dsl.FXGL.getDialogService().showInputBox("Entrez l'ID du Salon :", input -> {
+                try {
+                    int idSalon = Integer.parseInt(input);
+                    PartieRepository repo = new PartieRepository();
+                    EtatJeu salon = repo.chargerSalonAttente(idSalon);
+
+                    if (salon != null) {
+                        IO.println("Salon trouvé ! À toi de placer tes bateaux.");
+                        // TODO : On lancera le PlateauDeJeu avec le salon récupéré ici !
+                    } else {
+                        com.almasb.fxgl.dsl.FXGL.getDialogService().showMessageBox("Salon introuvable ou déjà lancé !");
+                    }
+                } catch (NumberFormatException _) {
+                    com.almasb.fxgl.dsl.FXGL.getDialogService().showMessageBox("ID invalide !");
+                }
+            });
+        }));
         menuButtons.add(new TechButton("SETTINGS_", () -> IO.println("Ouverture paramètres.")));
         menuButtons.add(new TechButton("EXIT_", () -> FXGL.getGameController().exit()));
 
@@ -119,6 +144,12 @@ public class MenuUI extends Pane {
         credits.setTranslateX(100);
         credits.setTranslateY(680);
         getChildren().add(credits);
+        Text txtProfil = new Text("Profil actif : " + Session.pseudo);
+        txtProfil.setFont(Font.font("Consolas", 18));
+        txtProfil.setFill(Color.LIMEGREEN);
+        txtProfil.setTranslateX(1000);
+        txtProfil.setTranslateY(40);
+        getChildren().add(txtProfil);
     }
 
 

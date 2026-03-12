@@ -3,6 +3,7 @@ package school.coda.darill_thomas_louis.bataillejavale.infrastructure.database;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
+import school.coda.darill_thomas_louis.bataillejavale.core.model.Session;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,19 +16,22 @@ public class PartieRepository {
 
     // Enregistre le début de la partie et renvoie l'ID généré par PostgreSQL
     public int creerNouvellePartie(EtatJeu etatJeu) {
-        String sql = "INSERT INTO parties (etat_jeu, statut) VALUES (?::jsonb, 'EN_COURS') RETURNING id;";
+        String sql = "INSERT INTO parties (joueur1_id, etat_jeu, statut) VALUES (?, ?::jsonb, 'EN_COURS') RETURNING id;";
 
         try (Connection conn = CreateDB.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, mapper.writeValueAsString(etatJeu));
+            pstmt.setInt(1, Session.idJoueur);
+
+            pstmt.setString(2, mapper.writeValueAsString(etatJeu));
+
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
                 return rs.getInt("id");
             }
         } catch (SQLException | JsonProcessingException e) {
-            IO.println("Erreur lors de la création en DB : " + e.getMessage());
+            System.err.println("Erreur lors de la création en DB : " + e.getMessage());
         }
         return -1;
     }
@@ -86,5 +90,75 @@ public class PartieRepository {
         } catch (SQLException e) {
             IO.println("Erreur de verrouillage DB : " + e.getMessage());
         }
+    }
+
+    public int hebergerPartieMulti(EtatJeu etatJeu) {
+        String sql = "INSERT INTO parties (joueur1_id, etat_jeu, statut) VALUES (?, ?::jsonb, 'ATTENTE_P2') RETURNING id;";
+        try (Connection conn = CreateDB.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, school.coda.darill_thomas_louis.bataillejavale.core.model.Session.idJoueur);
+            pstmt.setString(2, mapper.writeValueAsString(etatJeu));
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) return rs.getInt("id");
+        } catch (SQLException | JsonProcessingException e) {
+            IO.println("Erreur d'hébergement : " + e.getMessage());
+        }
+        return -1;
+    }
+
+    public EtatJeu chargerSalonAttente(int idPartie) {
+        String sql = "SELECT etat_jeu FROM parties WHERE id = ? AND statut = 'ATTENTE_P2'";
+        try (Connection conn = CreateDB.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, idPartie);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return mapper.readValue(rs.getString("etat_jeu"), EtatJeu.class);
+            }
+        } catch (SQLException | JsonProcessingException e) {
+            IO.println("Erreur de chargement du salon : " + e.getMessage());
+        }
+        return null;
+    }
+
+    public void demarrerPartieMulti(int idPartie, EtatJeu etatJeuComplet) {
+        String sql = "UPDATE parties SET joueur2_id = ?, etat_jeu = ?::jsonb, statut = 'EN_COURS' WHERE id = ?";
+        try (Connection conn = CreateDB.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, school.coda.darill_thomas_louis.bataillejavale.core.model.Session.idJoueur);
+            pstmt.setString(2, mapper.writeValueAsString(etatJeuComplet));
+            pstmt.setInt(3, idPartie);
+            pstmt.executeUpdate();
+        } catch (SQLException | JsonProcessingException e) {
+            IO.println("Erreur au démarrage multi : " + e.getMessage());
+        }
+    }
+
+    public String getStatutPartie(int idPartie) {
+        String sql = "SELECT statut FROM parties WHERE id = ?";
+        try (Connection conn = CreateDB.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, idPartie);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) return rs.getString("statut");
+        } catch (SQLException e) {
+            IO.println("Erreur de statut : " + e.getMessage());
+        }
+        return "ERREUR";
+    }
+
+    public EtatJeu chargerPartieActiveOuTerminee(int idPartie) {
+        String sql = "SELECT etat_jeu FROM parties WHERE id = ?";
+        try (Connection conn = CreateDB.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, idPartie);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return mapper.readValue(rs.getString("etat_jeu"), EtatJeu.class);
+            }
+        } catch (SQLException | JsonProcessingException e) {
+            System.err.println("Erreur de polling DB : " + e.getMessage());
+        }
+        return null;
     }
 }

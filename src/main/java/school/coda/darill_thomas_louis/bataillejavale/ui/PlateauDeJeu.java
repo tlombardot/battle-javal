@@ -99,27 +99,22 @@ public class PlateauDeJeu {
         conteneurRadar = assemblerConteneurGrille("ZONE ENNEMIE (Radar)", Color.RED, vueRadar, "#ff0000");
 
         voileAttenteRadar = new StackPane();
-        voileAttenteRadar.setPrefSize(440, 440);
-        voileAttenteRadar.setStyle("-fx-background-color: rgba(0, 0, 0, 0.75); -fx-background-radius: 8px;");
+        voileAttenteRadar.setPrefSize(FXGL.getAppWidth(), FXGL.getAppHeight());
+        voileAttenteRadar.setStyle("-fx-background-color: rgba(0, 0, 0, 0.75);");
 
-        Text texteAttente = new Text("REFLEXION DU SEIGNEUR ENNEMI...");
-        texteAttente.setFont(getPolicePersonnalisee(24));
+        Text texteAttente = new Text("RÉFLEXION DU SEIGNEUR ENNEMI...");
+        texteAttente.setFont(getPolicePersonnalisee(35));
         texteAttente.setFill(Color.web("#ff0000"));
         voileAttenteRadar.getChildren().add(texteAttente);
 
         voileAttenteRadar.setVisible(false);
         voileAttenteRadar.setOpacity(0);
 
-        conteneurRadar.getChildren().remove(vueRadar);
-        StackPane radarAvecVoile = new StackPane(vueRadar, voileAttenteRadar);
-        conteneurRadar.getChildren().add(radarAvecVoile);
-
         ColorAdjust desaturate = new ColorAdjust();
         desaturate.setBrightness(-0.5);
         conteneurRadar.setEffect(desaturate);
 
         creerPanneauPlacement();
-
         Rectangle fondPlateau = creerFondEcran();
 
         layoutPrincipal = new BorderPane();
@@ -130,7 +125,7 @@ public class PlateauDeJeu {
         layoutPrincipal.setCenter(conteneurOcean);
 
         racineVisuelle = new StackPane();
-        racineVisuelle.getChildren().addAll(fondPlateau, layoutPrincipal, notificationBox);
+        racineVisuelle.getChildren().addAll(fondPlateau, layoutPrincipal, voileAttenteRadar, notificationBox);
 
         vueOcean.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
 
@@ -403,7 +398,7 @@ public class PlateauDeJeu {
         for (int i = 0; i < navire.getTaille(); i++) {
             int curX = horizontal ? startX + i : startX;
             int curY = !horizontal ? startY + i : startY;
-            if (curX < 10 && curY < 10) grille.colorierCase(curX, curY, couleur);
+            if (curX < 10 && curY < 10) grille.dessinerApercu(curX, curY, couleur);
         }
     }
 

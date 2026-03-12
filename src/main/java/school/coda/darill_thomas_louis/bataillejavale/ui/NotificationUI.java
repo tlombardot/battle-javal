@@ -12,6 +12,9 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+/**
+ * Création et affichage de l'alerte en cas d'impact lors d'un tir
+ */
 public class NotificationUI extends StackPane {
     private final Text messageText;
     private final Rectangle fondAlerte;
