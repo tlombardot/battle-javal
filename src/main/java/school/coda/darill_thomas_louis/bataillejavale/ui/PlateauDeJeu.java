@@ -1,15 +1,18 @@
 package school.coda.darill_thomas_louis.bataillejavale.ui;
 
 import com.almasb.fxgl.dsl.FXGL;
+import javafx.animation.AnimationTimer;
+import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -17,10 +20,12 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import school.coda.darill_thomas_louis.bataillejavale.core.event.ResultatTir;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.GrilleOcean;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Vaisseau;
+import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,12 +34,12 @@ import java.util.Random;
 
 public class PlateauDeJeu {
 
-    private static final String TEXT_FONT = "Times New Roman";
+    private static final String TEXT_FONT = "Impact";
 
     private boolean tourJoueur;
 
     private int idPartieCourante = -1;
-    private final school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository partieRepository = new school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository();
+    private final PartieRepository partieRepository = new PartieRepository();
 
     private EtatJeu etatJeuBackend;
     private List<Vaisseau> flotteRestante;
@@ -63,6 +68,8 @@ public class PlateauDeJeu {
     private VBox panneauPlacement;
     private Button btnPret;
 
+    private StackPane voileAttenteRadar;
+
     public PlateauDeJeu(EtatJeu sauvegarde, int idPartie) {
         this();
         this.etatJeuBackend = sauvegarde;
@@ -90,6 +97,22 @@ public class PlateauDeJeu {
 
         conteneurOcean = assemblerConteneurGrille("ZONE ALLIÉE (Océan)", Color.CYAN, vueOcean, "#00ffff");
         conteneurRadar = assemblerConteneurGrille("ZONE ENNEMIE (Radar)", Color.RED, vueRadar, "#ff0000");
+
+        voileAttenteRadar = new StackPane();
+        voileAttenteRadar.setPrefSize(440, 440);
+        voileAttenteRadar.setStyle("-fx-background-color: rgba(0, 0, 0, 0.75); -fx-background-radius: 8px;");
+
+        Text texteAttente = new Text("REFLEXION DU SEIGNEUR ENNEMI...");
+        texteAttente.setFont(getPolicePersonnalisee(24));
+        texteAttente.setFill(Color.web("#ff0000"));
+        voileAttenteRadar.getChildren().add(texteAttente);
+
+        voileAttenteRadar.setVisible(false);
+        voileAttenteRadar.setOpacity(0);
+
+        conteneurRadar.getChildren().remove(vueRadar);
+        StackPane radarAvecVoile = new StackPane(vueRadar, voileAttenteRadar);
+        conteneurRadar.getChildren().add(radarAvecVoile);
 
         ColorAdjust desaturate = new ColorAdjust();
         desaturate.setBrightness(-0.5);
@@ -140,79 +163,25 @@ public class PlateauDeJeu {
         return fond;
     }
 
-    private ImageView creerFondPlateau() {
-
-        String cheminComplet = getClass().getResource("/assets/textures/ocean_3.gif").toExternalForm();
-        Image imageGif = new Image(cheminComplet);
-
-        ImageView fondPlateau = new ImageView(imageGif);
-
-        fondPlateau.setFitWidth(com.almasb.fxgl.dsl.FXGL.getAppWidth());
-        fondPlateau.setFitHeight(com.almasb.fxgl.dsl.FXGL.getAppHeight());
-
-        return fondPlateau;
-    }
-
     private VBox assemblerConteneurGrille(String titre, Color couleurTexte, GrilleUI grille, String couleurNeon) {
         Text texte = new Text(titre);
-        texte.setFont(Font.font(TEXT_FONT, 20));
+        texte.setFont(getPolicePersonnalisee(20));
         texte.setFill(couleurTexte);
 
-        Canvas fondAnime = creerOceanProceduralOptimise();
-        StackPane vueTactique = new StackPane(fondAnime, grille);
-        vueTactique.setMinSize(400, 400);
-
-        vueTactique.setStyle(
-                "-fx-background-color: rgba(10, 20, 30, 0.4); " +
+        grille.setStyle(
+                "-fx-background-color: #050814; " +
                         "-fx-border-color: linear-gradient(to bottom right, " + couleurNeon + ", rgba(0,0,0,0.8)); " +
                         "-fx-border-width: 4px; " +
                         "-fx-border-radius: 8px; " +
                         "-fx-background-radius: 8px;"
         );
-        vueTactique.setEffect(new DropShadow(10, Color.web(couleurNeon)));
+        grille.setEffect(new javafx.scene.effect.DropShadow(25, Color.web(couleurNeon)));
 
-        VBox conteneur = new VBox(15, texte, vueTactique);
+        VBox conteneur = new VBox(15, texte, grille);
         conteneur.setAlignment(Pos.CENTER);
         return conteneur;
     }
 
-    private Canvas creerOceanProceduralOptimise() {
-        Canvas canvas = new Canvas(440, 440); // Plus grand pour englober la grille ET les lettres
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        AnimationTimer timer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                double temps = now / 1_000_000_000.0;
-
-                // Fond bleu nuit très profond
-                gc.setGlobalBlendMode(javafx.scene.effect.BlendMode.SRC_OVER);
-                gc.setFill(Color.web("#020612"));
-                gc.fillRect(0, 0, 440, 440);
-                
-                gc.setGlobalBlendMode(javafx.scene.effect.BlendMode.ADD);
-
-                for (int i = 0; i < 3; i++) {
-                    gc.setStroke(Color.web("#00E5FF", 0.3 + (i * 0.15)));
-                    gc.setLineWidth(2.5 + i);
-                    gc.beginPath();
-                    gc.moveTo(0, 440);
-
-                    for (int x = 0; x <= 440; x += 5) {
-                        double vitesse = temps * (1.5 + i * 0.5);
-                        double frequence = x * 0.01;
-                        double hauteur = 20 + (i * 15);
-                        double y = 200 + (i * 50) + Math.sin(frequence + vitesse) * hauteur;
-                        gc.lineTo(x, y);
-                    }
-
-                    gc.stroke();
-                }
-            }
-        };
-        timer.start();
-        return canvas;
-    }
 
     private Font getPolicePersonnalisee(int taille) {
         Font customFont = Font.loadFont(getClass().getResourceAsStream("/assets/ui/fonts/Cinzel-Medium.ttf"), taille);
@@ -230,11 +199,11 @@ public class PlateauDeJeu {
         panneauPlacement.setPrefWidth(320);
 
         Text titre = new Text("DÉPLOIEMENT");
-        titre.setFont(Font.font(TEXT_FONT, 28));
+        titre.setFont(getPolicePersonnalisee(28));
         titre.setFill(Color.WHITE);
 
         Text instructions = new Text("Clic Droit (sur bateau) : Tourner\nGlisser-Déposer : Placer");
-        instructions.setFont(Font.font(TEXT_FONT, 14));
+        instructions.setFont(getPolicePersonnalisee(14));
         instructions.setFill(Color.GRAY);
         instructions.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
@@ -255,7 +224,7 @@ public class PlateauDeJeu {
 
     private Button styleBouton(String texte, String couleurHex) {
         Button btn = new Button(texte);
-        btn.setFont(Font.font(TEXT_FONT, 16));
+        btn.setFont(getPolicePersonnalisee(16));
         btn.setPrefSize(260, 50);
         btn.setStyle("-fx-background-color: transparent; -fx-border-color: " + couleurHex + "; -fx-text-fill: " + couleurHex + "; -fx-border-width: 2px; -fx-cursor: hand;");
         btn.setOnMouseEntered(e -> btn.setStyle("-fx-background-color: " + couleurHex + "; -fx-text-fill: #1a2230; -fx-border-width: 2px; -fx-cursor: hand;"));
@@ -297,7 +266,7 @@ public class PlateauDeJeu {
     // ==========================================
 
     private GrilleUI creerGrilleOcean() {
-        GrilleUI grille = new GrilleUI();
+        GrilleUI grille = new GrilleUI("#00ffff");
         grille.setListener(new GrilleUI.GrilleListener() {
             @Override public void onCaseLeftClick(int x, int y) { /* On ne l'utilise pas */ }
             @Override public void onCaseRightClick(int x, int y) { /* On ne l'utilise pas */ }
@@ -319,7 +288,7 @@ public class PlateauDeJeu {
     }
 
     private GrilleUI creerGrilleRadar(GrilleUI oceanRef) {
-        GrilleUI radar = new GrilleUI();
+        GrilleUI radar = new GrilleUI("#ff0000");
         radar.setListener(new GrilleUI.GrilleListener() {
             @Override public void onCaseLeftClick(int x, int y) {
                 gererTirJoueur(radar, oceanRef, x, y);
@@ -491,6 +460,11 @@ public class PlateauDeJeu {
         sideBar.setPhase("TOUR DU CPU...");
         tourJoueur = false;
 
+        voileAttenteRadar.setVisible(true);
+        javafx.animation.FadeTransition fadeOuverture = new javafx.animation.FadeTransition(Duration.seconds(0.2), voileAttenteRadar);
+        fadeOuverture.setToValue(1.0);
+        fadeOuverture.play();
+
         FXGL.getGameTimer().runOnceAfter(() -> {
             riposteDuCPU(oceanRef);
             etatJeuBackend.setTourCourant(etatJeuBackend.getTourCourant() + 1);
@@ -502,6 +476,10 @@ public class PlateauDeJeu {
 
             if(phaseBataille){
                 tourJoueur = true;
+                javafx.animation.FadeTransition fadeFermeture = new FadeTransition(javafx.util.Duration.seconds(0.3), voileAttenteRadar);
+                fadeFermeture.setToValue(0.0);
+                fadeFermeture.setOnFinished(e -> voileAttenteRadar.setVisible(false));
+                fadeFermeture.play();
             }
 
         }, javafx.util.Duration.seconds(1.0));

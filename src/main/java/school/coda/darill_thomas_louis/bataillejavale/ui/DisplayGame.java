@@ -7,6 +7,7 @@ import com.almasb.fxgl.input.UserAction;
 import javafx.scene.Cursor;
 import javafx.scene.input.KeyCode;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.CreateDB;
+import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.JoueurRepository;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameScene;
 
@@ -70,6 +71,8 @@ public class DisplayGame extends GameApplication {
      */
     static void main(String[] args) {
         new CreateDB();
+        JoueurRepository joueurRepo = new JoueurRepository();
+        joueurRepo.connexionAutomatique();
         launch(args);
     }
 }
