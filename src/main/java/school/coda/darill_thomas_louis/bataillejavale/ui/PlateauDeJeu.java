@@ -64,16 +64,21 @@ public class PlateauDeJeu {
     private Button btnPret;
 
     public PlateauDeJeu(EtatJeu sauvegarde, int idPartie) {
-        this(); // Appelle le constructeur normal pour créer les grilles visuelles
-        this.etatJeuBackend = sauvegarde; // On écrase par la sauvegarde
+        this();
+        this.etatJeuBackend = sauvegarde;
         this.idPartieCourante = idPartie;
 
+        reparerSauvegarde(etatJeuBackend.getJoueur1(), etatJeuBackend.getJoueur2());
+        reparerSauvegarde(etatJeuBackend.getJoueur2(), etatJeuBackend.getJoueur1());
+
         passerEnModeBataille(false);
-        restaurerVisuelBataille(); // On redessine les anciens tirs !
+        restaurerVisuelBataille();
 
         sideBar.ajouterLog("Sauvegarde Cloud chargée avec succès (ID: " + idPartie + ")", "INFO");
         sideBar.setTexteManche(etatJeuBackend.getTourCourant());
     }
+
+
 
     public PlateauDeJeu() {
         initialiserDonneesPartie();
@@ -135,16 +140,88 @@ public class PlateauDeJeu {
         return fond;
     }
 
+    private ImageView creerFondPlateau() {
+
+        String cheminComplet = getClass().getResource("/assets/textures/ocean_3.gif").toExternalForm();
+        Image imageGif = new Image(cheminComplet);
+
+        ImageView fondPlateau = new ImageView(imageGif);
+
+        fondPlateau.setFitWidth(com.almasb.fxgl.dsl.FXGL.getAppWidth());
+        fondPlateau.setFitHeight(com.almasb.fxgl.dsl.FXGL.getAppHeight());
+
+        return fondPlateau;
+    }
+
     private VBox assemblerConteneurGrille(String titre, Color couleurTexte, GrilleUI grille, String couleurNeon) {
         Text texte = new Text(titre);
         texte.setFont(Font.font(TEXT_FONT, 20));
         texte.setFill(couleurTexte);
-        VBox conteneur = new VBox(15, texte, grille);
+
+        Canvas fondAnime = creerOceanProceduralOptimise();
+        StackPane vueTactique = new StackPane(fondAnime, grille);
+        vueTactique.setMinSize(400, 400);
+
+        vueTactique.setStyle(
+                "-fx-background-color: rgba(10, 20, 30, 0.4); " +
+                        "-fx-border-color: linear-gradient(to bottom right, " + couleurNeon + ", rgba(0,0,0,0.8)); " +
+                        "-fx-border-width: 4px; " +
+                        "-fx-border-radius: 8px; " +
+                        "-fx-background-radius: 8px;"
+        );
+        vueTactique.setEffect(new DropShadow(10, Color.web(couleurNeon)));
+
+        VBox conteneur = new VBox(15, texte, vueTactique);
         conteneur.setAlignment(Pos.CENTER);
-        conteneur.setEffect(new DropShadow(25, Color.web(couleurNeon)));
         return conteneur;
     }
 
+    private Canvas creerOceanProceduralOptimise() {
+        Canvas canvas = new Canvas(440, 440); // Plus grand pour englober la grille ET les lettres
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                double temps = now / 1_000_000_000.0;
+
+                // Fond bleu nuit très profond
+                gc.setGlobalBlendMode(javafx.scene.effect.BlendMode.SRC_OVER);
+                gc.setFill(Color.web("#020612"));
+                gc.fillRect(0, 0, 440, 440);
+                
+                gc.setGlobalBlendMode(javafx.scene.effect.BlendMode.ADD);
+
+                for (int i = 0; i < 3; i++) {
+                    gc.setStroke(Color.web("#00E5FF", 0.3 + (i * 0.15)));
+                    gc.setLineWidth(2.5 + i);
+                    gc.beginPath();
+                    gc.moveTo(0, 440);
+
+                    for (int x = 0; x <= 440; x += 5) {
+                        double vitesse = temps * (1.5 + i * 0.5);
+                        double frequence = x * 0.01;
+                        double hauteur = 20 + (i * 15);
+                        double y = 200 + (i * 50) + Math.sin(frequence + vitesse) * hauteur;
+                        gc.lineTo(x, y);
+                    }
+
+                    gc.stroke();
+                }
+            }
+        };
+        timer.start();
+        return canvas;
+    }
+
+    private Font getPolicePersonnalisee(int taille) {
+        Font customFont = Font.loadFont(getClass().getResourceAsStream("/assets/ui/fonts/Cinzel-Medium.ttf"), taille);
+        if (customFont == null) {
+            IO.println("ERREUR : Police introuvable, chargement par défaut.");
+            return Font.font("Consolas", taille);
+        }
+        return customFont;
+    }
 
     private void creerPanneauPlacement() {
         panneauPlacement = new VBox(25);
@@ -311,6 +388,38 @@ public class PlateauDeJeu {
     // HELPERS
     // ==========================================
 
+    private void reparerSauvegarde(school.coda.darill_thomas_louis.bataillejavale.core.model.JoueurPlay defenseur, school.coda.darill_thomas_louis.bataillejavale.core.model.JoueurPlay attaquant) {
+        Vaisseau[][] plateau = defenseur.getGrilleOcean().getPlateau();
+        List<Vaisseau> flotte = defenseur.getFlotte();
+
+        for (int x = 0; x < 10; x++) {
+            for (int y = 0; y < 10; y++) {
+                if (plateau[x][y] != null) {
+                    for (Vaisseau vraiVaisseau : flotte) {
+                        if (vraiVaisseau.getNom().equals(plateau[x][y].getNom())) {
+                            plateau[x][y] = vraiVaisseau;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (Vaisseau v : flotte) {
+            v.setCasesTouchees(0);
+        }
+
+        ResultatTir[][] historique = attaquant.getGrilleRadar().getHistoriqueTirs();
+        for (int x = 0; x < 10; x++) {
+            for (int y = 0; y < 10; y++) {
+                if ((historique[x][y] == ResultatTir.TOUCHE || historique[x][y] == ResultatTir.COULE) && plateau[x][y] != null) {
+                        plateau[x][y].recevoirDegat(x, y);
+                    }
+
+            }
+        }
+    }
+
     private Vaisseau trouverVaisseauRestant(String nom) {
         return flotteRestante.stream().filter(v -> v.getNom().equals(nom)).findFirst().orElse(null);
     }
@@ -337,7 +446,10 @@ public class PlateauDeJeu {
         if (estNouvellePartie) {
             placerBateauxCPU();
             idPartieCourante = partieRepository.creerNouvellePartie(etatJeuBackend);
+            sideBar.ajouterLog("Sauvegarde Cloud OK (ID: " + idPartieCourante + ")", "INFO");
+            notificationBox.afficherAlerte("BATAILLE IMMINENTE", "#ff3333");
         }
+
         phaseBataille = true;
         tourJoueur = true;
 
@@ -352,10 +464,7 @@ public class PlateauDeJeu {
         layoutPrincipal.setRight(sideBar);
 
         sideBar.setPhase("PHASE DE BATAILLE : À VOUS !");
-        sideBar.ajouterLog("Flotte en position. La bataille commence !", "ALERTE");
-        idPartieCourante = partieRepository.creerNouvellePartie(etatJeuBackend);
-        sideBar.ajouterLog("Sauvegarde Cloud OK (ID: " + idPartieCourante + ")", "INFO");
-        if (estNouvellePartie) notificationBox.afficherAlerte("BATAILLE IMMINENTE", "#ff3333");
+        sideBar.ajouterLog("Systèmes d'armement en ligne.", "ALERTE");
     }
 
     private void gererTirJoueur(GrilleUI radar, GrilleUI oceanRef, int x, int y) {
