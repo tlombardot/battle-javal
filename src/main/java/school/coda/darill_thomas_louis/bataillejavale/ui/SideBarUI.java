@@ -22,7 +22,7 @@ public class SideBarUI extends VBox {
      */
     public SideBarUI() {
 
-        setPrefWidth(360);
+        setPrefWidth(340);
         setPrefHeight(720);
         setPadding(new Insets(20));
         setSpacing(20);

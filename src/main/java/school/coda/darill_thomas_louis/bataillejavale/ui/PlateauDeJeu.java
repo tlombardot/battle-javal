@@ -26,6 +26,7 @@ import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.GrilleOcean;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Vaisseau;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository;
+import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -103,7 +104,7 @@ public class PlateauDeJeu {
         voileAttenteRadar.setStyle("-fx-background-color: rgba(0, 0, 0, 0.75);");
 
         Text texteAttente = new Text("RÉFLEXION DU SEIGNEUR ENNEMI...");
-        texteAttente.setFont(getPolicePersonnalisee(35));
+        texteAttente.setFont(FontUtils.getPolice(35));
         texteAttente.setFill(Color.web("#ff0000"));
         voileAttenteRadar.getChildren().add(texteAttente);
 
@@ -160,17 +161,10 @@ public class PlateauDeJeu {
 
     private VBox assemblerConteneurGrille(String titre, Color couleurTexte, GrilleUI grille, String couleurNeon) {
         Text texte = new Text(titre);
-        texte.setFont(getPolicePersonnalisee(20));
+        texte.setFont(FontUtils.getPolice(20));
         texte.setFill(couleurTexte);
 
-        grille.setStyle(
-                "-fx-background-color: #050814; " +
-                        "-fx-border-color: linear-gradient(to bottom right, " + couleurNeon + ", rgba(0,0,0,0.8)); " +
-                        "-fx-border-width: 4px; " +
-                        "-fx-border-radius: 8px; " +
-                        "-fx-background-radius: 8px;"
-        );
-        grille.setEffect(new javafx.scene.effect.DropShadow(25, Color.web(couleurNeon)));
+        grille.setStyle("-fx-background-color: transparent;");
 
         VBox conteneur = new VBox(15, texte, grille);
         conteneur.setAlignment(Pos.CENTER);
@@ -178,14 +172,6 @@ public class PlateauDeJeu {
     }
 
 
-    private Font getPolicePersonnalisee(int taille) {
-        Font customFont = Font.loadFont(getClass().getResourceAsStream("/assets/ui/fonts/Cinzel-Medium.ttf"), taille);
-        if (customFont == null) {
-            IO.println("ERREUR : Police introuvable, chargement par défaut.");
-            return Font.font("Consolas", taille);
-        }
-        return customFont;
-    }
 
     private void creerPanneauPlacement() {
         panneauPlacement = new VBox(25);
@@ -194,11 +180,11 @@ public class PlateauDeJeu {
         panneauPlacement.setPrefWidth(320);
 
         Text titre = new Text("DÉPLOIEMENT");
-        titre.setFont(getPolicePersonnalisee(28));
+        titre.setFont(FontUtils.getPolice(28));
         titre.setFill(Color.WHITE);
 
         Text instructions = new Text("Clic Droit (sur bateau) : Tourner\nGlisser-Déposer : Placer");
-        instructions.setFont(getPolicePersonnalisee(14));
+        instructions.setFont(FontUtils.getPolice(14));
         instructions.setFill(Color.GRAY);
         instructions.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
@@ -219,7 +205,7 @@ public class PlateauDeJeu {
 
     private Button styleBouton(String texte, String couleurHex) {
         Button btn = new Button(texte);
-        btn.setFont(getPolicePersonnalisee(16));
+        btn.setFont(FontUtils.getPolice(16));
         btn.setPrefSize(260, 50);
         btn.setStyle("-fx-background-color: transparent; -fx-border-color: " + couleurHex + "; -fx-text-fill: " + couleurHex + "; -fx-border-width: 2px; -fx-cursor: hand;");
         btn.setOnMouseEntered(e -> btn.setStyle("-fx-background-color: " + couleurHex + "; -fx-text-fill: #1a2230; -fx-border-width: 2px; -fx-cursor: hand;"));
