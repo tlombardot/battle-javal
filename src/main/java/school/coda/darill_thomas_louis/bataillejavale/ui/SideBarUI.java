@@ -12,21 +12,20 @@ import javafx.scene.text.Text;
 
 public class SideBarUI extends VBox {
 
-    private Text texteManche;
-    private Text texteTour;
-    private VBox logContainer;
-    private ScrollPane scrollPane;
+    private final Text texteTour;
+    private final VBox logContainer;
+    private final ScrollPane scrollPane;
 
     public SideBarUI() {
 
-        setPrefWidth(350);
+        setPrefWidth(360);
         setPrefHeight(720);
         setPadding(new Insets(20));
         setSpacing(20);
         setAlignment(Pos.TOP_CENTER);
         setStyle("-fx-background-color: rgba(10, 20, 30, 0.85); -fx-border-color: #00ffff; -fx-border-width: 0 0 0 2;");
 
-        texteManche = creerTexteStylise("MANCHE : 1", 24, "#ffffff");
+        Text texteManche = creerTexteStylise("MANCHE : 1", 24, "#ffffff");
         texteTour = creerTexteStylise("PHASE DE PLACEMENT", 18, "#00ffff");
 
         VBox headerBox = new VBox(5, texteManche, texteTour);
