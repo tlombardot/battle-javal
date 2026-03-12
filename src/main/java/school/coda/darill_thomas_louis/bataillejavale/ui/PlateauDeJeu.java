@@ -1,18 +1,13 @@
 package school.coda.darill_thomas_louis.bataillejavale.ui;
 
 import com.almasb.fxgl.dsl.FXGL;
-import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -24,7 +19,6 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import school.coda.darill_thomas_louis.bataillejavale.core.event.ResultatTir;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
-import school.coda.darill_thomas_louis.bataillejavale.core.model.GrilleOcean;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Vaisseau;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository;
 import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
@@ -39,7 +33,6 @@ public class PlateauDeJeu {
     private static final String TEXT_FONT = "Impact";
 
     private boolean tourJoueur;
-
     private int idPartieCourante = -1;
     private final PartieRepository partieRepository = new PartieRepository();
 
@@ -50,20 +43,23 @@ public class PlateauDeJeu {
 
     private final StackPane racineVisuelle;
     private final BorderPane layoutPrincipal;
+
     /**
-     * Grille vueOcean pour le placement des bâteaux et pour les tirs reçus
+     * Grille vueOcean pour le placement des bateaux et pour les tirs reçus
      */
     private final GrilleUI vueOcean;
+
     /**
      * Grille vueRadar pour les tirs envoyés
      */
     private final GrilleUI vueRadar;
+
     /**
      * Information sur la partie en cours, historique des actions
      */
-
     private final SideBarUI sideBar;
     private final NotificationUI notificationBox;
+    private final GestionnairePlacement gestionnairePlacement;
 
     private SelectBoard zoneSelectionBateaux;
     private final VBox conteneurOcean;
@@ -71,7 +67,7 @@ public class PlateauDeJeu {
     private VBox panneauPlacement;
     private Button btnPret;
 
-    private StackPane voileAttenteRadar;
+    private final StackPane voileAttenteRadar;
 
     public PlateauDeJeu(EtatJeu sauvegarde, int idPartie) {
         this();
@@ -88,14 +84,15 @@ public class PlateauDeJeu {
         sideBar.setTexteManche(etatJeuBackend.getTourCourant());
     }
 
-
     public PlateauDeJeu() {
         initialiserDonneesPartie();
 
-        vueOcean = creerGrilleOcean();
-        vueRadar = creerGrilleRadar(vueOcean);
         sideBar = new SideBarUI();
         notificationBox = new NotificationUI();
+        gestionnairePlacement = new GestionnairePlacement(this);
+
+        vueOcean = creerGrilleOcean();
+        vueRadar = creerGrilleRadar(vueOcean);
 
         voileAttenteRadar = creerVoileAttente();
         StackPane blocRadarEtVoile = new StackPane(vueRadar, voileAttenteRadar);
@@ -120,7 +117,19 @@ public class PlateauDeJeu {
         notificationBox.afficherAlerte("DÉPLOIE TA FLOTTE, AMIRAL !", "#00ffff");
     }
 
+    // ==========================================
+    // GETTERS UTILISÉS PAR LE GESTIONNAIRE
+    // ==========================================
+
     public StackPane getRacineVisuelle() { return racineVisuelle; }
+    public EtatJeu getEtatJeuBackend() { return etatJeuBackend; }
+    public boolean isPhaseBataille() { return phaseBataille; }
+    public List<Vaisseau> getFlotteRestante() { return flotteRestante; }
+    public Button getBtnPret() { return btnPret; }
+
+    // ==========================================
+    // INITIALISATION ET UI
+    // ==========================================
 
     private void initialiserDonneesPartie() {
         etatJeuBackend = new EtatJeu();
@@ -128,7 +137,7 @@ public class PlateauDeJeu {
         rechargerFlotteRestante();
     }
 
-    private void rechargerFlotteRestante() {
+    public void rechargerFlotteRestante() {
         flotteRestante = new ArrayList<>(Arrays.asList(
                 new Vaisseau("Porte-avions", 5), new Vaisseau("Cuirassé", 4),
                 new Vaisseau("Destroyer", 3), new Vaisseau("Sous-marin", 3), new Vaisseau("Patrouilleur", 2)
@@ -174,10 +183,8 @@ public class PlateauDeJeu {
         BorderPane layout = new BorderPane();
         layout.setPrefWidth(FXGL.getAppWidth());
         layout.setPrefHeight(FXGL.getAppHeight());
-
         layout.setLeft(panneauPlacement);
         layout.setCenter(conteneurOcean);
-
         return layout;
     }
 
@@ -199,10 +206,10 @@ public class PlateauDeJeu {
         zoneSelectionBateaux = new SelectBoard(flotteRestante);
 
         Button btnAleatoire = styleBouton("PLACEMENT ALÉATOIRE", "#00ffff");
-        btnAleatoire.setOnAction(_ -> placerMesBateauxAleatoirement());
+        btnAleatoire.setOnAction(_ -> gestionnairePlacement.placerMesBateauxAleatoirement(vueOcean));
 
         Button btnVider = styleBouton("VIDER LA GRILLE", "#ffaa00");
-        btnVider.setOnAction(_ -> viderGrille());
+        btnVider.setOnAction(_ -> gestionnairePlacement.viderGrille(vueOcean));
 
         btnPret = styleBouton("DÉMARRER BATAILLE", "#32cd32");
         btnPret.setDisable(true);
@@ -221,33 +228,14 @@ public class PlateauDeJeu {
         return btn;
     }
 
-    private void actualiserMenuBateaux() {
+    public void actualiserMenuBateaux() {
         panneauPlacement.getChildren().remove(zoneSelectionBateaux);
         zoneSelectionBateaux = new SelectBoard(flotteRestante);
         panneauPlacement.getChildren().add(2, zoneSelectionBateaux);
     }
 
-    private void viderGrille() {
-        etatJeuBackend.getJoueur1().getGrilleOcean().vider();
-        etatJeuBackend.getJoueur1().getFlotte().clear();
-        rechargerFlotteRestante();
-        actualiserMenuBateaux();
-        vueOcean.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
-        btnPret.setDisable(true);
-    }
-
-    private void placerMesBateauxAleatoirement() {
-        viderGrille();
-        for (Vaisseau navire : new ArrayList<>(flotteRestante)) {
-            boolean place = false;
-            while (!place) {
-                place = etatJeuBackend.getJoueur1().getGrilleOcean().placerVaisseau(navire, random.nextInt(10), random.nextInt(10), random.nextBoolean());
-                if (place) etatJeuBackend.getJoueur1().getFlotte().add(navire);
-            }
-        }
-        flotteRestante.clear();
-        vueOcean.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
-        btnPret.setDisable(false);
+    public void retirerVaisseauZoneSelection(String nomNavire) {
+        zoneSelectionBateaux.retirerVaisseau(nomNavire);
     }
 
     // ==========================================
@@ -257,20 +245,19 @@ public class PlateauDeJeu {
     private GrilleUI creerGrilleOcean() {
         GrilleUI grille = new GrilleUI("#00ffff");
         grille.setListener(new GrilleUI.GrilleListener() {
-            @Override public void onCaseLeftClick(int x, int y) { /* On ne l'utilise pas */ }
-            @Override public void onCaseRightClick(int x, int y) { /* On ne l'utilise pas */ }
-
+            @Override public void onCaseLeftClick(int x, int y) {}
+            @Override public void onCaseRightClick(int x, int y) {}
             @Override public String onDragStart(int x, int y) {
-                return gererDragStartOcean(grille, x, y);
+                return gestionnairePlacement.gererDragStartOcean(grille, x, y);
             }
             @Override public void onDragOver(int x, int y, String nomNavire, boolean estHorizontal) {
-                gererDragOverOcean(grille, x, y, nomNavire, estHorizontal);
+                gestionnairePlacement.gererDragOverOcean(grille, x, y, nomNavire, estHorizontal);
             }
             @Override public void onDragExited() {
                 if (!phaseBataille) grille.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
             }
             @Override public void onDragDropped(int x, int y, String nomNavire, boolean estHorizontal) {
-                gererDragDroppedOcean(grille, x, y, nomNavire, estHorizontal);
+                gestionnairePlacement.gererDragDroppedOcean(grille, x, y, nomNavire, estHorizontal);
             }
         });
         return grille;
@@ -282,118 +269,13 @@ public class PlateauDeJeu {
             @Override public void onCaseLeftClick(int x, int y) {
                 gererTirJoueur(radar, oceanRef, x, y);
             }
-            @Override public void onCaseRightClick(int x, int y) { /* On ne l'utilise pas */ }
-            @Override public void onDragOver(int x, int y, String nomNavire, boolean estHorizontal) { /* On ne l'utilise pas */ }
-            @Override public void onDragDropped(int x, int y, String nomNavire, boolean estHorizontal) { /* On ne l'utilise pas */ }
-            @Override public void onDragExited() { /* On ne l'utilise pas */ }
+            @Override public void onCaseRightClick(int x, int y) {}
+            @Override public void onDragOver(int x, int y, String nomNavire, boolean estHorizontal) {}
+            @Override public void onDragDropped(int x, int y, String nomNavire, boolean estHorizontal) {}
+            @Override public void onDragExited() {}
             @Override public String onDragStart(int x, int y) { return null; }
         });
         return radar;
-    }
-
-    // ==========================================
-    // LOGIQUE DE DRAG & DROP
-    // ==========================================
-
-    private String gererDragStartOcean(GrilleUI grille, int x, int y) {
-        if (phaseBataille) return null;
-
-        Vaisseau navire = etatJeuBackend.getJoueur1().getGrilleOcean().getVaisseauAt(x, y);
-        if (navire == null) return null;
-
-        boolean estHoriz = estVaisseauHorizontal(x, y, navire);
-
-        etatJeuBackend.getJoueur1().getGrilleOcean().retirerVaisseau(navire);
-        etatJeuBackend.getJoueur1().getFlotte().remove(navire);
-        flotteRestante.add(navire);
-
-        actualiserMenuBateaux();
-        grille.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
-        btnPret.setDisable(true);
-
-        return navire.getNom() + ";" + estHoriz;
-    }
-
-    private void gererDragOverOcean(GrilleUI grille, int x, int y, String nomNavire, boolean estHorizontal) {
-        if (phaseBataille) return;
-        Vaisseau navire = trouverVaisseauRestant(nomNavire);
-        if (navire == null) return;
-
-        grille.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
-        boolean valide = etatJeuBackend.getJoueur1().getGrilleOcean().estPlacementValide(navire, x, y, estHorizontal);
-        Color couleurApercu = valide ? Color.color(0, 1, 0, 0.6) : Color.color(1, 0, 0, 0.6);
-
-        dessinerApercuPlacement(grille, navire, x, y, estHorizontal, couleurApercu);
-    }
-
-    private void gererDragDroppedOcean(GrilleUI grille, int x, int y, String nomNavire, boolean estHorizontal) {
-        if (phaseBataille) return;
-        Vaisseau navire = trouverVaisseauRestant(nomNavire);
-        if (navire == null) return;
-
-        boolean success = etatJeuBackend.getJoueur1().getGrilleOcean().placerVaisseau(navire, x, y, estHorizontal);
-        if (success) {
-            etatJeuBackend.getJoueur1().getFlotte().add(navire);
-            flotteRestante.remove(navire);
-            zoneSelectionBateaux.retirerVaisseau(nomNavire);
-            grille.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
-
-            if (flotteRestante.isEmpty()) btnPret.setDisable(false);
-        }
-    }
-
-    // ==========================================
-    // HELPERS
-    // ==========================================
-
-    private void reparerSauvegarde(school.coda.darill_thomas_louis.bataillejavale.core.model.JoueurPlay defenseur, school.coda.darill_thomas_louis.bataillejavale.core.model.JoueurPlay attaquant) {
-        Vaisseau[][] plateau = defenseur.getGrilleOcean().getPlateau();
-        List<Vaisseau> flotte = defenseur.getFlotte();
-
-        for (int x = 0; x < 10; x++) {
-            for (int y = 0; y < 10; y++) {
-                if (plateau[x][y] != null) {
-                    for (Vaisseau vraiVaisseau : flotte) {
-                        if (vraiVaisseau.getNom().equals(plateau[x][y].getNom())) {
-                            plateau[x][y] = vraiVaisseau;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        for (Vaisseau v : flotte) {
-            v.setCasesTouchees(0);
-        }
-
-        ResultatTir[][] historique = attaquant.getGrilleRadar().getHistoriqueTirs();
-        for (int x = 0; x < 10; x++) {
-            for (int y = 0; y < 10; y++) {
-                if ((historique[x][y] == ResultatTir.TOUCHE || historique[x][y] == ResultatTir.COULE) && plateau[x][y] != null) {
-                        plateau[x][y].recevoirDegat(x, y);
-                    }
-
-            }
-        }
-    }
-
-    private Vaisseau trouverVaisseauRestant(String nom) {
-        return flotteRestante.stream().filter(v -> v.getNom().equals(nom)).findFirst().orElse(null);
-    }
-
-    private boolean estVaisseauHorizontal(int x, int y, Vaisseau navire) {
-        GrilleOcean ocean = etatJeuBackend.getJoueur1().getGrilleOcean();
-        return (x + 1 < 10 && ocean.getVaisseauAt(x + 1, y) == navire) ||
-                (x - 1 >= 0 && ocean.getVaisseauAt(x - 1, y) == navire);
-    }
-
-    private void dessinerApercuPlacement(GrilleUI grille, Vaisseau navire, int startX, int startY, boolean horizontal, Color couleur) {
-        for (int i = 0; i < navire.getTaille(); i++) {
-            int curX = horizontal ? startX + i : startX;
-            int curY = !horizontal ? startY + i : startY;
-            if (curX < 10 && curY < 10) grille.dessinerApercu(curX, curY, couleur);
-        }
     }
 
     // ==========================================
@@ -440,7 +322,6 @@ public class PlateauDeJeu {
         etatJeuBackend.getJoueur1().getGrilleRadar().enregistrerTir(x, y, resultat);
 
         afficherResultatTirJoueur(radar, x, y, resultat, cibleAdverse);
-
         partieRepository.mettreAJourPartie(idPartieCourante, etatJeuBackend);
 
         verifierFinDePartie();
@@ -450,9 +331,8 @@ public class PlateauDeJeu {
         tourJoueur = false;
 
         conteneurRadar.setEffect(null);
-
         voileAttenteRadar.setVisible(true);
-        javafx.animation.FadeTransition fadeOuverture = new javafx.animation.FadeTransition(Duration.seconds(0.2), voileAttenteRadar);
+        FadeTransition fadeOuverture = new FadeTransition(Duration.seconds(0.2), voileAttenteRadar);
         fadeOuverture.setToValue(1.0);
         fadeOuverture.play();
 
@@ -467,13 +347,16 @@ public class PlateauDeJeu {
 
             if(phaseBataille){
                 tourJoueur = true;
-                javafx.animation.FadeTransition fadeFermeture = new FadeTransition(javafx.util.Duration.seconds(0.3), voileAttenteRadar);
+                DropShadow neonGlowRadar = new DropShadow(25, Color.web("#ff0000"));
+                conteneurRadar.setEffect(neonGlowRadar);
+
+                FadeTransition fadeFermeture = new FadeTransition(Duration.seconds(0.3), voileAttenteRadar);
                 fadeFermeture.setToValue(0.0);
                 fadeFermeture.setOnFinished(e -> voileAttenteRadar.setVisible(false));
                 fadeFermeture.play();
             }
 
-        }, javafx.util.Duration.seconds(1.0));
+        }, Duration.seconds(1.0));
     }
 
     private void afficherResultatTirJoueur(GrilleUI radar, int x, int y, ResultatTir resultat, Vaisseau cible) {
@@ -537,11 +420,11 @@ public class PlateauDeJeu {
     private void verifierFinDePartie() {
         if (etatJeuBackend.getJoueur2().aPerdu()) {
             phaseBataille = false;
-            partieRepository.terminerPartie(idPartieCourante, "TERMINEE_VICTOIRE"); // CLOUD VERROUILLÉ !
+            partieRepository.terminerPartie(idPartieCourante, "TERMINEE_VICTOIRE");
             afficherEcranFin("VICTOIRE !\nVous avez détruit la flotte ennemie !", Color.LIMEGREEN);
         } else if (etatJeuBackend.getJoueur1().aPerdu()) {
             phaseBataille = false;
-            partieRepository.terminerPartie(idPartieCourante, "TERMINEE_DEFAITE"); // CLOUD VERROUILLÉ !
+            partieRepository.terminerPartie(idPartieCourante, "TERMINEE_DEFAITE");
             afficherEcranFin("DÉFAITE...\nLe CPU a coulé votre flotte.", Color.RED);
         }
     }
@@ -565,18 +448,47 @@ public class PlateauDeJeu {
 
         for(int x=0; x<10; x++) {
             for(int y=0; y<10; y++) {
-                // Redessiner nos tirs sur le radar
                 ResultatTir monTir = etatJeuBackend.getJoueur1().getGrilleRadar().getHistoriqueTirs()[x][y];
                 if(monTir != null) {
                     if (monTir == ResultatTir.RATE) vueRadar.colorierCase(x, y, Color.WHITE);
                     else vueRadar.colorierCase(x, y, Color.RED);
                 }
 
-                // Redessiner les tirs du CPU sur notre océan
                 ResultatTir tirCpu = etatJeuBackend.getJoueur2().getGrilleRadar().getHistoriqueTirs()[x][y];
                 if(tirCpu != null) {
                     if (tirCpu == ResultatTir.RATE) vueOcean.colorierCase(x, y, Color.LIGHTCYAN);
                     else vueOcean.colorierCase(x, y, Color.DARKRED);
+                }
+            }
+        }
+    }
+
+    private void reparerSauvegarde(school.coda.darill_thomas_louis.bataillejavale.core.model.JoueurPlay defenseur, school.coda.darill_thomas_louis.bataillejavale.core.model.JoueurPlay attaquant) {
+        Vaisseau[][] plateau = defenseur.getGrilleOcean().getPlateau();
+        List<Vaisseau> flotte = defenseur.getFlotte();
+
+        for (int x = 0; x < 10; x++) {
+            for (int y = 0; y < 10; y++) {
+                if (plateau[x][y] != null) {
+                    for (Vaisseau vraiVaisseau : flotte) {
+                        if (vraiVaisseau.getNom().equals(plateau[x][y].getNom())) {
+                            plateau[x][y] = vraiVaisseau;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (Vaisseau v : flotte) {
+            v.setCasesTouchees(0);
+        }
+
+        ResultatTir[][] historique = attaquant.getGrilleRadar().getHistoriqueTirs();
+        for (int x = 0; x < 10; x++) {
+            for (int y = 0; y < 10; y++) {
+                if ((historique[x][y] == ResultatTir.TOUCHE || historique[x][y] == ResultatTir.COULE) && plateau[x][y] != null) {
+                    plateau[x][y].recevoirDegat(x, y);
                 }
             }
         }
