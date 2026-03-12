@@ -1,8 +1,10 @@
 package school.coda.darill_thomas_louis.bataillejavale.ui;
 
+import com.almasb.fxgl.dsl.FXGL;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -26,23 +28,20 @@ import java.util.Random;
 
 public class PlateauDeJeu {
 
-    private static final String TEXT_FONT = "Consolas";
+    private static final String TEXT_FONT = "Times New Roman";
 
     private EtatJeu etatJeuBackend;
     private List<Vaisseau> flotteRestante;
-    private boolean estHorizontal = true;
-    private int hoverX = -1;
-    private int hoverY = -1;
     private boolean phaseBataille = false;
     private final Random random = new Random();
 
-    // --- INTERFACE ---
     private final StackPane racineVisuelle;
     private final BorderPane layoutPrincipal;
 
     private final GrilleUI vueOcean;
     private final GrilleUI vueRadar;
     private final SideBarUI sideBar;
+    private final NotificationUI notificationBox;
 
     private SelectBoard zoneSelectionBateaux;
     private final VBox conteneurOcean;
@@ -56,6 +55,7 @@ public class PlateauDeJeu {
         vueOcean = creerGrilleOcean();
         vueRadar = creerGrilleRadar(vueOcean);
         sideBar = new SideBarUI();
+        notificationBox = new NotificationUI();
 
         DropShadow neonGlowOcean = new DropShadow(25, Color.web("#00ffff"));
         DropShadow neonGlowRadar = new DropShadow(25, Color.web("#ff0000"));
@@ -74,29 +74,34 @@ public class PlateauDeJeu {
         conteneurRadar.setAlignment(Pos.CENTER);
         conteneurRadar.setEffect(neonGlowRadar);
 
+        ColorAdjust desaturate = new ColorAdjust();
+        desaturate.setBrightness(-0.5);
+        conteneurRadar.setEffect(desaturate);
+
         creerPanneauPlacement();
 
         Rectangle fondPlateau = new Rectangle();
         Stop[] stops = new Stop[] { new Stop(0, Color.web("#050814")), new Stop(1, Color.web("#0a1526")) };
         LinearGradient bgGradient = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
         fondPlateau.setFill(bgGradient);
-
-        fondPlateau.setWidth(com.almasb.fxgl.dsl.FXGL.getAppWidth());
-        fondPlateau.setHeight(com.almasb.fxgl.dsl.FXGL.getAppHeight());
+        fondPlateau.setWidth(FXGL.getAppWidth());
+        fondPlateau.setHeight(FXGL.getAppHeight());
 
         layoutPrincipal = new BorderPane();
-
-        layoutPrincipal.setPrefWidth(com.almasb.fxgl.dsl.FXGL.getAppWidth());
-        layoutPrincipal.setPrefHeight(com.almasb.fxgl.dsl.FXGL.getAppHeight());
+        layoutPrincipal.setPrefWidth(FXGL.getAppWidth());
+        layoutPrincipal.setPrefHeight(FXGL.getAppHeight());
 
         BorderPane.setMargin(panneauPlacement, new Insets(0, 0, 0, 50));
         layoutPrincipal.setLeft(panneauPlacement);
         layoutPrincipal.setCenter(conteneurOcean);
 
         racineVisuelle = new StackPane();
-        racineVisuelle.getChildren().addAll(fondPlateau, layoutPrincipal);
+        racineVisuelle.getChildren().addAll(fondPlateau, layoutPrincipal, notificationBox);
 
         vueOcean.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
+
+        sideBar.ajouterLog("Système de contrôle initialisé. En attente de déploiement.", "INFO");
+        notificationBox.afficherAlerte("DÉPLOIE TA FLOTTE, AMIRAL !", "#00ffff");
     }
 
     public StackPane getRacineVisuelle() {
@@ -126,15 +131,14 @@ public class PlateauDeJeu {
         panneauPlacement.setPrefWidth(320);
 
         Text titre = new Text("DÉPLOIEMENT");
-        titre.setFont(Font.font("Consolas", 28));
+        titre.setFont(Font.font(TEXT_FONT, 28));
         titre.setFill(Color.WHITE);
 
         Text instructions = new Text("Clic Droit (sur bateau) : Tourner\nGlisser-Déposer : Placer");
-        instructions.setFont(Font.font("Consolas", 14));
+        instructions.setFont(Font.font(TEXT_FONT, 14));
         instructions.setFill(Color.GRAY);
         instructions.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
-        // --- ON INSTANCIE TON SELECTBOARD ICI ---
         zoneSelectionBateaux = new SelectBoard(flotteRestante);
 
         Button btnAleatoire = styleBouton("PLACEMENT ALÉATOIRE", "#00ffff");
@@ -167,10 +171,9 @@ public class PlateauDeJeu {
         etatJeuBackend.getJoueur1().getFlotte().clear();
         rechargerFlotteRestante();
 
-        // NOUVEAU : On recrée les bateaux dans le SelectBoard
         panneauPlacement.getChildren().remove(zoneSelectionBateaux);
         zoneSelectionBateaux = new SelectBoard(flotteRestante);
-        panneauPlacement.getChildren().add(2, zoneSelectionBateaux); // On le remet à sa place
+        panneauPlacement.getChildren().add(2, zoneSelectionBateaux);
 
         vueOcean.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
         btnPret.setDisable(true);
@@ -205,12 +208,13 @@ public class PlateauDeJeu {
         zoneBataille.setAlignment(Pos.CENTER);
 
         layoutPrincipal.setCenter(zoneBataille);
+        layoutPrincipal.setRight(sideBar); // On affiche la SideBar à droite !
 
-        sideBar.ajouterLog("Flotte en position.", Color.CYAN);
-        sideBar.ajouterLog("La bataille commence !", Color.LIMEGREEN);
+        sideBar.setPhase("DEBUT DE LA PHASE DE COMBAT : À VOUS !");
+        sideBar.ajouterLog("Flotte en position. La bataille commence !", "ALERTE");
+        notificationBox.afficherAlerte("BATAILLE IMMINENTE", "#ff3333");
     }
 
-    // --- LOGIQUE MÉTIER ---
 
     private GrilleUI creerGrilleOcean() {
         GrilleUI grille = new GrilleUI();
@@ -281,13 +285,9 @@ public class PlateauDeJeu {
                 boolean success = etatJeuBackend.getJoueur1().getGrilleOcean().placerVaisseau(navire, dropX, dropY, estHorizontal);
 
                 if (success) {
-                    // On valide l'ajout
                     etatJeuBackend.getJoueur1().getFlotte().add(navire);
                     flotteRestante.remove(navire);
-
-                    // On le retire visuellement du SelectBoard
                     zoneSelectionBateaux.retirerVaisseau(nomNavire);
-
                     grille.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
 
                     if (flotteRestante.isEmpty()) {
@@ -304,7 +304,10 @@ public class PlateauDeJeu {
         radar.setListener(new GrilleUI.GrilleListener() {
             @Override
             public void onCaseLeftClick(int x, int y) {
-                if (!phaseBataille) return;
+                if (!phaseBataille) {
+                    notificationBox.afficherAlerte("PHASE DE DÉPLOIEMENT", "#ffaa00");
+                    return;
+                }
                 if (etatJeuBackend.getJoueur1().getGrilleRadar().getHistoriqueTirs()[x][y] != null) return;
 
                 Vaisseau cibleAdverse = etatJeuBackend.getJoueur2().getGrilleOcean().getVaisseauAt(x, y);
@@ -313,21 +316,30 @@ public class PlateauDeJeu {
 
                 if (resultat == ResultatTir.RATE) {
                     radar.colorierCase(x, y, Color.WHITE);
-                    sideBar.ajouterLog("Tir en " + (char)('A' + y) + "-" + (x + 1) + " : Raté", Color.GRAY);
+                    sideBar.ajouterLog("Tir allié en " + (char)('A' + y) + "-" + (x + 1) + " : Raté", "RATE");
                 } else {
                     radar.colorierCase(x, y, Color.RED);
-                    if (resultat == ResultatTir.TOUCHE) sideBar.ajouterLog("Cible touchée !", Color.ORANGE);
-                    else sideBar.ajouterLog("BOUM ! " + cibleAdverse.getNom() + " coulé !", Color.LIMEGREEN);
+                    if (resultat == ResultatTir.TOUCHE) {
+                        sideBar.ajouterLog("Cible ennemie touchée !", "TOUCHE");
+                    } else {
+                        sideBar.ajouterLog("BOUM ! " + cibleAdverse.getNom() + " ennemi coulé !", "ALERTE");
+                        notificationBox.afficherAlerte("NAVIRE ENNEMI DÉTRUIT", "#ffaa00");
+                    }
                 }
 
                 verifierFinDePartie();
                 if (!phaseBataille) return;
 
-                riposteDuCPU(oceanRef);
+                // Tour du CPU
+                sideBar.setPhase("TOUR DU CPU...");
 
-                etatJeuBackend.setTourCourant(etatJeuBackend.getTourCourant() + 1);
-                sideBar.setTour(etatJeuBackend.getTourCourant());
-                verifierFinDePartie();
+                com.almasb.fxgl.dsl.FXGL.getGameTimer().runOnceAfter(() -> {
+                    riposteDuCPU(oceanRef);
+                    etatJeuBackend.setTourCourant(etatJeuBackend.getTourCourant() + 1);
+//                    sideBar.setTour(etatJeuBackend.getTourCourant());
+                    sideBar.setPhase("PHASE DE COMBAT : À VOUS !");
+                    verifierFinDePartie();
+                }, javafx.util.Duration.seconds(1.0));
             }
             @Override public void onCaseRightClick(int x, int y) {}
             @Override public void onDragOver(int x, int y, String nomNavire, boolean estHorizontal) {}
@@ -366,17 +378,23 @@ public class PlateauDeJeu {
 
         if (resultatCPU == ResultatTir.RATE) {
             oceanRef.colorierCase(cibleX, cibleY, Color.LIGHTCYAN);
-            sideBar.ajouterLog("CPU : Tir raté.", Color.GRAY);
+            sideBar.ajouterLog("CPU : Tir raté en " + (char)('A' + cibleY) + "-" + (cibleX + 1), "RATE");
         } else {
             oceanRef.colorierCase(cibleX, cibleY, Color.DARKRED);
-            if (resultatCPU == ResultatTir.TOUCHE) sideBar.ajouterLog("ALERTE ! Navire touché !", Color.RED);
-            else sideBar.ajouterLog("DÉSASTRE ! " + notreCible.getNom() + " coulé !", Color.DARKRED);
+            if (resultatCPU == ResultatTir.TOUCHE) {
+                sideBar.ajouterLog("ALERTE ! Navire allié touché !", "TOUCHE");
+                notificationBox.afficherAlerte("IMPACT CONFIRMÉ SUR NOTRE FLOTTE", "#ff3333");
+            } else {
+                sideBar.ajouterLog("DÉSASTRE ! " + notreCible.getNom() + " allié coulé !", "ALERTE");
+                notificationBox.afficherAlerte("NAVIRE ALLIÉ PERDU", "#ff0000");
+            }
         }
     }
+
     private void verifierFinDePartie(){
         if (etatJeuBackend.getJoueur2().aPerdu()){
             phaseBataille = false;
-            afficherEcranFin("VICTOIRE ! \nVous avez détruit la flotte ennemie !", Color.LIMEGREEN);
+            afficherEcranFin("VICTOIRE !\nVous avez détruit la flotte ennemie !", Color.LIMEGREEN);
         } else if (etatJeuBackend.getJoueur1().aPerdu()){
             phaseBataille = false;
             afficherEcranFin("DÉFAITE...\nLe CPU a coulé votre flotte.", Color.RED);
@@ -384,7 +402,7 @@ public class PlateauDeJeu {
     }
 
     private void afficherEcranFin(String message, Color couleur) {
-        javafx.scene.shape.Rectangle voileObscur = new javafx.scene.shape.Rectangle(
+        Rectangle voileObscur = new Rectangle(
                 com.almasb.fxgl.dsl.FXGL.getAppWidth(), com.almasb.fxgl.dsl.FXGL.getAppHeight(), Color.color(0, 0, 0, 0.8));
         Text texteFin = new Text(message);
         texteFin.setFont(Font.font(TEXT_FONT, 40));
@@ -394,7 +412,8 @@ public class PlateauDeJeu {
         btnQuitter.setOnAction(_ -> com.almasb.fxgl.dsl.FXGL.getGameController().exit());
         VBox ecranFin = new VBox(40, texteFin, btnQuitter);
         ecranFin.setAlignment(Pos.CENTER);
-        com.almasb.fxgl.dsl.FXGL.addUINode(voileObscur);
-        com.almasb.fxgl.dsl.FXGL.addUINode(ecranFin);
+
+        // On ajoute l'écran de fin par-dessus tout le reste dans le StackPane
+        racineVisuelle.getChildren().addAll(voileObscur, ecranFin);
     }
 }

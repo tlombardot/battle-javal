@@ -184,7 +184,7 @@ public class MenuUI extends Pane {
             techBand.setVisible(false);
 
             textNode = new Text(text);
-            textNode.setFont(Font.font("Consolas", 30));
+            textNode.setFont(Font.font("Times New Romans", 30));
             textNode.setFill(Color.web("#a0a0a0"));
             textNode.setTranslateX(20);
 

@@ -1,50 +1,80 @@
 package school.coda.darill_thomas_louis.bataillejavale.ui;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 public class SideBarUI extends VBox {
-    private final Text textTour;
-    private final VBox logContainer;
-    private static final String TEXT_FONT = "Consolas";
+
+    private Text texteManche;
+    private Text texteTour;
+    private VBox logContainer;
+    private ScrollPane scrollPane;
 
     public SideBarUI() {
-        setPrefWidth(300);
+
+        setPrefWidth(350);
+        setPrefHeight(720);
         setPadding(new Insets(20));
-        setSpacing(15);
-        setStyle("-fx-background-color: #1a2230; -fx-border-color: #00ffff; -fx-border-width: 2px;");
+        setSpacing(20);
+        setAlignment(Pos.TOP_CENTER);
+        setStyle("-fx-background-color: rgba(10, 20, 30, 0.85); -fx-border-color: #00ffff; -fx-border-width: 0 0 0 2;");
 
-        Text titre = new Text("HISTORIQUE");
-        titre.setFont(Font.font(TEXT_FONT, 24));
-        titre.setFill(Color.WHITE);
+        texteManche = creerTexteStylise("MANCHE : 1", 24, "#ffffff");
+        texteTour = creerTexteStylise("PHASE DE PLACEMENT", 18, "#00ffff");
 
-        textTour = new Text("Tour courant : 1");
-        textTour.setFont(Font.font(TEXT_FONT, 18));
-        textTour.setFill(Color.CYAN);
+        VBox headerBox = new VBox(5, texteManche, texteTour);
+        headerBox.setAlignment(Pos.CENTER);
 
-        logContainer = new VBox(10);
-        ScrollPane scrollPane = new ScrollPane(logContainer);
+        Rectangle separateur = new Rectangle(300, 2, Color.web("#00ffff", 0.5));
+        Text logTitre = creerTexteStylise("COMMUNICATIONS SYSTEM_", 16, "#a0a0a0");
+
+        logContainer = new VBox(5);
+        logContainer.setPadding(new Insets(10));
+
+        scrollPane = new ScrollPane(logContainer);
         scrollPane.setPrefHeight(500);
-        scrollPane.setStyle("-fx-background: #1a2230; -fx-border-color: transparent;");
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setFitToWidth(true);
 
-        getChildren().addAll(titre, textTour, scrollPane);
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-control-inner-background: transparent;");
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        getChildren().addAll(headerBox, separateur, logTitre, scrollPane);
     }
 
-    public void setTour(int tour) {
-        textTour.setText("Tour courant : " + tour);
+    private Text creerTexteStylise(String contenu, int taille, String couleurHex) {
+        Text t = new Text(contenu);
+        t.setFont(Font.font("Consolas", FontWeight.BOLD, taille));
+        t.setFill(Color.web(couleurHex));
+        return t;
     }
 
-    public void ajouterLog(String message, Color couleur) {
-        Text logText = new Text(message);
-        logText.setFont(Font.font(TEXT_FONT, 14));
-        logText.setFill(couleur);
-        logText.setWrappingWidth(240);
+    public void setPhase(String phase) {
+        texteTour.setText(phase);
+    }
 
-        logContainer.getChildren().addFirst(logText);
+    public void ajouterLog(String message, String type) {
+        Text logText = new Text("» " + message);
+        logText.setFont(Font.font("Times New Roman", 14));
+        logText.setWrappingWidth(280);
+
+        switch (type.toUpperCase()) {
+            case "INFO": logText.setFill(Color.web("#eeeeee")); break;
+            case "TOUCHE": logText.setFill(Color.web("#ff3333")); break;
+            case "RATE": logText.setFill(Color.web("#a0a0a0")); break;
+            case "ALERTE": logText.setFill(Color.web("#ffaa00")); break;
+            default: logText.setFill(Color.web("#ffffff"));
+        }
+
+        logContainer.getChildren().add(logText);
+
+        scrollPane.layout();
+        scrollPane.setVvalue(1.0);
     }
 }
