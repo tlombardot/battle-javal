@@ -22,7 +22,7 @@ public class DisplayGame extends GameApplication {
     @Override
     protected void initSettings(GameSettings gameSettings) {
         gameSettings.setWidth(1280);
-        gameSettings.setHeight(730);
+        gameSettings.setHeight(720);
         gameSettings.setTitle("Javale-Battle");
         gameSettings.setVersion("Test-Version");
     }

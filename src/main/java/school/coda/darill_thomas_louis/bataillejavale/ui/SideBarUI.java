@@ -13,6 +13,7 @@ import javafx.scene.text.Text;
 public class SideBarUI extends VBox {
 
     private final Text texteTour;
+    private final Text texteManche;
     private final VBox logContainer;
     private final ScrollPane scrollPane;
 
@@ -25,14 +26,14 @@ public class SideBarUI extends VBox {
         setAlignment(Pos.TOP_CENTER);
         setStyle("-fx-background-color: rgba(10, 20, 30, 0.85); -fx-border-color: #00ffff; -fx-border-width: 0 0 0 2;");
 
-        Text texteManche = creerTexteStylise("MANCHE : 1", 24, "#ffffff");
+        texteManche = creerTexteStylise("MANCHE : 1", 24, "#ffffff");
         texteTour = creerTexteStylise("PHASE DE PLACEMENT", 18, "#00ffff");
 
         VBox headerBox = new VBox(5, texteManche, texteTour);
         headerBox.setAlignment(Pos.CENTER);
 
         Rectangle separateur = new Rectangle(300, 2, Color.web("#00ffff", 0.5));
-        Text logTitre = creerTexteStylise("COMMUNICATIONS SYSTEM_", 16, "#a0a0a0");
+        Text logTitre = creerTexteStylise("HISTORIQUE DES SEIGNEURS_", 16, "#a0a0a0");
 
         logContainer = new VBox(5);
         logContainer.setPadding(new Insets(10));
@@ -56,6 +57,10 @@ public class SideBarUI extends VBox {
 
     public void setPhase(String phase) {
         texteTour.setText(phase);
+    }
+
+    public void setTexteManche(int numeroManche) {
+        texteManche.setText("Manche : " + numeroManche);
     }
 
     public void ajouterLog(String message, String type) {

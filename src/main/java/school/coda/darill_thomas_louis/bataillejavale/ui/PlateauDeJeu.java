@@ -31,6 +31,11 @@ public class PlateauDeJeu {
 
     private static final String TEXT_FONT = "Times New Roman";
 
+    private boolean tourJoueur;
+
+    private int idPartieCourante = -1;
+    private final school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository partieRepository = new school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository();
+
     private EtatJeu etatJeuBackend;
     private List<Vaisseau> flotteRestante;
     private boolean phaseBataille = false;
@@ -87,10 +92,6 @@ public class PlateauDeJeu {
 
     public StackPane getRacineVisuelle() { return racineVisuelle; }
 
-    // ==========================================
-    // INITIALISATION ET UI DE BASE
-    // ==========================================
-
     private void initialiserDonneesPartie() {
         etatJeuBackend = new EtatJeu();
         phaseBataille = false;
@@ -124,9 +125,6 @@ public class PlateauDeJeu {
         return conteneur;
     }
 
-    // ==========================================
-    // GESTION DU PANNEAU DE PLACEMENT
-    // ==========================================
 
     private void creerPanneauPlacement() {
         panneauPlacement = new VBox(25);
@@ -226,7 +224,9 @@ public class PlateauDeJeu {
     private GrilleUI creerGrilleRadar(GrilleUI oceanRef) {
         GrilleUI radar = new GrilleUI();
         radar.setListener(new GrilleUI.GrilleListener() {
-            @Override public void onCaseLeftClick(int x, int y) { gererTirJoueur(radar, oceanRef, x, y); }
+            @Override public void onCaseLeftClick(int x, int y) {
+                gererTirJoueur(radar, oceanRef, x, y);
+            }
             @Override public void onCaseRightClick(int x, int y) { /* On ne l'utilise pas */ }
             @Override public void onDragOver(int x, int y, String nomNavire, boolean estHorizontal) { /* On ne l'utilise pas */ }
             @Override public void onDragDropped(int x, int y, String nomNavire, boolean estHorizontal) { /* On ne l'utilise pas */ }
@@ -316,6 +316,11 @@ public class PlateauDeJeu {
     private void passerEnModeBataille() {
         placerBateauxCPU();
         phaseBataille = true;
+        tourJoueur = true;
+
+        conteneurRadar.setEffect(null);
+        DropShadow neonGlowRadar = new DropShadow(25, Color.web("#ff0000"));
+        conteneurRadar.setEffect(neonGlowRadar);
 
         layoutPrincipal.setLeft(null);
         HBox zoneBataille = new HBox(60, conteneurOcean, conteneurRadar, sideBar);
@@ -323,7 +328,7 @@ public class PlateauDeJeu {
         layoutPrincipal.setCenter(zoneBataille);
         layoutPrincipal.setRight(sideBar);
 
-        sideBar.setPhase("DEBUT DE LA PHASE DE COMBAT : À VOUS !");
+        sideBar.setPhase("PHASE DE BATAILLE : À VOUS !");
         sideBar.ajouterLog("Flotte en position. La bataille commence !", "ALERTE");
         notificationBox.afficherAlerte("BATAILLE IMMINENTE", "#ff3333");
     }
@@ -333,6 +338,9 @@ public class PlateauDeJeu {
             notificationBox.afficherAlerte("PHASE DE DÉPLOIEMENT", "#ffaa00");
             return;
         }
+
+        if(!tourJoueur){return;}
+
         if (etatJeuBackend.getJoueur1().getGrilleRadar().getHistoriqueTirs()[x][y] != null) return;
 
         Vaisseau cibleAdverse = etatJeuBackend.getJoueur2().getGrilleOcean().getVaisseauAt(x, y);
@@ -345,11 +353,21 @@ public class PlateauDeJeu {
         if (!phaseBataille) return;
 
         sideBar.setPhase("TOUR DU CPU...");
+        tourJoueur = false;
+
         FXGL.getGameTimer().runOnceAfter(() -> {
             riposteDuCPU(oceanRef);
             etatJeuBackend.setTourCourant(etatJeuBackend.getTourCourant() + 1);
+
+            sideBar.setTexteManche(etatJeuBackend.getTourCourant());
             sideBar.setPhase("PHASE DE COMBAT : À VOUS !");
+
             verifierFinDePartie();
+
+            if(phaseBataille){
+                tourJoueur = true;
+            }
+
         }, javafx.util.Duration.seconds(1.0));
     }
 
