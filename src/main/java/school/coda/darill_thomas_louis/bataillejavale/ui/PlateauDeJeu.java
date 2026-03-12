@@ -2,7 +2,6 @@ package school.coda.darill_thomas_louis.bataillejavale.ui;
 
 import com.almasb.fxgl.dsl.FXGL;
 import javafx.animation.FadeTransition;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -166,7 +165,7 @@ public class PlateauDeJeu {
 
     private StackPane creerVoileAttente() {
         StackPane voile = new StackPane();
-        voile.setStyle("-fx-background-color: rgba(0, 0, 0, 0.55);");
+        voile.setStyle("-fx-background-color: rgba(0, 0, 0, 0.75);");
 
         Text texteAttente = new Text("RÉFLEXION ENNEMIE...");
         texteAttente.setFont(FontUtils.getPolice(25));
@@ -298,10 +297,11 @@ public class PlateauDeJeu {
 
         layoutPrincipal.setLeft(null);
 
-        HBox zoneBataille = new HBox(60, conteneurOcean, conteneurRadar, sideBar);
+        HBox zoneBataille = new HBox(45, conteneurOcean, conteneurRadar);
         zoneBataille.setAlignment(Pos.CENTER);
+
         layoutPrincipal.setCenter(zoneBataille);
-        layoutPrincipal.setRight(null);
+        layoutPrincipal.setRight(sideBar);
 
         sideBar.setPhase("PHASE DE BATAILLE : À VOUS !");
         sideBar.ajouterLog("Systèmes d'armement en ligne.", "ALERTE");

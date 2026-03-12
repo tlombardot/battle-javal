@@ -3,12 +3,12 @@ package school.coda.darill_thomas_louis.bataillejavale.ui;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
 
 public class SideBarUI extends VBox {
 
@@ -17,51 +17,54 @@ public class SideBarUI extends VBox {
     private final VBox logContainer;
     private final ScrollPane scrollPane;
 
-    /**
-     *
-     */
     public SideBarUI() {
-
         setPrefWidth(340);
         setPrefHeight(720);
-        setPadding(new Insets(20));
-        setSpacing(20);
+        setPadding(new Insets(25));
+        setSpacing(25);
         setAlignment(Pos.TOP_CENTER);
-        setStyle("-fx-background-color: rgba(10, 20, 30, 0.85); -fx-border-color: #00ffff; -fx-border-width: 0 0 0 2;");
 
-        texteManche = creerTexteStylise("MANCHE : 1", 24, "#ffffff");
-        texteTour = creerTexteStylise("PHASE DE PLACEMENT", 18, "#00ffff");
+        setStyle("-fx-background-color: linear-gradient(to bottom right, rgba(15, 25, 35, 0.95), rgba(5, 10, 15, 0.95)); " +
+                "-fx-border-color: #00ffff; " +
+                "-fx-border-width: 0 0 0 3; " +
+                "-fx-border-style: solid;");
 
-        VBox headerBox = new VBox(5, texteManche, texteTour);
+
+        texteManche = creerTexteStylise("MANCHE : 1", 28, "#ffffff", true);
+        texteTour = creerTexteStylise("PHASE DE PLACEMENT", 18, "#00ffff", true);
+
+        VBox headerBox = new VBox(10, texteManche, texteTour);
         headerBox.setAlignment(Pos.CENTER);
 
-        Rectangle separateur = new Rectangle(300, 2, Color.web("#00ffff", 0.5));
-        Text logTitre = creerTexteStylise("HISTORIQUE DES SEIGNEURS_", 16, "#a0a0a0");
+        Rectangle separateur = new Rectangle(280, 2, Color.web("#00ffff", 0.6));
+        Text logTitre = creerTexteStylise("HISTORIQUE DE COMBAT_", 16, "#a0a0a0", false);
 
-        logContainer = new VBox(5);
-        logContainer.setPadding(new Insets(10));
+        logContainer = new VBox(8);
+        logContainer.setPadding(new Insets(5, 5, 20, 5));
 
         scrollPane = new ScrollPane(logContainer);
-        scrollPane.setPrefHeight(500);
+        scrollPane.setPrefHeight(550);
         scrollPane.setFitToWidth(true);
 
-        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-control-inner-background: transparent;");
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-control-inner-background: transparent; -fx-padding: 0;");
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         getChildren().addAll(headerBox, separateur, logTitre, scrollPane);
     }
 
     /**
-     *Ajoute un style au texte
-     * @param contenu
-     * @param taille
-     * @param couleurHex
-     * @return
+     * Crée un texte stylisé avec la police du jeu et un effet optionnel de néon
      */
-    private Text creerTexteStylise(String contenu, int taille, String couleurHex) {
+    private Text creerTexteStylise(String contenu, int taille, String couleurHex, boolean avecGlow) {
         Text t = new Text(contenu);
-        t.setFont(Font.font("Consolas", FontWeight.BOLD, taille));
+        t.setFont(FontUtils.getPolice(taille));
         t.setFill(Color.web(couleurHex));
+
+        if (avecGlow) {
+            DropShadow glow = new DropShadow(15, Color.web(couleurHex, 0.5));
+            t.setEffect(glow);
+        }
         return t;
     }
 
@@ -70,19 +73,19 @@ public class SideBarUI extends VBox {
     }
 
     public void setTexteManche(int numeroManche) {
-        texteManche.setText("Manche : " + numeroManche);
+        texteManche.setText("MANCHE : " + numeroManche);
     }
 
     public void ajouterLog(String message, String type) {
         Text logText = new Text("» " + message);
-        logText.setFont(Font.font("Times New Roman", 14));
-        logText.setWrappingWidth(280);
+        logText.setFont(FontUtils.getPolice(14));
+        logText.setWrappingWidth(270);
 
         switch (type.toUpperCase()) {
-            case "INFO": logText.setFill(Color.web("#eeeeee")); break;
+            case "INFO": logText.setFill(Color.web("#b0c4de")); break;
             case "TOUCHE": logText.setFill(Color.web("#ff3333")); break;
-            case "RATE": logText.setFill(Color.web("#a0a0a0")); break;
-            case "ALERTE": logText.setFill(Color.web("#ffaa00")); break;
+            case "RATE": logText.setFill(Color.web("#708090")); break;
+            case "ALERTE": logText.setFill(Color.web("#ffcc00")); break;
             default: logText.setFill(Color.web("#ffffff"));
         }
 
