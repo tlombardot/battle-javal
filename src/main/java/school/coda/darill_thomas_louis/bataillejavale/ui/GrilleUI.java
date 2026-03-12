@@ -80,7 +80,6 @@ public class GrilleUI extends GridPane {
             }
         });
 
-        // --- GESTION DU DRAG & DROP ---
         caseMer.setOnDragOver(event -> {
             if (event.getDragboard().hasString()) {
                 event.acceptTransferModes(TransferMode.MOVE);

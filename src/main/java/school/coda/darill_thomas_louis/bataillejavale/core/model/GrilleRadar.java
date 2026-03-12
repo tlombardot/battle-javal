@@ -6,7 +6,7 @@ public class GrilleRadar implements Grille {
     private final int tailleX;
     private final int tailleY;
 
-    private final ResultatTir[][] historiqueTirs;
+    private ResultatTir[][] historiqueTirs;
 
     public GrilleRadar() {
         this.tailleX = 10;
@@ -23,6 +23,9 @@ public class GrilleRadar implements Grille {
         historiqueTirs[x][y] = resultat;
     }
 
-    // Getter pour JSON
+    // Getter & Setter pour JSON
     public ResultatTir[][] getHistoriqueTirs() { return historiqueTirs; }
+    public void setHistoriqueTirs(ResultatTir[][] historiqueTirs) {
+        this.historiqueTirs = historiqueTirs;
+    }
 }

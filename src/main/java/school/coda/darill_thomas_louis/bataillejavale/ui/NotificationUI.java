@@ -13,8 +13,8 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 public class NotificationUI extends StackPane {
-    private Text messageText;
-    private Rectangle fondAlerte;
+    private final Text messageText;
+    private final Rectangle fondAlerte;
 
     public NotificationUI() {
         setVisible(false);

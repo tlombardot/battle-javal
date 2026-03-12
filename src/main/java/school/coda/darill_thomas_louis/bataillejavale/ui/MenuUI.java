@@ -19,6 +19,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,8 +76,32 @@ public class MenuUI extends Pane {
         completeMenuBox.setTranslateY(350);
 
         menuButtons.add(new TechButton("START GAME_", this::lancerEcranLoading));
-        menuButtons.add(new TechButton("MULTIPLAYER MODE_", () -> System.out.println("Mode en développement.")));
-        menuButtons.add(new TechButton("SETTINGS_", () -> System.out.println("Ouverture paramètres.")));
+        menuButtons.add(new TechButton("LOAD LAST GAME_", () -> {
+            // FXGL ouvre une jolie boîte de dialogue pour saisir l'ID !
+            com.almasb.fxgl.dsl.FXGL.getDialogService().showInputBox("Entrez l'ID de la partie à reprendre :", input -> {
+                try {
+                    int id = Integer.parseInt(input);
+                    school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository repo =
+                            new school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository();
+
+                    EtatJeu sauvegarde = repo.chargerPartie(id);
+
+                    if (sauvegarde != null) {
+                        // Si la partie existe et est EN_COURS, on la lance !
+                        com.almasb.fxgl.dsl.FXGL.getGameScene().clearUINodes();
+                        PlateauDeJeu plateau = new PlateauDeJeu(sauvegarde, id); // On utilise le nouveau constructeur
+                        com.almasb.fxgl.dsl.FXGL.addUINode(plateau.getRacineVisuelle());
+                    } else {
+                        // Si l'ID n'existe pas ou que la partie est finie : Message d'erreur !
+                        com.almasb.fxgl.dsl.FXGL.getDialogService().showMessageBox("Partie introuvable ou déjà terminée !");
+                    }
+                } catch (NumberFormatException e) {
+                    com.almasb.fxgl.dsl.FXGL.getDialogService().showMessageBox("Veuillez entrer un numéro valide !");
+                }
+            });
+        }));
+        menuButtons.add(new TechButton("MULTIPLAYER MODE_", () -> IO.println("Mode en développement.")));
+        menuButtons.add(new TechButton("SETTINGS_", () -> IO.println("Ouverture paramètres.")));
         menuButtons.add(new TechButton("EXIT_", () -> FXGL.getGameController().exit()));
 
         for (TechButton btn : menuButtons) {

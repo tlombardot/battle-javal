@@ -55,6 +55,18 @@ public class PlateauDeJeu {
     private VBox panneauPlacement;
     private Button btnPret;
 
+    public PlateauDeJeu(EtatJeu sauvegarde, int idPartie) {
+        this(); // Appelle le constructeur normal pour créer les grilles visuelles
+        this.etatJeuBackend = sauvegarde; // On écrase par la sauvegarde
+        this.idPartieCourante = idPartie;
+
+        passerEnModeBataille(false);
+        restaurerVisuelBataille(); // On redessine les anciens tirs !
+
+        sideBar.ajouterLog("Sauvegarde Cloud chargée avec succès (ID: " + idPartie + ")", "INFO");
+        sideBar.setTexteManche(etatJeuBackend.getTourCourant());
+    }
+
     public PlateauDeJeu() {
         initialiserDonneesPartie();
 
@@ -151,7 +163,7 @@ public class PlateauDeJeu {
 
         btnPret = styleBouton("DÉMARRER BATAILLE", "#32cd32");
         btnPret.setDisable(true);
-        btnPret.setOnAction(_ -> passerEnModeBataille());
+        btnPret.setOnAction(_ -> passerEnModeBataille(true));
 
         panneauPlacement.getChildren().addAll(titre, instructions, zoneSelectionBateaux, btnAleatoire, btnVider, btnPret);
     }
@@ -237,7 +249,7 @@ public class PlateauDeJeu {
     }
 
     // ==========================================
-    // LOGIQUE DE DRAG & DROP EXTRAITE
+    // LOGIQUE DE DRAG & DROP
     // ==========================================
 
     private String gererDragStartOcean(GrilleUI grille, int x, int y) {
@@ -313,8 +325,11 @@ public class PlateauDeJeu {
     // LOGIQUE DE BATAILLE
     // ==========================================
 
-    private void passerEnModeBataille() {
-        placerBateauxCPU();
+    private void passerEnModeBataille(boolean estNouvellePartie) {
+        if (estNouvellePartie) {
+            placerBateauxCPU();
+            idPartieCourante = partieRepository.creerNouvellePartie(etatJeuBackend);
+        }
         phaseBataille = true;
         tourJoueur = true;
 
@@ -330,7 +345,9 @@ public class PlateauDeJeu {
 
         sideBar.setPhase("PHASE DE BATAILLE : À VOUS !");
         sideBar.ajouterLog("Flotte en position. La bataille commence !", "ALERTE");
-        notificationBox.afficherAlerte("BATAILLE IMMINENTE", "#ff3333");
+        idPartieCourante = partieRepository.creerNouvellePartie(etatJeuBackend);
+        sideBar.ajouterLog("Sauvegarde Cloud OK (ID: " + idPartieCourante + ")", "INFO");
+        if (estNouvellePartie) notificationBox.afficherAlerte("BATAILLE IMMINENTE", "#ff3333");
     }
 
     private void gererTirJoueur(GrilleUI radar, GrilleUI oceanRef, int x, int y) {
@@ -348,6 +365,8 @@ public class PlateauDeJeu {
         etatJeuBackend.getJoueur1().getGrilleRadar().enregistrerTir(x, y, resultat);
 
         afficherResultatTirJoueur(radar, x, y, resultat, cibleAdverse);
+
+        partieRepository.mettreAJourPartie(idPartieCourante, etatJeuBackend);
 
         verifierFinDePartie();
         if (!phaseBataille) return;
@@ -425,14 +444,18 @@ public class PlateauDeJeu {
                 notificationBox.afficherAlerte("NAVIRE ALLIÉ PERDU", "#ff0000");
             }
         }
+
+        partieRepository.mettreAJourPartie(idPartieCourante, etatJeuBackend);
     }
 
     private void verifierFinDePartie() {
         if (etatJeuBackend.getJoueur2().aPerdu()) {
             phaseBataille = false;
+            partieRepository.terminerPartie(idPartieCourante, "TERMINEE_VICTOIRE"); // CLOUD VERROUILLÉ !
             afficherEcranFin("VICTOIRE !\nVous avez détruit la flotte ennemie !", Color.LIMEGREEN);
         } else if (etatJeuBackend.getJoueur1().aPerdu()) {
             phaseBataille = false;
+            partieRepository.terminerPartie(idPartieCourante, "TERMINEE_DEFAITE"); // CLOUD VERROUILLÉ !
             afficherEcranFin("DÉFAITE...\nLe CPU a coulé votre flotte.", Color.RED);
         }
     }
@@ -449,5 +472,27 @@ public class PlateauDeJeu {
         ecranFin.setAlignment(Pos.CENTER);
 
         racineVisuelle.getChildren().addAll(voileObscur, ecranFin);
+    }
+
+    private void restaurerVisuelBataille() {
+        vueOcean.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
+
+        for(int x=0; x<10; x++) {
+            for(int y=0; y<10; y++) {
+                // Redessiner nos tirs sur le radar
+                ResultatTir monTir = etatJeuBackend.getJoueur1().getGrilleRadar().getHistoriqueTirs()[x][y];
+                if(monTir != null) {
+                    if (monTir == ResultatTir.RATE) vueRadar.colorierCase(x, y, Color.WHITE);
+                    else vueRadar.colorierCase(x, y, Color.RED);
+                }
+
+                // Redessiner les tirs du CPU sur notre océan
+                ResultatTir tirCpu = etatJeuBackend.getJoueur2().getGrilleRadar().getHistoriqueTirs()[x][y];
+                if(tirCpu != null) {
+                    if (tirCpu == ResultatTir.RATE) vueOcean.colorierCase(x, y, Color.LIGHTCYAN);
+                    else vueOcean.colorierCase(x, y, Color.DARKRED);
+                }
+            }
+        }
     }
 }

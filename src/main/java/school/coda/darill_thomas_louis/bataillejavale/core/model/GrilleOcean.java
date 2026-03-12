@@ -6,7 +6,7 @@ public class GrilleOcean implements Grille {
     private final int tailleX;
     private final int tailleY;
 
-    private final Vaisseau[][] plateau;
+    private Vaisseau[][] plateau;
 
     public GrilleOcean() {
         this.tailleX = 10;
@@ -82,5 +82,9 @@ public class GrilleOcean implements Grille {
                 }
             }
         }
+    }
+
+    public void setPlateau(Vaisseau[][] plateau) {
+        this.plateau = plateau;
     }
 }
