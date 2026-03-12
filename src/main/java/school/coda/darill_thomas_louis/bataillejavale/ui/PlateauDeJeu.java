@@ -5,6 +5,7 @@ import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -60,6 +61,7 @@ public class PlateauDeJeu {
     /**
      * Information sur la partie en cours, historique des actions
      */
+
     private final SideBarUI sideBar;
     private final NotificationUI notificationBox;
 
@@ -87,7 +89,6 @@ public class PlateauDeJeu {
     }
 
 
-
     public PlateauDeJeu() {
         initialiserDonneesPartie();
 
@@ -96,40 +97,25 @@ public class PlateauDeJeu {
         sideBar = new SideBarUI();
         notificationBox = new NotificationUI();
 
-        conteneurOcean = assemblerConteneurGrille("ZONE ALLIÉE (Océan)", Color.CYAN, vueOcean, "#00ffff");
-        conteneurRadar = assemblerConteneurGrille("ZONE ENNEMIE (Radar)", Color.RED, vueRadar, "#ff0000");
+        voileAttenteRadar = creerVoileAttente();
+        StackPane blocRadarEtVoile = new StackPane(vueRadar, voileAttenteRadar);
 
-        voileAttenteRadar = new StackPane();
-        voileAttenteRadar.setPrefSize(FXGL.getAppWidth(), FXGL.getAppHeight());
-        voileAttenteRadar.setStyle("-fx-background-color: rgba(0, 0, 0, 0.75);");
-
-        Text texteAttente = new Text("RÉFLEXION DU SEIGNEUR ENNEMI...");
-        texteAttente.setFont(FontUtils.getPolice(35));
-        texteAttente.setFill(Color.web("#ff0000"));
-        voileAttenteRadar.getChildren().add(texteAttente);
-
-        voileAttenteRadar.setVisible(false);
-        voileAttenteRadar.setOpacity(0);
+        conteneurOcean = assemblerConteneurGrille("ZONE ALLIÉE (Océan)", Color.CYAN, vueOcean);
+        conteneurRadar = assemblerConteneurGrille("ZONE ENNEMIE (Radar)", Color.RED, blocRadarEtVoile);
 
         ColorAdjust desaturate = new ColorAdjust();
         desaturate.setBrightness(-0.5);
         conteneurRadar.setEffect(desaturate);
 
         creerPanneauPlacement();
-        Rectangle fondPlateau = creerFondEcran();
 
-        layoutPrincipal = new BorderPane();
-        layoutPrincipal.setPrefWidth(FXGL.getAppWidth());
-        layoutPrincipal.setPrefHeight(FXGL.getAppHeight());
-        BorderPane.setMargin(panneauPlacement, new Insets(0, 0, 0, 50));
-        layoutPrincipal.setLeft(panneauPlacement);
-        layoutPrincipal.setCenter(conteneurOcean);
+        Rectangle fondPlateau = creerFondEcran();
+        layoutPrincipal = assemblerLayoutPrincipal();
 
         racineVisuelle = new StackPane();
-        racineVisuelle.getChildren().addAll(fondPlateau, layoutPrincipal, voileAttenteRadar, notificationBox);
+        racineVisuelle.getChildren().addAll(fondPlateau, layoutPrincipal, notificationBox);
 
         vueOcean.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
-
         sideBar.ajouterLog("Système initialisé. En attente de déploiement.", "INFO");
         notificationBox.afficherAlerte("DÉPLOIE TA FLOTTE, AMIRAL !", "#00ffff");
     }
@@ -159,19 +145,41 @@ public class PlateauDeJeu {
         return fond;
     }
 
-    private VBox assemblerConteneurGrille(String titre, Color couleurTexte, GrilleUI grille, String couleurNeon) {
+    private VBox assemblerConteneurGrille(String titre, Color couleurTexte, Node elementCentral) {
         Text texte = new Text(titre);
         texte.setFont(FontUtils.getPolice(20));
         texte.setFill(couleurTexte);
 
-        grille.setStyle("-fx-background-color: transparent;");
-
-        VBox conteneur = new VBox(15, texte, grille);
+        VBox conteneur = new VBox(15, texte, elementCentral);
         conteneur.setAlignment(Pos.CENTER);
         return conteneur;
     }
 
+    private StackPane creerVoileAttente() {
+        StackPane voile = new StackPane();
+        voile.setStyle("-fx-background-color: rgba(0, 0, 0, 0.55);");
 
+        Text texteAttente = new Text("RÉFLEXION ENNEMIE...");
+        texteAttente.setFont(FontUtils.getPolice(25));
+        texteAttente.setFill(Color.web("#ff0000"));
+
+        voile.getChildren().add(texteAttente);
+        voile.setVisible(false);
+        voile.setOpacity(0);
+
+        return voile;
+    }
+
+    private BorderPane assemblerLayoutPrincipal() {
+        BorderPane layout = new BorderPane();
+        layout.setPrefWidth(FXGL.getAppWidth());
+        layout.setPrefHeight(FXGL.getAppHeight());
+
+        layout.setLeft(panneauPlacement);
+        layout.setCenter(conteneurOcean);
+
+        return layout;
+    }
 
     private void creerPanneauPlacement() {
         panneauPlacement = new VBox(25);
@@ -403,15 +411,15 @@ public class PlateauDeJeu {
         phaseBataille = true;
         tourJoueur = true;
 
-        conteneurRadar.setEffect(null);
         DropShadow neonGlowRadar = new DropShadow(25, Color.web("#ff0000"));
         conteneurRadar.setEffect(neonGlowRadar);
 
         layoutPrincipal.setLeft(null);
+
         HBox zoneBataille = new HBox(60, conteneurOcean, conteneurRadar, sideBar);
         zoneBataille.setAlignment(Pos.CENTER);
         layoutPrincipal.setCenter(zoneBataille);
-        layoutPrincipal.setRight(sideBar);
+        layoutPrincipal.setRight(null);
 
         sideBar.setPhase("PHASE DE BATAILLE : À VOUS !");
         sideBar.ajouterLog("Systèmes d'armement en ligne.", "ALERTE");
@@ -440,6 +448,8 @@ public class PlateauDeJeu {
 
         sideBar.setPhase("TOUR DU CPU...");
         tourJoueur = false;
+
+        conteneurRadar.setEffect(null);
 
         voileAttenteRadar.setVisible(true);
         javafx.animation.FadeTransition fadeOuverture = new javafx.animation.FadeTransition(Duration.seconds(0.2), voileAttenteRadar);
