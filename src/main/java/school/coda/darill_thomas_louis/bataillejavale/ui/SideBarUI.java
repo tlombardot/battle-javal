@@ -17,6 +17,9 @@ public class SideBarUI extends VBox {
     private final VBox logContainer;
     private final ScrollPane scrollPane;
 
+    /**
+     *
+     */
     public SideBarUI() {
 
         setPrefWidth(360);
@@ -48,6 +51,13 @@ public class SideBarUI extends VBox {
         getChildren().addAll(headerBox, separateur, logTitre, scrollPane);
     }
 
+    /**
+     *
+     * @param contenu
+     * @param taille
+     * @param couleurHex
+     * @return
+     */
     private Text creerTexteStylise(String contenu, int taille, String couleurHex) {
         Text t = new Text(contenu);
         t.setFont(Font.font("Consolas", FontWeight.BOLD, taille));

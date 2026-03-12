@@ -2,6 +2,9 @@ package school.coda.darill_thomas_louis.bataillejavale.core.model;
 
 import school.coda.darill_thomas_louis.bataillejavale.core.event.ResultatTir;
 
+/**
+ * GrilleOcean pour le placement des bâteaux et pour les tirs reçus
+ */
 public class GrilleOcean implements Grille {
     private final int tailleX;
     private final int tailleY;

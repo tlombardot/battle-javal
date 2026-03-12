@@ -10,11 +10,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Vaisseau;
-
+/**
+ *Gère le postionnement des navires ainsi que le drag & drop
+ */
 public class VaisseauUI extends VBox {
 
     private final Vaisseau navire;
     private boolean estHorizontal = true;
+
 
     public VaisseauUI(Vaisseau navire) {
         this.navire = navire;
@@ -41,6 +44,9 @@ public class VaisseauUI extends VBox {
         this.setStyle("-fx-cursor: hand;");
     }
 
+    /**
+     * Crée des bâteaux à la verticale ou à l'horizontale
+     */
     private void dessinerVaisseau() {
         this.getChildren().clear();
 

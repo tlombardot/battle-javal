@@ -43,9 +43,17 @@ public class PlateauDeJeu {
 
     private final StackPane racineVisuelle;
     private final BorderPane layoutPrincipal;
-
+    /**
+     * Grille vueOcean pour le placement des bâteaux et pour les tirs reçus
+     */
     private final GrilleUI vueOcean;
+    /**
+     * Grille vueRadar pour les tirs envoyés
+     */
     private final GrilleUI vueRadar;
+    /**
+     * Information sur la partie en cours, historique des actions
+     */
     private final SideBarUI sideBar;
     private final NotificationUI notificationBox;
 

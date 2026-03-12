@@ -2,6 +2,9 @@ package school.coda.darill_thomas_louis.bataillejavale.core.model;
 
 import school.coda.darill_thomas_louis.bataillejavale.core.event.ResultatTir;
 
+/**
+ * GrilleRadar pour les tirs envoyés
+ */
 public class GrilleRadar implements Grille {
     private final int tailleX;
     private final int tailleY;
