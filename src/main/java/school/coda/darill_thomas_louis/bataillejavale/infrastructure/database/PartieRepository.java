@@ -15,24 +15,12 @@ public class PartieRepository {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public static class PartieInfo {
-        public final int id;
-        public final String statut;
-        public final int tour;
-        public final String date;
-
-        public PartieInfo(int id, String statut, int tour, String date) {
-            this.id = id;
-            this.statut = statut;
-            this.tour = tour;
-            this.date = date;
-        }
+    public record PartieInfo(int id, String statut, int tour, String date) {
     }
 
     public List<PartieInfo> getListePartiesJoueur() {
         List<PartieInfo> list = new java.util.ArrayList<>();
 
-        // On récupère les parties où le joueur est impliqué, triées par les plus récentes
         String sql = "SELECT id, statut, tour_courant, created_at FROM parties " +
                 "WHERE (joueur1_id = ? OR joueur2_id = ?) " +
                 "AND statut = 'EN_COURS' " +
@@ -103,15 +91,20 @@ public class PartieRepository {
         }
     }
 
-    public void terminerPartie(int idPartie, String resultatFinal) {
+    public void terminerPartie(int idPartie, String resultatFinal, int idGagnant) {
         if (idPartie == -1) return;
-        String sql = "UPDATE parties SET statut = ? WHERE id = ?;";
+        String sql = "UPDATE parties SET statut = ?, winner_id = ? WHERE id = ?;";
         try (Connection conn = CreateDB.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, resultatFinal); // Ex: 'VICTOIRE' ou 'DEFAITE'
-            pstmt.setInt(2, idPartie);
+            pstmt.setString(1, resultatFinal);
+            if (idGagnant != -1) {
+                pstmt.setInt(2, idGagnant);
+            } else {
+                pstmt.setNull(2, java.sql.Types.INTEGER);
+            }
+            pstmt.setInt(3, idPartie);
             pstmt.executeUpdate();
-            IO.println("Partie " + idPartie + " verrouillée en base (" + resultatFinal + ").");
+            IO.println("Partie " + idPartie + " verrouillée en base (" + resultatFinal + "). Gagnant: " + idGagnant);
         } catch (SQLException e) {
             IO.println("Erreur de verrouillage DB : " + e.getMessage());
         }

@@ -21,6 +21,7 @@ import javafx.util.Duration;
 import school.coda.darill_thomas_louis.bataillejavale.core.event.ResultatTir;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Vaisseau;
+import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.JoueurRepository;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository;
 import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
 
@@ -576,15 +577,17 @@ public class PlateauDeJeu {
     }
 
     private void verifierFinDePartie() {
+        JoueurRepository joueurRepo = new JoueurRepository();
         if (etatJeuBackend.getJoueur2().aPerdu()) {
             phaseBataille = false;
             if (pollingTimer != null) pollingTimer.expire();
-            partieRepository.terminerPartie(idPartieCourante, "TERMINEE_VICTOIRE");
+            partieRepository.terminerPartie(idPartieCourante, "TERMINEE_VICTOIRE", school.coda.darill_thomas_louis.bataillejavale.core.model.Session.idJoueur);
+            joueurRepo.updateStats(true);
             afficherEcranFin("VICTOIRE !\nVous avez détruit la flotte ennemie !", Color.LIMEGREEN);
         } else if (etatJeuBackend.getJoueur1().aPerdu()) {
             phaseBataille = false;
             if (pollingTimer != null) pollingTimer.expire();
-            partieRepository.terminerPartie(idPartieCourante, "TERMINEE_DEFAITE");
+            partieRepository.terminerPartie(idPartieCourante, "TERMINEE_DEFAITE", -1);            joueurRepo.updateStats(false);
             afficherEcranFin("DÉFAITE...\nLe CPU a coulé votre flotte.", Color.RED);
         }
     }
