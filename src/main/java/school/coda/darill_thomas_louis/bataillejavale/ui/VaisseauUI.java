@@ -1,16 +1,26 @@
 package school.coda.darill_thomas_louis.bataillejavale.ui;
 
+import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.stage.Popup;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Vaisseau;
+import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
+
+import javax.swing.*;
 
 public class VaisseauUI extends Pane {
 
@@ -55,10 +65,29 @@ public class VaisseauUI extends Pane {
             }
         });
 
-        this.setOnMouseEntered(e -> this.setOpacity(1.0));
-        this.setOnMouseExited(e -> this.setOpacity(0.85));
+        Popup popupInfos = creerBulleInfo(navire.getNom());
+
+        this.setOnMouseEntered(e -> {
+            this.setOpacity(1.0);
+            popupInfos.show(this.getScene().getWindow(), e.getScreenX(), e.getScreenY());
+            popupInfos.setX(e.getScreenX() - popupInfos.getWidth() / 2);
+            popupInfos.setY(e.getScreenY() - popupInfos.getHeight() - 10);
+        });
+
+        this.setOnMouseMoved(e -> {
+            if (popupInfos.isShowing()) {
+                popupInfos.setX(e.getScreenX() - popupInfos.getWidth() / 2);
+                popupInfos.setY(e.getScreenY() - popupInfos.getHeight() - 10);
+            }
+        });
+
+        this.setOnMouseExited(e -> {
+            this.setOpacity(0.85);
+            popupInfos.hide();
+        });
 
         this.setOnDragDetected(event -> {
+            popupInfos.hide();
             Dragboard db = this.startDragAndDrop(TransferMode.MOVE);
             ClipboardContent content = new ClipboardContent();
             content.putString(navire.getNom() + ";" + estHorizontal);
@@ -80,6 +109,29 @@ public class VaisseauUI extends Pane {
 
             this.getTransforms().add(new Rotate(90, pivotX, pivotY));
         }
+    }
+
+    private Popup creerBulleInfo(String nom) {
+        Popup popup = new Popup();
+
+        VBox conteneur = new VBox();
+        conteneur.setAlignment(Pos.CENTER);
+        conteneur.setMouseTransparent(true);
+
+        Text texte = new Text(nom.toUpperCase());
+        texte.setFont(FontUtils.getPolice(14));
+        texte.setFill(Color.WHITE);
+
+        StackPane fond = new StackPane(texte);
+        fond.setStyle("-fx-background-color: rgba(0, 0, 0, 0.9); -fx-background-radius: 4; -fx-border-color: #4fc3f7; -fx-border-radius: 4; -fx-padding: 4 10 4 10;");
+
+        Polygon pointe = new Polygon(0.0, 0.0, 12.0, 0.0, 6.0, 6.0);
+        pointe.setFill(Color.web("#4fc3f7"));
+
+        conteneur.getChildren().addAll(fond, pointe);
+        popup.getContent().add(conteneur);
+
+        return popup;
     }
 
     private void dessinerBlueprint() {

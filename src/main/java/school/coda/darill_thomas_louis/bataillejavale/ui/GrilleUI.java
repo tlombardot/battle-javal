@@ -2,6 +2,7 @@ package school.coda.darill_thomas_louis.bataillejavale.ui;
 
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
@@ -64,7 +65,8 @@ public class GrilleUI extends StackPane {
 
 
         coucheBateaux.setManaged(false);
-        this.getChildren().add(new Pane(grilleCases, coucheBateaux));
+        this.getChildren().add(new Group(grilleCases, coucheBateaux));
+
         demarrerAnimationInterne();
     }
 
@@ -230,7 +232,7 @@ public class GrilleUI extends StackPane {
 
             dessinBateau.setLayoutX(pixelX);
             dessinBateau.setLayoutY(pixelY);
-            dessinBateau.setMouseTransparent(true);
+//            dessinBateau.setMouseTransparent(true);
 
             coucheBateaux.getChildren().add(dessinBateau);
 
