@@ -7,20 +7,18 @@ import school.coda.darill_thomas_louis.bataillejavale.core.model.Vaisseau;
 import java.util.List;
 
 public class SelectBoard extends VBox {
-    /**
-     *Créer une interface graphique qui affiche les vaisseaux restants
-     * @param flotteRestante
-     */
+
     public SelectBoard(List<Vaisseau> flotteRestante) {
-        this.setSpacing(15);
+        this.setSpacing(20); // Un peu plus d'espace entre les vaisseaux
         this.setAlignment(Pos.CENTER);
-        this.setPrefHeight(300); // Hauteur minimale
+
+        // On ne fixe PLUS la hauteur ici, c'est le ScrollPane dans PlateauDeJeu qui va gérer la limite !
 
         for (Vaisseau v : flotteRestante) {
             this.getChildren().add(new VaisseauUI(v));
         }
     }
-    // Permet de retirer visuellement un bateau une fois qu'il est placé sur la grille
+
     public void retirerVaisseau(String nomVaisseau) {
         this.getChildren().removeIf(node ->
                 node instanceof VaisseauUI && ((VaisseauUI) node).getNavire().getNom().equals(nomVaisseau)

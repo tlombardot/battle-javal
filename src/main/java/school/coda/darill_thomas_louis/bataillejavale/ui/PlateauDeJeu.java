@@ -5,6 +5,7 @@ import javafx.animation.FadeTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
@@ -186,23 +187,40 @@ public class PlateauDeJeu {
         layout.setCenter(conteneurOcean);
         return layout;
     }
+    // ... AUTRES METHODES DE PLATEAUDEJEU ...
 
     private void creerPanneauPlacement() {
-        panneauPlacement = new VBox(25);
-        panneauPlacement.setAlignment(Pos.CENTER);
-        panneauPlacement.setStyle("-fx-background-color: #1a2230; -fx-padding: 30; -fx-border-color: #00ffff; -fx-border-width: 2px; -fx-border-radius: 10; -fx-background-radius: 10;");
+        panneauPlacement = new VBox(20); // Espacement ajusté
+        panneauPlacement.setAlignment(Pos.TOP_CENTER); // On aligne en haut pour que le titre ne bouge jamais
+        panneauPlacement.setStyle(
+                "-fx-background-color: transparent; " +
+                        "-fx-padding: 30 20 30 10; " +
+                        "-fx-border-color: #00ffff; " +
+                        "-fx-border-width: 0 2px 0 0;" // Haut:0, Droite:2, Bas:0, Gauche:0
+        );
         panneauPlacement.setPrefWidth(320);
 
+        // Titre stylisé avec ta police
         Text titre = new Text("DÉPLOIEMENT");
-        titre.setFont(FontUtils.getPolice(28));
+        titre.setFont(FontUtils.getPolice(32));
         titre.setFill(Color.WHITE);
+        titre.setEffect(new DropShadow(10, Color.web("#00ffff")));
 
-        Text instructions = new Text("Clic Droit (sur bateau) : Tourner\nGlisser-Déposer : Placer");
+        Text instructions = new Text("CLIC DROIT : PIVOTER\nGLISSER : PLACER");
         instructions.setFont(FontUtils.getPolice(14));
-        instructions.setFill(Color.GRAY);
+        instructions.setFill(Color.web("#00ffff", 0.7));
         instructions.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
         zoneSelectionBateaux = new SelectBoard(flotteRestante);
+
+        ScrollPane scrollBateaux = new ScrollPane(zoneSelectionBateaux);
+        scrollBateaux.setFitToWidth(true);
+        scrollBateaux.setPrefHeight(400);
+        scrollBateaux.setMinHeight(250);
+
+        scrollBateaux.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollBateaux.setVbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER);
+        scrollBateaux.setHbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER);
 
         Button btnAleatoire = styleBouton("PLACEMENT ALÉATOIRE", "#00ffff");
         btnAleatoire.setOnAction(_ -> gestionnairePlacement.placerMesBateauxAleatoirement(vueOcean));
@@ -214,23 +232,41 @@ public class PlateauDeJeu {
         btnPret.setDisable(true);
         btnPret.setOnAction(_ -> passerEnModeBataille(true));
 
-        panneauPlacement.getChildren().addAll(titre, instructions, zoneSelectionBateaux, btnAleatoire, btnVider, btnPret);
+        panneauPlacement.getChildren().addAll(titre, instructions, scrollBateaux, btnAleatoire, btnVider, btnPret);
     }
 
     private Button styleBouton(String texte, String couleurHex) {
         Button btn = new Button(texte);
-        btn.setFont(FontUtils.getPolice(16));
-        btn.setPrefSize(260, 50);
-        btn.setStyle("-fx-background-color: transparent; -fx-border-color: " + couleurHex + "; -fx-text-fill: " + couleurHex + "; -fx-border-width: 2px; -fx-cursor: hand;");
-        btn.setOnMouseEntered(e -> btn.setStyle("-fx-background-color: " + couleurHex + "; -fx-text-fill: #1a2230; -fx-border-width: 2px; -fx-cursor: hand;"));
-        btn.setOnMouseExited(e -> btn.setStyle("-fx-background-color: transparent; -fx-border-color: " + couleurHex + "; -fx-text-fill: " + couleurHex + "; -fx-border-width: 2px; -fx-cursor: hand;"));
+        btn.setFont(FontUtils.getPolice(18));
+        btn.setPrefSize(260, 45);
+
+        String styleNormal = "-fx-background-color: #0c121e; -fx-border-color: " + couleurHex + "; -fx-text-fill: " + couleurHex + "; -fx-border-width: 2px; -fx-cursor: hand; -fx-border-radius: 4; -fx-background-radius: 4;";
+        String styleHover = "-fx-background-color: " + couleurHex + "; -fx-border-color: " + couleurHex + "; -fx-text-fill: #0c121e; -fx-border-width: 2px; -fx-cursor: hand; -fx-border-radius: 4; -fx-background-radius: 4;";
+
+        btn.setStyle(styleNormal);
+
+        DropShadow glow = new DropShadow(15, Color.web(couleurHex));
+        glow.setSpread(0.2);
+
+        btn.setOnMouseEntered(e -> {
+            btn.setStyle(styleHover);
+            btn.setEffect(glow);
+        });
+
+        btn.setOnMouseExited(e -> {
+            btn.setStyle(styleNormal);
+            btn.setEffect(null);
+        });
+
         return btn;
     }
 
+    // Méthode mise à jour pour gérer le ScrollPane lors du rafraichissement
     public void actualiserMenuBateaux() {
-        panneauPlacement.getChildren().remove(zoneSelectionBateaux);
+        // On récupère le ScrollPane qui est à l'index 2
+        javafx.scene.control.ScrollPane scroll = (javafx.scene.control.ScrollPane) panneauPlacement.getChildren().get(2);
         zoneSelectionBateaux = new SelectBoard(flotteRestante);
-        panneauPlacement.getChildren().add(2, zoneSelectionBateaux);
+        scroll.setContent(zoneSelectionBateaux);
     }
 
     public void retirerVaisseauZoneSelection(String nomNavire) {
