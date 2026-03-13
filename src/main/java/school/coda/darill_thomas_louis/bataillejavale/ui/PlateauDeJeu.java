@@ -113,7 +113,7 @@ public class PlateauDeJeu {
 
         vueOcean.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
         sideBar.ajouterLog("Système initialisé. En attente de déploiement.", "INFO");
-        notificationBox.afficherAlerte("DÉPLOIE TA FLOTTE, AMIRAL !", "#00ffff");
+        notificationBox.afficherAlerte("DÉPLOIEMENT DE FLOTTE !", "#00ffff");
     }
 
     // ==========================================
@@ -286,7 +286,7 @@ public class PlateauDeJeu {
             placerBateauxCPU();
             idPartieCourante = partieRepository.creerNouvellePartie(etatJeuBackend);
             sideBar.ajouterLog("Sauvegarde Cloud OK (ID: " + idPartieCourante + ")", "INFO");
-            notificationBox.afficherAlerte("BATAILLE IMMINENTE", "#ff3333");
+            notificationBox.afficherAlerte("BATAILLE IMMINENTE !", "#ff3333");
         }
 
         phaseBataille = true;
@@ -309,7 +309,6 @@ public class PlateauDeJeu {
 
     private void gererTirJoueur(GrilleUI radar, GrilleUI oceanRef, int x, int y) {
         if (!phaseBataille) {
-            notificationBox.afficherAlerte("PHASE DE DÉPLOIEMENT", "#ffaa00");
             return;
         }
 
@@ -407,7 +406,6 @@ public class PlateauDeJeu {
             oceanRef.colorierCase(cibleX, cibleY, Color.DARKRED);
             if (resultatCPU == ResultatTir.TOUCHE) {
                 sideBar.ajouterLog("ALERTE ! Navire allié touché !", "TOUCHE");
-                notificationBox.afficherAlerte("IMPACT CONFIRMÉ SUR NOTRE FLOTTE", "#ff3333");
             } else {
                 sideBar.ajouterLog("DÉSASTRE ! " + notreCible.getNom() + " allié coulé !", "ALERTE");
                 notificationBox.afficherAlerte("NAVIRE ALLIÉ PERDU", "#ff0000");
