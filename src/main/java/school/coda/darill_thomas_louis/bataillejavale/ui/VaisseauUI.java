@@ -13,14 +13,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Vaisseau;
 import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
-
-import javax.swing.*;
 
 public class VaisseauUI extends Pane {
 

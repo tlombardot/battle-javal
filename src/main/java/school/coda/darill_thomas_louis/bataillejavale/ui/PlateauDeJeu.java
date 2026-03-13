@@ -1,6 +1,7 @@
 package school.coda.darill_thomas_louis.bataillejavale.ui;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.time.TimerAction;
 import javafx.animation.FadeTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -30,6 +31,10 @@ import java.util.Random;
 
 public class PlateauDeJeu {
 
+    public enum ModeJeu { SOLO, MULTI_HOTE, MULTI_INVITE, REPLAY }
+    private ModeJeu modeActuel = ModeJeu.SOLO;
+    private TimerAction pollingTimer;
+
     private static final String TEXT_FONT = "Impact";
 
     private boolean tourJoueur;
@@ -41,52 +46,61 @@ public class PlateauDeJeu {
     private boolean phaseBataille = false;
     private final Random random = new Random();
 
-    private final StackPane racineVisuelle;
-    private final BorderPane layoutPrincipal;
+    private StackPane racineVisuelle;
+    private BorderPane layoutPrincipal;
 
-    /**
-     * Grille vueOcean pour le placement des bateaux et pour les tirs reçus
-     */
-    private final GrilleUI vueOcean;
-
-    /**
-     * Grille vueRadar pour les tirs envoyés
-     */
-    private final GrilleUI vueRadar;
-
-    /**
-     * Information sur la partie en cours, historique des actions
-     */
-    private final SideBarUI sideBar;
-    private final NotificationUI notificationBox;
-    private final GestionnairePlacement gestionnairePlacement;
+    private GrilleUI vueOcean;
+    private GrilleUI vueRadar;
+    private SideBarUI sideBar;
+    private NotificationUI notificationBox;
+    private GestionnairePlacement gestionnairePlacement;
 
     private SelectBoard zoneSelectionBateaux;
-    private final VBox conteneurOcean;
-    private final VBox conteneurRadar;
+    private VBox conteneurOcean;
+    private VBox conteneurRadar;
     private VBox panneauPlacement;
     private Button btnPret;
 
-    private final StackPane voileAttenteRadar;
+    private StackPane voileAttenteRadar;
 
-    public PlateauDeJeu(EtatJeu sauvegarde, int idPartie) {
-        this();
-        this.etatJeuBackend = sauvegarde;
-        this.idPartieCourante = idPartie;
-
-        reparerSauvegarde(etatJeuBackend.getJoueur1(), etatJeuBackend.getJoueur2());
-        reparerSauvegarde(etatJeuBackend.getJoueur2(), etatJeuBackend.getJoueur1());
-
-        passerEnModeBataille(false);
-        restaurerVisuelBataille();
-
-        sideBar.ajouterLog("Sauvegarde Cloud chargée avec succès (ID: " + idPartie + ")", "INFO");
-        sideBar.setTexteManche(etatJeuBackend.getTourCourant());
+    // Pour une NOUVELLE partie (Solo ou Hôte Multi)
+    public PlateauDeJeu(ModeJeu mode) {
+        this.modeActuel = mode;
+        initialiserDonneesPartie();
+        this.racineVisuelle = initialiserUI();
     }
 
-    public PlateauDeJeu() {
-        initialiserDonneesPartie();
+    // Pour CHARGER une partie (Replay ou Invité Multi)
+    public PlateauDeJeu(ModeJeu mode, EtatJeu sauvegarde, int idPartie) {
+        this.modeActuel = mode;
+        this.idPartieCourante = idPartie;
 
+        if (mode == ModeJeu.MULTI_INVITE) {
+            school.coda.darill_thomas_louis.bataillejavale.core.model.JoueurPlay hote = sauvegarde.getJoueur1();
+            sauvegarde.setJoueur1(sauvegarde.getJoueur2());
+            sauvegarde.setJoueur2(hote);
+        }
+
+        this.etatJeuBackend = sauvegarde;
+        rechargerFlotteRestante();
+        this.racineVisuelle = initialiserUI();
+
+        if (mode == ModeJeu.REPLAY) {
+            reparerSauvegarde(etatJeuBackend.getJoueur1(), etatJeuBackend.getJoueur2());
+            reparerSauvegarde(etatJeuBackend.getJoueur2(), etatJeuBackend.getJoueur1());
+            passerEnModeBataille(false);
+            restaurerVisuelBataille();
+            sideBar.ajouterLog("Sauvegarde Cloud chargée avec succès (ID: " + idPartie + ")", "INFO");
+            sideBar.setTexteManche(etatJeuBackend.getTourCourant());
+        }
+    }
+
+    // Constructeur par défaut (Garde ta compatibilité)
+    public PlateauDeJeu() {
+        this(ModeJeu.SOLO);
+    }
+
+    private StackPane initialiserUI() {
         sideBar = new SideBarUI();
         notificationBox = new NotificationUI();
         gestionnairePlacement = new GestionnairePlacement(this);
@@ -107,14 +121,17 @@ public class PlateauDeJeu {
         creerPanneauPlacement();
 
         Rectangle fondPlateau = creerFondEcran();
+
         layoutPrincipal = assemblerLayoutPrincipal();
 
-        racineVisuelle = new StackPane();
-        racineVisuelle.getChildren().addAll(fondPlateau, layoutPrincipal, notificationBox);
+        StackPane racine = new StackPane();
+        racine.getChildren().addAll(fondPlateau, layoutPrincipal, notificationBox);
 
         vueOcean.rafraichir(etatJeuBackend.getJoueur1().getGrilleOcean());
-        sideBar.ajouterLog("Système initialisé. En attente de déploiement.", "INFO");
+        sideBar.ajouterLog("Système initialisé. Mode : " + modeActuel, "INFO");
         notificationBox.afficherAlerte("DÉPLOIEMENT DE FLOTTE !", "#00ffff");
+
+        return racine;
     }
 
     // ==========================================
@@ -168,9 +185,10 @@ public class PlateauDeJeu {
         StackPane voile = new StackPane();
         voile.setStyle("-fx-background-color: rgba(0, 0, 0, 0.75);");
 
-        Text texteAttente = new Text("RÉFLEXION ENNEMIE...");
+        Text texteAttente = new Text("EN ATTENTE...");
         texteAttente.setFont(FontUtils.getPolice(25));
         texteAttente.setFill(Color.web("#ff0000"));
+        texteAttente.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
         voile.getChildren().add(texteAttente);
         voile.setVisible(false);
@@ -187,20 +205,18 @@ public class PlateauDeJeu {
         layout.setCenter(conteneurOcean);
         return layout;
     }
-    // ... AUTRES METHODES DE PLATEAUDEJEU ...
 
     private void creerPanneauPlacement() {
-        panneauPlacement = new VBox(20); // Espacement ajusté
-        panneauPlacement.setAlignment(Pos.TOP_CENTER); // On aligne en haut pour que le titre ne bouge jamais
+        panneauPlacement = new VBox(20);
+        panneauPlacement.setAlignment(Pos.TOP_CENTER);
         panneauPlacement.setStyle(
                 "-fx-background-color: transparent; " +
                         "-fx-padding: 30 20 30 10; " +
                         "-fx-border-color: #00ffff; " +
-                        "-fx-border-width: 0 2px 0 0;" // Haut:0, Droite:2, Bas:0, Gauche:0
+                        "-fx-border-width: 0 2px 0 0;"
         );
         panneauPlacement.setPrefWidth(320);
 
-        // Titre stylisé avec ta police
         Text titre = new Text("DÉPLOIEMENT");
         titre.setFont(FontUtils.getPolice(32));
         titre.setFill(Color.WHITE);
@@ -217,7 +233,6 @@ public class PlateauDeJeu {
         scrollBateaux.setFitToWidth(true);
         scrollBateaux.setPrefHeight(400);
         scrollBateaux.setMinHeight(250);
-
         scrollBateaux.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
         scrollBateaux.setVbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER);
         scrollBateaux.setHbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER);
@@ -312,41 +327,76 @@ public class PlateauDeJeu {
     }
 
     // ==========================================
-    // LOGIQUE DE BATAILLE
+    // LOGIQUE DE BATAILLE ET RÉSEAU MULTIJOUEUR
     // ==========================================
 
-    private void passerEnModeBataille(boolean estNouvellePartie) {
-        if (estNouvellePartie) {
-            placerBateauxCPU();
-            idPartieCourante = partieRepository.creerNouvellePartie(etatJeuBackend);
-            sideBar.ajouterLog("Sauvegarde Cloud OK (ID: " + idPartieCourante + ")", "INFO");
-            notificationBox.afficherAlerte("BATAILLE IMMINENTE !", "#ff3333");
+    // Remet les joueurs dans le bon ordre pour la base de données
+    private EtatJeu getEtatJeuPourDB() {
+        if (modeActuel == ModeJeu.MULTI_INVITE) {
+            EtatJeu dbEtat = new EtatJeu();
+            dbEtat.setJoueur1(etatJeuBackend.getJoueur2());
+            dbEtat.setJoueur2(etatJeuBackend.getJoueur1());
+            dbEtat.setTourCourant(etatJeuBackend.getTourCourant());
+            return dbEtat;
         }
+        return etatJeuBackend;
+    }
 
+    private void passerEnModeBataille(boolean estNouvellePartie) {
+        if (modeActuel == ModeJeu.SOLO) {
+            if (estNouvellePartie) {
+                placerBateauxCPU();
+                idPartieCourante = partieRepository.creerNouvellePartie(etatJeuBackend);
+                sideBar.ajouterLog("Partie Solo (ID: " + idPartieCourante + ")", "INFO");
+            }
+            demarrerVisuelBataille(true);
+
+        } else if (modeActuel == ModeJeu.MULTI_HOTE) {
+            idPartieCourante = partieRepository.hebergerPartieMulti(getEtatJeuPourDB());
+            sideBar.ajouterLog("SALON CRÉÉ : ID " + idPartieCourante, "ALERTE");
+            demarrerVisuelBataille(false); // On bloque l'écran en attendant le joueur 2
+            demarrerPollingAttenteJoueur2();
+
+        } else if (modeActuel == ModeJeu.MULTI_INVITE) {
+            partieRepository.demarrerPartieMulti(idPartieCourante, getEtatJeuPourDB());
+            sideBar.ajouterLog("SALON REJOINT : ID " + idPartieCourante, "INFO");
+            demarrerVisuelBataille(false); // L'hôte tire en premier, on attend !
+            demarrerPollingTourAdversaire();
+
+        } else if (modeActuel == ModeJeu.REPLAY) {
+            demarrerVisuelBataille(tourJoueur);
+        }
+    }
+
+    private void demarrerVisuelBataille(boolean aMoiDeJouer) {
         phaseBataille = true;
-        tourJoueur = true;
-
-        DropShadow neonGlowRadar = new DropShadow(25, Color.web("#ff0000"));
-        conteneurRadar.setEffect(neonGlowRadar);
+        tourJoueur = aMoiDeJouer;
 
         layoutPrincipal.setLeft(null);
-
         HBox zoneBataille = new HBox(30, conteneurOcean, conteneurRadar);
         zoneBataille.setAlignment(Pos.CENTER);
-
         layoutPrincipal.setCenter(zoneBataille);
         layoutPrincipal.setRight(sideBar);
 
-        sideBar.setPhase("PHASE DE BATAILLE : À VOUS !");
-        sideBar.ajouterLog("Systèmes d'armement en ligne.", "ALERTE");
+        if (aMoiDeJouer) {
+            conteneurRadar.setEffect(new DropShadow(25, Color.web("#ff0000")));
+            sideBar.setPhase("PHASE DE BATAILLE : À VOUS !");
+            notificationBox.afficherAlerte("BATAILLE IMMINENTE !", "#ff3333");
+            voileAttenteRadar.setVisible(false);
+        } else {
+            conteneurRadar.setEffect(null);
+            sideBar.setPhase("ATTENTE DE L'ADVERSAIRE...");
+            voileAttenteRadar.setVisible(true);
+            voileAttenteRadar.setOpacity(1.0);
+            ((Text) voileAttenteRadar.getChildren().get(0)).setText(
+                    modeActuel == ModeJeu.MULTI_HOTE ? "DONNEZ L'ID " + idPartieCourante + "\nÀ VOTRE ADVERSAIRE" : "RÉFLEXION ENNEMIE..."
+            );
+        }
     }
 
     private void gererTirJoueur(GrilleUI radar, GrilleUI oceanRef, int x, int y) {
-        if (!phaseBataille) {
-            return;
-        }
-
-        if(!tourJoueur){return;}
+        if (!phaseBataille) return;
+        if (!tourJoueur) return;
 
         if (etatJeuBackend.getJoueur1().getGrilleRadar().getHistoriqueTirs()[x][y] != null) return;
 
@@ -355,42 +405,120 @@ public class PlateauDeJeu {
         etatJeuBackend.getJoueur1().getGrilleRadar().enregistrerTir(x, y, resultat);
 
         afficherResultatTirJoueur(radar, x, y, resultat, cibleAdverse);
-        partieRepository.mettreAJourPartie(idPartieCourante, etatJeuBackend);
+
+        // INCREMENT DU TOUR ET SAUVEGARDE DB
+        etatJeuBackend.setTourCourant(etatJeuBackend.getTourCourant() + 1);
+        partieRepository.mettreAJourPartie(idPartieCourante, getEtatJeuPourDB());
 
         verifierFinDePartie();
         if (!phaseBataille) return;
 
-        sideBar.setPhase("TOUR DU CPU...");
+        // ON PASSE LA MAIN
         tourJoueur = false;
+        sideBar.setPhase("TOUR ADVERSE...");
 
         conteneurRadar.setEffect(null);
         voileAttenteRadar.setVisible(true);
         FadeTransition fadeOuverture = new FadeTransition(Duration.seconds(0.2), voileAttenteRadar);
         fadeOuverture.setToValue(1.0);
         fadeOuverture.play();
+        ((Text) voileAttenteRadar.getChildren().get(0)).setText("RÉFLEXION ENNEMIE...");
 
-        FXGL.getGameTimer().runOnceAfter(() -> {
-            riposteDuCPU(oceanRef);
-            etatJeuBackend.setTourCourant(etatJeuBackend.getTourCourant() + 1);
+        if (modeActuel == ModeJeu.SOLO) {
+            FXGL.getGameTimer().runOnceAfter(() -> {
+                riposteDuCPU(oceanRef);
+                etatJeuBackend.setTourCourant(etatJeuBackend.getTourCourant() + 1);
 
-            sideBar.setTexteManche(etatJeuBackend.getTourCourant());
-            sideBar.setPhase("PHASE DE COMBAT : À VOUS !");
+                sideBar.setTexteManche(etatJeuBackend.getTourCourant());
+                sideBar.setPhase("PHASE DE COMBAT : À VOUS !");
 
-            verifierFinDePartie();
+                verifierFinDePartie();
 
-            if(phaseBataille){
+                if(phaseBataille){
+                    tourJoueur = true;
+                    conteneurRadar.setEffect(new DropShadow(25, Color.web("#ff0000")));
+
+                    FadeTransition fadeFermeture = new FadeTransition(Duration.seconds(0.3), voileAttenteRadar);
+                    fadeFermeture.setToValue(0.0);
+                    fadeFermeture.setOnFinished(_ -> voileAttenteRadar.setVisible(false));
+                    fadeFermeture.play();
+                }
+
+            }, Duration.seconds(1.0));
+        } else {
+            // MULTI : On attend que l'adversaire joue
+            demarrerPollingTourAdversaire();
+        }
+    }
+
+    // --- LE MOTEUR RÉSEAU (POLLING) ---
+
+    private void demarrerPollingAttenteJoueur2() {
+        pollingTimer = FXGL.getGameTimer().runAtInterval(() -> {
+            String statut = partieRepository.getStatutPartie(idPartieCourante);
+            if ("EN_COURS".equals(statut)) {
+                pollingTimer.expire();
+
+                EtatJeu etatEnBase = partieRepository.chargerPartieActiveOuTerminee(idPartieCourante);
+                if (etatEnBase != null) {
+                    etatJeuBackend = etatEnBase;
+                    reparerSauvegarde(etatJeuBackend.getJoueur1(), etatJeuBackend.getJoueur2());
+                    reparerSauvegarde(etatJeuBackend.getJoueur2(), etatJeuBackend.getJoueur1());
+                }
+
                 tourJoueur = true;
-                DropShadow neonGlowRadar = new DropShadow(25, Color.web("#ff0000"));
-                conteneurRadar.setEffect(neonGlowRadar);
+                conteneurRadar.setEffect(new DropShadow(25, Color.web("#ff0000")));
+                sideBar.setPhase("PHASE DE BATAILLE : À VOUS !");
+                notificationBox.afficherAlerte("L'ADVERSAIRE A REJOINT !", "#00ffff");
 
                 FadeTransition fadeFermeture = new FadeTransition(Duration.seconds(0.3), voileAttenteRadar);
                 fadeFermeture.setToValue(0.0);
-                fadeFermeture.setOnFinished(e -> voileAttenteRadar.setVisible(false));
+                fadeFermeture.setOnFinished(_ -> voileAttenteRadar.setVisible(false));
                 fadeFermeture.play();
             }
-
-        }, Duration.seconds(1.0));
+        }, Duration.seconds(2.0));
     }
+
+    private void demarrerPollingTourAdversaire() {
+        pollingTimer = FXGL.getGameTimer().runAtInterval(() -> {
+            EtatJeu etatEnBase = partieRepository.chargerPartieActiveOuTerminee(idPartieCourante);
+
+            if (etatEnBase != null && etatEnBase.getTourCourant() > etatJeuBackend.getTourCourant()) {
+                pollingTimer.expire();
+
+                // Si on est l'invité, on inverse les joueurs pour notre vue
+                if (modeActuel == ModeJeu.MULTI_INVITE) {
+                    var temp = etatEnBase.getJoueur1();
+                    etatEnBase.setJoueur1(etatEnBase.getJoueur2());
+                    etatEnBase.setJoueur2(temp);
+                }
+
+                etatJeuBackend = etatEnBase;
+                reparerSauvegarde(etatJeuBackend.getJoueur1(), etatJeuBackend.getJoueur2());
+                reparerSauvegarde(etatJeuBackend.getJoueur2(), etatJeuBackend.getJoueur1());
+
+                restaurerVisuelBataille();
+                verifierFinDePartie();
+
+                if (phaseBataille) {
+                    tourJoueur = true;
+                    sideBar.setTexteManche(etatJeuBackend.getTourCourant());
+                    sideBar.setPhase("PHASE DE BATAILLE : À VOUS !");
+                    notificationBox.afficherAlerte("C'EST VOTRE TOUR !", "#00ffff");
+                    conteneurRadar.setEffect(new DropShadow(25, Color.web("#ff0000")));
+
+                    FadeTransition fadeFermeture = new FadeTransition(Duration.seconds(0.3), voileAttenteRadar);
+                    fadeFermeture.setToValue(0.0);
+                    fadeFermeture.setOnFinished(_ -> voileAttenteRadar.setVisible(false));
+                    fadeFermeture.play();
+                }
+            }
+        }, Duration.seconds(2.0));
+    }
+
+    // ==========================================
+    // LOGIQUE DE BASE
+    // ==========================================
 
     private void afficherResultatTirJoueur(GrilleUI radar, int x, int y, ResultatTir resultat, Vaisseau cible) {
         if (resultat == ResultatTir.RATE) {
@@ -452,10 +580,12 @@ public class PlateauDeJeu {
     private void verifierFinDePartie() {
         if (etatJeuBackend.getJoueur2().aPerdu()) {
             phaseBataille = false;
+            if (pollingTimer != null) pollingTimer.expire();
             partieRepository.terminerPartie(idPartieCourante, "TERMINEE_VICTOIRE");
             afficherEcranFin("VICTOIRE !\nVous avez détruit la flotte ennemie !", Color.LIMEGREEN);
         } else if (etatJeuBackend.getJoueur1().aPerdu()) {
             phaseBataille = false;
+            if (pollingTimer != null) pollingTimer.expire();
             partieRepository.terminerPartie(idPartieCourante, "TERMINEE_DEFAITE");
             afficherEcranFin("DÉFAITE...\nLe CPU a coulé votre flotte.", Color.RED);
         }

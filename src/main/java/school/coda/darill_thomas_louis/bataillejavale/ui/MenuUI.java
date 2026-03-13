@@ -76,20 +76,21 @@ public class MenuUI extends Pane {
         completeMenuBox.setTranslateX(100);
         completeMenuBox.setTranslateY(320);
 
-        menuButtons.add(new TechButton("START GAME_", this::lancerEcranLoading));
+        // 1. SOLO VS CPU
+        menuButtons.add(new TechButton("START GAME_", () -> lancerEcranLoading(PlateauDeJeu.ModeJeu.SOLO, null, -1)));
+
+        // 2. REPRENDRE UNE PARTIE
         menuButtons.add(new TechButton("LOAD LAST GAME_", () -> {
             FXGL.getDialogService().showInputBox("Entrez l'ID de la partie à reprendre :", input -> {
                 try {
                     int id = Integer.parseInt(input);
                     PartieRepository repo = new PartieRepository();
-                    EtatJeu sauvegarde = repo.chargerPartie(id);
+                    EtatJeu sauvegarde = repo.chargerPartieActiveOuTerminee(id);
 
                     if (sauvegarde != null) {
-                        FXGL.getGameScene().clearUINodes();
-                        PlateauDeJeu plateau = new PlateauDeJeu(sauvegarde, id);
-                        FXGL.addUINode(plateau.getRacineVisuelle());
+                        lancerEcranLoading(PlateauDeJeu.ModeJeu.REPLAY, sauvegarde, id);
                     } else {
-                        FXGL.getDialogService().showMessageBox("Partie introuvable ou déjà terminée !");
+                        FXGL.getDialogService().showMessageBox("Partie introuvable !");
                     }
                 } catch (NumberFormatException _) {
                     FXGL.getDialogService().showMessageBox("Veuillez entrer un numéro valide !");
@@ -97,10 +98,10 @@ public class MenuUI extends Pane {
             });
         }));
 
-        menuButtons.add(new TechButton("HOST MULTIPLAYER_", () -> {
-            System.out.println("Création d'un salon multijoueur...");
-        }));
+        // 3. CRÉER UN SALON MULTIJOUEUR
+        menuButtons.add(new TechButton("HOST MULTIPLAYER_", () -> lancerEcranLoading(PlateauDeJeu.ModeJeu.MULTI_HOTE, null, -1)));
 
+        // 4. REJOINDRE UN SALON MULTIJOUEUR
         menuButtons.add(new TechButton("JOIN MULTIPLAYER_", () -> {
             FXGL.getDialogService().showInputBox("Entrez l'ID du Salon :", input -> {
                 try {
@@ -109,9 +110,9 @@ public class MenuUI extends Pane {
                     EtatJeu salon = repo.chargerSalonAttente(idSalon);
 
                     if (salon != null) {
-                        System.out.println("Salon trouvé ! À toi de placer tes bateaux.");
+                        lancerEcranLoading(PlateauDeJeu.ModeJeu.MULTI_INVITE, salon, idSalon);
                     } else {
-                        FXGL.getDialogService().showMessageBox("Salon introuvable ou déjà lancé !");
+                        FXGL.getDialogService().showMessageBox("Salon introuvable ou la partie a déjà commencé !");
                     }
                 } catch (NumberFormatException _) {
                     FXGL.getDialogService().showMessageBox("ID invalide !");
@@ -186,7 +187,7 @@ public class MenuUI extends Pane {
         }
     }
 
-    private void lancerEcranLoading() {
+    private void lancerEcranLoading(PlateauDeJeu.ModeJeu mode, EtatJeu sauvegarde, int idPartie) {
         isActive = false;
         getChildren().clear();
 
@@ -216,10 +217,17 @@ public class MenuUI extends Pane {
 
         FXGL.getGameTimer().runOnceAfter(() -> {
             FXGL.getGameScene().clearUINodes();
-            System.out.println("Lancement de la partie.");
-            PlateauDeJeu plateau = new PlateauDeJeu();
+            System.out.println("Lancement de la partie en mode : " + mode);
+
+            PlateauDeJeu plateau;
+            if (sauvegarde == null) {
+                plateau = new PlateauDeJeu(mode); // Nouvelle partie
+            } else {
+                plateau = new PlateauDeJeu(mode, sauvegarde, idPartie); // Chargement ou Rejoindre
+            }
+
             FXGL.addUINode(plateau.getRacineVisuelle());
-        }, Duration.seconds(3.0));
+        }, Duration.seconds(2.0));
     }
 
     private class TechButton {
