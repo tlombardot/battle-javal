@@ -46,7 +46,7 @@ public class JoueurRepository {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Erreur connexion joueur : " + e.getMessage());
+            IO.println("Erreur connexion joueur : " + e.getMessage());
         }
     }
 

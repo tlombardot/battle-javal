@@ -52,7 +52,7 @@ public class PreferencesManager {
         try {
             mapper.writerWithDefaultPrettyPrinter().writeValue(fichierPrefs, preferences);
         } catch (IOException e) {
-            System.err.println("Erreur de sauvegarde : " + e.getMessage());
+            IO.println("Erreur de sauvegarde : " + e.getMessage());
         }
     }
 }

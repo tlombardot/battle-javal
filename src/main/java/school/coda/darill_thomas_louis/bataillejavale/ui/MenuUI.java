@@ -15,8 +15,8 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Polygon;
+import school.coda.darill_thomas_louis.bataillejavale.core.model.ModeJeu;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
@@ -54,7 +54,7 @@ public class MenuUI extends Pane {
             background.setFitHeight(720);
             getChildren().add(background);
         } catch (NullPointerException e) {
-            System.out.println("Fichier interface introuvable : " + e.getMessage());
+            IO.println("Fichier interface introuvable : " + e.getMessage());
             Rectangle fond = new Rectangle(1280, 720, Color.web("#0a0f18"));
             getChildren().add(fond);
         }
@@ -83,13 +83,13 @@ public class MenuUI extends Pane {
         completeMenuBox.setTranslateY(320);
 
         // 1. SOLO VS CPU
-        menuButtons.add(new TechButton("START GAME_", () -> lancerEcranLoading(PlateauDeJeu.ModeJeu.SOLO, null, -1)));
+        menuButtons.add(new TechButton("START GAME_", () -> lancerEcranLoading(ModeJeu.SOLO, null, -1)));
 
         // 2. REPRENDRE UNE PARTIE
         menuButtons.add(new TechButton("LOAD SAVED GAME_", this::afficherListeSauvegardes));
 
         // 3. CRÉER UN SALON MULTIJOUEUR
-        menuButtons.add(new TechButton("HOST MULTIPLAYER_", () -> lancerEcranLoading(PlateauDeJeu.ModeJeu.MULTI_HOTE, null, -1)));
+        menuButtons.add(new TechButton("HOST MULTIPLAYER_", () -> lancerEcranLoading(ModeJeu.MULTI_HOTE, null, -1)));
 
         // 4. REJOINDRE UN SALON MULTIJOUEUR
         menuButtons.add(new TechButton("JOIN MULTIPLAYER_", () -> FXGL.getDialogService().showInputBox("Entrez l'ID du Salon :", input -> {
@@ -99,7 +99,7 @@ public class MenuUI extends Pane {
                 EtatJeu salon = repo.chargerSalonAttente(idSalon);
 
                 if (salon != null) {
-                    lancerEcranLoading(PlateauDeJeu.ModeJeu.MULTI_INVITE, salon, idSalon);
+                    lancerEcranLoading(ModeJeu.MULTI_INVITE, salon, idSalon);
                 } else {
                     FXGL.getDialogService().showMessageBox("Salon introuvable ou la partie a déjà commencé !");
                 }
@@ -362,7 +362,7 @@ public class MenuUI extends Pane {
                 carte.setOnMouseClicked(e -> {
                     EtatJeu sauvegarde = repo.chargerPartieActiveOuTerminee(info.id());
                     if (sauvegarde != null) {
-                        lancerEcranLoading(PlateauDeJeu.ModeJeu.SOLO, sauvegarde, info.id());
+                        lancerEcranLoading(ModeJeu.SOLO, sauvegarde, info.id());
                     }
                 });
 
