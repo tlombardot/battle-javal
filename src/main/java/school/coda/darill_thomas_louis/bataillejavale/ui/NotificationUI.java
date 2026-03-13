@@ -28,7 +28,7 @@ public class NotificationUI extends StackPane {
         setMouseTransparent(true);
         setMaxSize(600, 65);
         StackPane.setAlignment(this, Pos.TOP_CENTER);
-        setTranslateX(-100);
+//        setTranslateX(-100);
         setTranslateY(-100);
 
         fondAlerte = new Rectangle(600, 65);

@@ -1,27 +1,28 @@
 package school.coda.darill_thomas_louis.bataillejavale.ui;
 
 import com.almasb.fxgl.dsl.FXGL;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.geometry.Pos;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Polygon;
-import javafx.scene.text.Font;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Session;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository;
+import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class MenuUI extends Pane {
     private int currentSelection = 0;
     private boolean isActive = true;
 
-    public  MenuUI() {
+    public MenuUI() {
         buildBackground();
         buildLogo();
         buildButtons();
@@ -49,8 +50,8 @@ public class MenuUI extends Pane {
             background.setFitWidth(1280);
             background.setFitHeight(720);
             getChildren().add(background);
-        }catch (NullPointerException e){
-            IO.println("Ficher interface introuvable : " + e.getMessage());
+        } catch (NullPointerException e) {
+            System.out.println("Fichier interface introuvable : " + e.getMessage());
             Rectangle fond = new Rectangle(1280, 720, Color.web("#0a0f18"));
             getChildren().add(fond);
         }
@@ -63,15 +64,13 @@ public class MenuUI extends Pane {
             logoTitle.setFitWidth(520);
             logoTitle.setPreserveRatio(true);
             logoTitle.setTranslateX(40);
-            logoTitle.setTranslateY(10);
+            logoTitle.setTranslateY(5);
             getChildren().add(logoTitle);
         } catch (Exception _) {
             System.out.println("Logo non trouvé.");
         }
     }
-    /**
-     * Construction des boutons dans le menu principal
-     */
+
     private void buildButtons() {
         VBox completeMenuBox = new VBox(20);
         completeMenuBox.setTranslateX(100);
@@ -79,54 +78,48 @@ public class MenuUI extends Pane {
 
         menuButtons.add(new TechButton("START GAME_", this::lancerEcranLoading));
         menuButtons.add(new TechButton("LOAD LAST GAME_", () -> {
-            // FXGL ouvre une jolie boîte de dialogue pour saisir l'ID !
-            com.almasb.fxgl.dsl.FXGL.getDialogService().showInputBox("Entrez l'ID de la partie à reprendre :", input -> {
+            FXGL.getDialogService().showInputBox("Entrez l'ID de la partie à reprendre :", input -> {
                 try {
                     int id = Integer.parseInt(input);
-                    school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository repo =
-                            new school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository();
-
+                    PartieRepository repo = new PartieRepository();
                     EtatJeu sauvegarde = repo.chargerPartie(id);
 
                     if (sauvegarde != null) {
-                        // Si la partie existe et est EN_COURS, on la lance !
-                        com.almasb.fxgl.dsl.FXGL.getGameScene().clearUINodes();
+                        FXGL.getGameScene().clearUINodes();
                         PlateauDeJeu plateau = new PlateauDeJeu(sauvegarde, id);
-                        com.almasb.fxgl.dsl.FXGL.addUINode(plateau.getRacineVisuelle());
+                        FXGL.addUINode(plateau.getRacineVisuelle());
                     } else {
-                        // Si l'ID n'existe pas ou que la partie est finie : Message d'erreur !
-                        com.almasb.fxgl.dsl.FXGL.getDialogService().showMessageBox("Partie introuvable ou déjà terminée !");
+                        FXGL.getDialogService().showMessageBox("Partie introuvable ou déjà terminée !");
                     }
                 } catch (NumberFormatException _) {
-                    com.almasb.fxgl.dsl.FXGL.getDialogService().showMessageBox("Veuillez entrer un numéro valide !");
+                    FXGL.getDialogService().showMessageBox("Veuillez entrer un numéro valide !");
                 }
             });
         }));
+
         menuButtons.add(new TechButton("HOST MULTIPLAYER_", () -> {
-            IO.println("Création d'un salon multijoueur...");
-            // TODO : On appellera PlateauDeJeu en mode "Hôte" ici !
+            System.out.println("Création d'un salon multijoueur...");
         }));
 
-        // --- NOUVEAU BOUTON : REJOINDRE (JOUEUR 2) ---
         menuButtons.add(new TechButton("JOIN MULTIPLAYER_", () -> {
-            com.almasb.fxgl.dsl.FXGL.getDialogService().showInputBox("Entrez l'ID du Salon :", input -> {
+            FXGL.getDialogService().showInputBox("Entrez l'ID du Salon :", input -> {
                 try {
                     int idSalon = Integer.parseInt(input);
                     PartieRepository repo = new PartieRepository();
                     EtatJeu salon = repo.chargerSalonAttente(idSalon);
 
                     if (salon != null) {
-                        IO.println("Salon trouvé ! À toi de placer tes bateaux.");
-                        // TODO : On lancera le PlateauDeJeu avec le salon récupéré ici !
+                        System.out.println("Salon trouvé ! À toi de placer tes bateaux.");
                     } else {
-                        com.almasb.fxgl.dsl.FXGL.getDialogService().showMessageBox("Salon introuvable ou déjà lancé !");
+                        FXGL.getDialogService().showMessageBox("Salon introuvable ou déjà lancé !");
                     }
                 } catch (NumberFormatException _) {
-                    com.almasb.fxgl.dsl.FXGL.getDialogService().showMessageBox("ID invalide !");
+                    FXGL.getDialogService().showMessageBox("ID invalide !");
                 }
             });
         }));
-        menuButtons.add(new TechButton("SETTINGS_", () -> IO.println("Ouverture paramètres.")));
+
+        menuButtons.add(new TechButton("SETTINGS_", () -> System.out.println("Ouverture paramètres.")));
         menuButtons.add(new TechButton("EXIT_", () -> FXGL.getGameController().exit()));
 
         for (TechButton btn : menuButtons) {
@@ -134,24 +127,41 @@ public class MenuUI extends Pane {
         }
         getChildren().add(completeMenuBox);
     }
-    /**
-     * Construction des crédits
-     */
-    private void buildCredits() {
-        Text credits = new Text("Created by KING_Darill | CYBER080Thomas | SMART_Louis");
-        credits.setFont(Font.font("Arial", 15));
-        credits.setFill(Color.web("#dddddd"));
-        credits.setTranslateX(100);
-        credits.setTranslateY(680);
-        getChildren().add(credits);
-        Text txtProfil = new Text("Profil actif : " + Session.pseudo);
-        txtProfil.setFont(Font.font("Consolas", 18));
-        txtProfil.setFill(Color.LIMEGREEN);
-        txtProfil.setTranslateX(1000);
-        txtProfil.setTranslateY(40);
-        getChildren().add(txtProfil);
-    }
 
+    private void buildCredits() {
+        VBox creditsBox = new VBox(5);
+        creditsBox.setAlignment(Pos.CENTER_RIGHT);
+        creditsBox.setTranslateX(800);
+        creditsBox.setTranslateY(660);
+
+        Text creditsText = new Text("CREATED BY KING_DARILL_ CYBER080THOMAS_ JAVA_LOUIS_");
+        creditsText.setFont(FontUtils.getPolice(14));
+        creditsText.setFill(Color.web("#cccccc"));
+        creditsText.setEffect(new DropShadow(5, Color.BLACK));
+
+        creditsBox.getChildren().add(creditsText);
+        getChildren().add(creditsBox);
+
+        StackPane profilBox = new StackPane();
+        profilBox.setTranslateX(1020);
+        profilBox.setTranslateY(30);
+
+        Rectangle fondProfil = new Rectangle(230, 45, Color.web("#0a0f18", 0.15));
+        fondProfil.setArcWidth(5);
+        fondProfil.setArcHeight(5);
+        fondProfil.setStroke(Color.web("#00ffff", 0.6));
+        fondProfil.setStrokeWidth(2);
+        fondProfil.setStrokeType(StrokeType.INSIDE);
+        fondProfil.setEffect(new DropShadow(15, Color.web("#00ffff", 0.3)));
+
+        Text txtProfil = new Text("PROFIL : " + Session.pseudo);
+        txtProfil.setFont(FontUtils.getPolice(20));
+        txtProfil.setFill(Color.web("#ffffff"));
+        txtProfil.setEffect(new DropShadow(10, Color.web("#00ffff")));
+
+        profilBox.getChildren().addAll(fondProfil, txtProfil);
+        getChildren().add(profilBox);
+    }
 
     public void selectUp() {
         if (!isActive) return;
@@ -180,32 +190,29 @@ public class MenuUI extends Pane {
         isActive = false;
         getChildren().clear();
 
-        Rectangle blackScreen = new Rectangle(1280, 720, Color.BLACK);
+        Rectangle blackScreen = new Rectangle(1280, 720, Color.web("#05080c"));
         getChildren().add(blackScreen);
 
-        /*
-        try {
-            ImageView techGif = new ImageView(FXGL.image("loading_tech.gif"));
-            techGif.setTranslateX(400);
-            techGif.setTranslateY(200);
-            FXGL.addUINode(techGif);
-        } catch (Exception e) {}
-        */
+        StackPane loadingPane = new StackPane();
+        loadingPane.setPrefSize(1280, 720);
 
-        Text loadingText = new Text("ESTABLISHING CONTROL BOARD SATELLITE CONNECTIONS...");
-        loadingText.setFont(Font.font("Consolas", 24));
+        Text loadingText = new Text("ESTABLISHING SATELLITE CONNECTIONS...");
+        loadingText.setFont(FontUtils.getPolice(28));
         loadingText.setFill(Color.web("#00ffff"));
-        loadingText.setTranslateX(100);
-        loadingText.setTranslateY(650);
+        loadingText.setEffect(new DropShadow(20, Color.web("#00ffff", 0.6)));
 
-        FadeTransition blink = new FadeTransition(Duration.seconds(0.5), loadingText);
+        FadeTransition blink = new FadeTransition(Duration.seconds(0.6), loadingText);
         blink.setFromValue(1.0);
-        blink.setToValue(0.2);
+        blink.setToValue(0.3);
         blink.setCycleCount(Animation.INDEFINITE);
         blink.setAutoReverse(true);
         blink.play();
 
-        getChildren().add(loadingText);
+        loadingPane.getChildren().add(loadingText);
+        StackPane.setAlignment(loadingText, Pos.BOTTOM_CENTER);
+        loadingText.setTranslateY(-50);
+
+        getChildren().add(loadingPane);
 
         FXGL.getGameTimer().runOnceAfter(() -> {
             FXGL.getGameScene().clearUINodes();
@@ -220,28 +227,36 @@ public class MenuUI extends Pane {
         Polygon techBand;
         Text textNode;
         Runnable action;
+        FadeTransition pulseAnimation;
 
         public TechButton(String text, Runnable action) {
             this.action = action;
             visual = new StackPane();
             visual.setAlignment(Pos.CENTER_LEFT);
 
-            techBand = new Polygon(0, 0, 400, 0, 370, 40, 0, 40);
+            techBand = new Polygon(0, 0, 420, 0, 390, 45, 0, 45);
 
             Stop[] stops = new Stop[] {
                     new Stop(0, Color.web("#00ffff", 0.15)),
-                    new Stop(1, Color.web("#00ffff", 0.35))
+                    new Stop(1, Color.web("#00ffff", 0.45))
             };
             LinearGradient gradient = new LinearGradient(0, 0, 1, 0, true, CycleMethod.NO_CYCLE, stops);
             techBand.setFill(gradient);
 
-            DropShadow glow = new DropShadow(15, Color.web("#00e6e6"));
+            DropShadow glow = new DropShadow(30, Color.web("#00ffff"));
+            glow.setSpread(0.2);
             techBand.setEffect(glow);
             techBand.setVisible(false);
 
+            pulseAnimation = new FadeTransition(Duration.seconds(0.8), techBand);
+            pulseAnimation.setFromValue(0.5);
+            pulseAnimation.setToValue(1.0);
+            pulseAnimation.setCycleCount(Animation.INDEFINITE);
+            pulseAnimation.setAutoReverse(true);
+
             textNode = new Text(text);
-            textNode.setFont(Font.font("Times New Romans", 30));
-            textNode.setFill(Color.web("#a0a0a0"));
+            textNode.setFont(FontUtils.getPolice(24));
+            textNode.setFill(Color.WHITE);
             textNode.setTranslateX(20);
 
             visual.getChildren().addAll(techBand, textNode);
@@ -252,6 +267,7 @@ public class MenuUI extends Pane {
                     updateSelection();
                 }
             });
+
             visual.setOnMouseClicked(_ -> {
                 if (isActive) action.run();
             });
@@ -259,14 +275,17 @@ public class MenuUI extends Pane {
 
         public void setActive(boolean active) {
             techBand.setVisible(active);
-            textNode.setFill(active ? Color.WHITE : Color.web("#a0a0a0"));
+            textNode.setFill(active ? Color.WHITE : Color.web("#cccccc"));
+
             if (active) {
-                textNode.setTranslateX(35);
+                textNode.setTranslateX(40);
+                textNode.setEffect(new DropShadow(10, Color.BLACK));
+                pulseAnimation.play();
             } else {
                 textNode.setTranslateX(20);
+                textNode.setEffect(null);
+                pulseAnimation.stop();
             }
         }
     }
-
-
 }
