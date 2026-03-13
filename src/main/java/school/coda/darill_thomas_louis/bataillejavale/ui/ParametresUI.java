@@ -20,7 +20,10 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.AppPreferences;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.config.PreferencesManager;
+import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.JoueurRepository;
 import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
+
+import java.util.Objects;
 
 public class ParametresUI extends StackPane {
 
@@ -85,6 +88,10 @@ public class ParametresUI extends StackPane {
             prefs.evenementsActive = checkEvenements.isSelected();
 
             PreferencesManager.getInstance().sauvegarderPreferences();
+
+            JoueurRepository repo = new JoueurRepository();
+            repo.sauvegarderPreferencesDansCloud(prefs);
+
             fermerFenetre(menuParent, actionFermeture);
         });
         bottomBox.getChildren().add(btnSave);
@@ -253,14 +260,7 @@ public class ParametresUI extends StackPane {
             btn.setEffect(null);
         });
 
-        btn.setOnAction(e -> {
-            PreferencesManager.getInstance().sauvegarderPreferences();
-
-            JoueurRepository repo = new JoueurRepository();
-            repo.sauvegarderPreferencesDansCloud(PreferencesManager.getInstance().getPreferences());
-
-            action.run();
-        });
+        btn.setOnAction(e -> action.run());
         return btn;
     }
 

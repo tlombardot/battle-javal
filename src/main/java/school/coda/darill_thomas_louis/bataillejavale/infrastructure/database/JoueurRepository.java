@@ -3,7 +3,9 @@ package school.coda.darill_thomas_louis.bataillejavale.infrastructure.database;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import school.coda.darill_thomas_louis.bataillejavale.core.model.AppPreferences;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Session;
+import school.coda.darill_thomas_louis.bataillejavale.infrastructure.config.PreferencesManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,7 +19,7 @@ public class JoueurRepository {
         String pseudoOS = System.getProperty("user.name");
         System.out.println("Tentative de connexion pour : " + pseudoOS);
 
-        String sqlSelect = "SELECT id, stats FROM joueurs WHERE pseudo = ?";
+        String sqlSelect = "SELECT id, stats, preferences FROM joueurs WHERE pseudo = ?";
         String sqlInsert = "INSERT INTO joueurs (pseudo, mot_de_passe, stats) VALUES (?, 'auto_login', '{\"victoires\":0, \"defaites\":0}'::jsonb) RETURNING id";
 
         try (Connection conn = CreateDB.getConnection()) {
@@ -28,8 +30,11 @@ public class JoueurRepository {
                 if (rs.next()) {
                     Session.idJoueur = rs.getInt("id");
                     Session.pseudo = pseudoOS;
-                    chargerStats(rs.getString("stats")); // On lit le JSON de la DB
-                    System.out.println("Bon retour " + Session.pseudo + " ! (V:" + Session.victoires + " / D:" + Session.defaites + ")");
+                    chargerStats(rs.getString("stats")); // je lit... nous lisons ^^ le JSON de la DB
+
+                    chargerPreferences(rs.getString("preferences"));
+
+                    IO.println("Bon retour " + Session.pseudo + " ! (V:" + Session.victoires + " / D:" + Session.defaites + ")");
                     return;
                 }
             }
@@ -65,6 +70,29 @@ public class JoueurRepository {
         }
     }
 
+    /**
+     *
+     */
+    private void chargerPreferences(String prefsJson) {
+        try {
+            if (prefsJson != null && !prefsJson.isEmpty() && !prefsJson.equals("{}")) {
+                JsonNode root = mapper.readTree(prefsJson);
+
+                AppPreferences prefs = PreferencesManager.getInstance().getPreferences();
+
+                if (root.has("sonActive")) prefs.sonActive = root.get("sonActive").asBoolean();
+                if (root.has("volumeMusique")) prefs.volumeMusique = root.get("volumeMusique").asDouble();
+                if (root.has("ravitaillementActive")) prefs.ravitaillementActive = root.get("ravitaillementActive").asBoolean();
+                if (root.has("evenementsActive")) prefs.evenementsActive = root.get("evenementsActive").asBoolean();
+
+                IO.println("Préférences Cloud chargées en mémoire !");
+                PreferencesManager.getInstance().sauvegarderPreferences();
+            }
+        } catch (Exception e) {
+            IO.println("Erreur deparsing préférences depuis la DB : " + e.getMessage());
+        }
+    }
+
     public void updateStats(boolean victoire) {
         if (victoire) Session.victoires++;
         else Session.defaites++;
@@ -83,6 +111,37 @@ public class JoueurRepository {
 
         } catch (Exception e) {
             IO.println("Erreur sauvegarde stats : " + e.getMessage());
+        }
+    }
+
+    /**
+     *
+     */
+    public void sauvegarderPreferencesDansCloud(AppPreferences prefs) {
+        if (Session.idJoueur == 0) {
+            System.out.println("Le joueur n'est pas connecté, sauvegarde ignorée.");
+            return;
+        }
+
+        String sql = "UPDATE joueurs SET preferences = ?::jsonb WHERE id = ?";
+
+        try (Connection conn = CreateDB.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            ObjectNode prefsNode = mapper.createObjectNode();
+            prefsNode.put("sonActive", prefs.sonActive);
+            prefsNode.put("volumeMusique", prefs.volumeMusique);
+            prefsNode.put("ravitaillementActive", prefs.ravitaillementActive);
+            prefsNode.put("evenementsActive", prefs.evenementsActive);
+
+            pstmt.setString(1, mapper.writeValueAsString(prefsNode));
+            pstmt.setInt(2, Session.idJoueur);
+
+            pstmt.executeUpdate();
+            System.out.println("[MES LOGS JOYEUX (Darill logs...)] -> Préférences synchronisées dans le Cloud avec succès !");
+
+        } catch (Exception e) {
+            System.out.println("Erreur lors de la sauvegarde des préférences dans la DB : " + e.getMessage());
         }
     }
 }

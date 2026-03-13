@@ -6,7 +6,8 @@ import school.coda.darill_thomas_louis.bataillejavale.core.model.AppPreferences;
 import java.io.File;
 import java.io.IOException;
 
-public class PreferencesManager {
+
+public final class PreferencesManager {
 
     private static PreferencesManager instance;
     private AppPreferences preferences;
@@ -38,8 +39,8 @@ public class PreferencesManager {
         if (fichierPrefs.exists()) {
             try {
                 preferences = mapper.readValue(fichierPrefs, AppPreferences.class);
-            } catch (IOException e) {
-                System.err.println("Erreur de lecture, chargement par défaut.");
+            } catch (IOException _) {
+                IO.println("Erreur de lecture, chargement par défaut.");
                 preferences = new AppPreferences();
             }
         } else {
