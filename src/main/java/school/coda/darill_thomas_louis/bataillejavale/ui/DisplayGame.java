@@ -68,6 +68,7 @@ public class DisplayGame extends GameApplication {
     /**
      * Création de le Database et lancement du jeu
      * @param args
+     * Les arguments passés au programme au moment du lancement
      */
     static void main(String[] args) {
         new CreateDB();

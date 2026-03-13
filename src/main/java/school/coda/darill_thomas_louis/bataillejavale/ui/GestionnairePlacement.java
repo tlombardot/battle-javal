@@ -16,6 +16,11 @@ public class GestionnairePlacement {
         this.plateau = plateau;
     }
 
+    /**
+     * Vider la grille du joueur
+     * @param vueOcean
+     * Grille du joueur
+     */
     public void viderGrille(GrilleUI vueOcean) {
         plateau.getEtatJeuBackend().getJoueur1().getGrilleOcean().vider();
         plateau.getEtatJeuBackend().getJoueur1().getFlotte().clear();
@@ -25,6 +30,11 @@ public class GestionnairePlacement {
         plateau.getBtnPret().setDisable(true);
     }
 
+    /**
+     * Option permettant de posé les bâteaux aléatoirement
+     * @param vueOcean
+     * Grille du joueur
+     */
     public void placerMesBateauxAleatoirement(GrilleUI vueOcean) {
         viderGrille(vueOcean);
         for (Vaisseau navire : new ArrayList<>(plateau.getFlotteRestante())) {

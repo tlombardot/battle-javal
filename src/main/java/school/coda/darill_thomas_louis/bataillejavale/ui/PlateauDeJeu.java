@@ -85,14 +85,12 @@ public class PlateauDeJeu {
         rechargerFlotteRestante();
         this.racineVisuelle = initialiserUI();
 
-        if (mode == ModeJeu.REPLAY) {
-            reparerSauvegarde(etatJeuBackend.getJoueur1(), etatJeuBackend.getJoueur2());
-            reparerSauvegarde(etatJeuBackend.getJoueur2(), etatJeuBackend.getJoueur1());
-            passerEnModeBataille(false);
-            restaurerVisuelBataille();
-            sideBar.ajouterLog("Sauvegarde Cloud chargée avec succès (ID: " + idPartie + ")", "INFO");
-            sideBar.setTexteManche(etatJeuBackend.getTourCourant());
-        }
+        reparerSauvegarde(etatJeuBackend.getJoueur1(), etatJeuBackend.getJoueur2());
+        reparerSauvegarde(etatJeuBackend.getJoueur2(), etatJeuBackend.getJoueur1());
+        passerEnModeBataille(false);
+        restaurerVisuelBataille();
+        sideBar.ajouterLog("Sauvegarde Cloud chargée avec succès (ID: " + idPartie + ")", "INFO");
+        sideBar.setTexteManche(etatJeuBackend.getTourCourant());
     }
 
     // Constructeur par défaut (Garde ta compatibilité)

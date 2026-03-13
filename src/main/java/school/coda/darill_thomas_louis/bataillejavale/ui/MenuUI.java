@@ -42,6 +42,9 @@ public class MenuUI extends Pane {
         updateSelection();
     }
 
+    /**
+     * Construction de l'arrière-plan
+     */
     private void buildBackground() {
         try {
             String path = Objects.requireNonNull(getClass().getResource("/assets/textures/naval_ocean.gif")).toExternalForm();
@@ -57,6 +60,9 @@ public class MenuUI extends Pane {
         }
     }
 
+    /**
+     * Construction du logo
+     */
     private void buildLogo() {
         try {
             String pathLogo = Objects.requireNonNull(getClass().getResource("/assets/textures/main_logo.png")).toExternalForm();
@@ -346,7 +352,7 @@ public class MenuUI extends Pane {
                 carte.setOnMouseClicked(e -> {
                     EtatJeu sauvegarde = repo.chargerPartieActiveOuTerminee(info.id);
                     if (sauvegarde != null) {
-                        lancerEcranLoading(PlateauDeJeu.ModeJeu.REPLAY, sauvegarde, info.id);
+                        lancerEcranLoading(PlateauDeJeu.ModeJeu.SOLO, sauvegarde, info.id);
                     }
                 });
 

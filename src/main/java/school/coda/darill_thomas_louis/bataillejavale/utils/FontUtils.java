@@ -2,6 +2,11 @@ package school.coda.darill_thomas_louis.bataillejavale.utils;
 
 import javafx.scene.text.Font;
 
+/**
+ * Charge la police "Cinzel-Medium"
+ * si il y a erreur charge la police par défaut "Consolas"
+ */
+
 public class FontUtils {
 
     private static final String FONT_PATH = "/assets/ui/fonts/Cinzel-Medium.ttf";

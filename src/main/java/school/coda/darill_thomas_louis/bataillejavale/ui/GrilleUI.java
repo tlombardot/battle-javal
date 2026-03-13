@@ -247,6 +247,15 @@ public class GrilleUI extends StackPane {
         }
     }
 
+    /**
+     *Gère la position et la couleur d'une case
+     * @param x
+     * Gère la position de la case sur l'axe des abscisses
+     * @param y
+     * Gère la position de la case sur l'axe des ordonné
+     * @param couleur
+     * Charge la couleur de la case
+     */
     public void colorierCase(int x, int y, Color couleur) {
         if (x >= 0 && x < 10 && y >= 0 && y < 10) {
             rectangles[x][y].setUserData("TIR");

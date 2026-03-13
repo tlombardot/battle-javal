@@ -103,28 +103,6 @@ public class PartieRepository {
         }
     }
 
-    // Permet de charger une partie existante depuis PostgreSQL
-    public EtatJeu chargerPartie(int idPartie) {
-        // La condition statut = 'EN_COURS' empêche de charger une partie finie !
-        String sql = "SELECT etat_jeu FROM parties WHERE id = ? AND statut = 'EN_COURS'";
-
-        try (Connection conn = CreateDB.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, idPartie);
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                String json = rs.getString("etat_jeu");
-                return mapper.readValue(json, EtatJeu.class);
-            }
-
-        } catch (SQLException | JsonProcessingException e) {
-            IO.println("Erreur lors du chargement en DB : " + e.getMessage());
-        }
-        return null;
-    }
-
     public void terminerPartie(int idPartie, String resultatFinal) {
         if (idPartie == -1) return;
         String sql = "UPDATE parties SET statut = ? WHERE id = ?;";
