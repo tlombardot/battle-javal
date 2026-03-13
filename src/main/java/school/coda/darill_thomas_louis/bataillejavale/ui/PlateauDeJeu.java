@@ -261,9 +261,7 @@ public class PlateauDeJeu {
         return btn;
     }
 
-    // Méthode mise à jour pour gérer le ScrollPane lors du rafraichissement
     public void actualiserMenuBateaux() {
-        // On récupère le ScrollPane qui est à l'index 2
         javafx.scene.control.ScrollPane scroll = (javafx.scene.control.ScrollPane) panneauPlacement.getChildren().get(2);
         zoneSelectionBateaux = new SelectBoard(flotteRestante);
         scroll.setContent(zoneSelectionBateaux);
@@ -333,7 +331,7 @@ public class PlateauDeJeu {
 
         layoutPrincipal.setLeft(null);
 
-        HBox zoneBataille = new HBox(45, conteneurOcean, conteneurRadar);
+        HBox zoneBataille = new HBox(30, conteneurOcean, conteneurRadar);
         zoneBataille.setAlignment(Pos.CENTER);
 
         layoutPrincipal.setCenter(zoneBataille);

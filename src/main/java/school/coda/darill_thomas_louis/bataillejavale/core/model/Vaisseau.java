@@ -6,8 +6,11 @@ public class Vaisseau {
     private int taille;
     private int casesTouchees = 0;
 
-    
-    // Pour la base de donnèes il a besoin d'être vide
+    private int x = -1;
+    private int y = -1;
+    private boolean horizontal = true;
+
+    // Pour la base de données il a besoin d'être vide
     public Vaisseau() {}
 
     public Vaisseau(String nom, int taille) {
@@ -16,17 +19,38 @@ public class Vaisseau {
     }
 
     public String getNom() { return nom; }
-    public void setNom(String nom) { this.nom = nom; } // Nouveau
+    public void setNom(String nom) { this.nom = nom; }
 
     public int getTaille() { return taille; }
-    public void setTaille(int taille) { this.taille = taille; } // Nouveau
+    public void setTaille(int taille) { this.taille = taille; }
 
-    public int getCasesTouchees() { return casesTouchees; } // Nouveau
-    public void setCasesTouchees(int casesTouchees) { this.casesTouchees = casesTouchees; } // Nouveau
+    public int getCasesTouchees() { return casesTouchees; }
+    public void setCasesTouchees(int casesTouchees) { this.casesTouchees = casesTouchees; }
+
+
+    /**
+     * Enregistre la position finale du navire sur la grille.
+     */
+    public void placer(int x, int y, boolean horizontal) {
+        this.x = x;
+        this.y = y;
+        this.horizontal = horizontal;
+    }
+
+    public int getX() { return x; }
+    public void setX(int x) { this.x = x; }
+
+    public int getY() { return y; }
+    public void setY(int y) { this.y = y; }
+
+    public boolean estHorizontal() { return horizontal; }
+    public void setHorizontal(boolean horizontal) { this.horizontal = horizontal; }
+
 
     public boolean estCoule(){
         return casesTouchees >= taille;
     }
+
     public boolean recevoirDegat(int x, int y){
         casesTouchees++;
         return estCoule();

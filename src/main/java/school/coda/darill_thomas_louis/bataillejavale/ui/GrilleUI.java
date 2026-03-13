@@ -1,9 +1,11 @@
 package school.coda.darill_thomas_louis.bataillejavale.ui;
+
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Pos;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -11,16 +13,21 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import org.jetbrains.annotations.NotNull;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.GrilleOcean;
+import school.coda.darill_thomas_louis.bataillejavale.core.model.Vaisseau;
 
-public class GrilleUI extends GridPane {
-    /**
-     *
-     */
+import java.util.ArrayList;
+import java.util.List;
+
+public class GrilleUI extends StackPane {
+
     private static final int TAILLE_CASE = 40;
-    private final Rectangle[][] rectangles = new Rectangle[10][10];
 
+    private final Rectangle[][] rectangles = new Rectangle[10][10];
     private final String couleurThemeHex;
     private AnimationTimer effetPulsation;
+
+    private final GridPane grilleCases = new GridPane();
+    private final Pane coucheBateaux = new Pane();
 
     public interface GrilleListener {
         void onCaseLeftClick(int x, int y);
@@ -35,23 +42,33 @@ public class GrilleUI extends GridPane {
 
     public GrilleUI(String couleurThemeHex) {
         this.couleurThemeHex = couleurThemeHex;
-        this.setAlignment(Pos.CENTER);
-        this.setHgap(1);
-        this.setVgap(1);
+
+        grilleCases.setAlignment(Pos.CENTER);
+        grilleCases.setHgap(1);
+        grilleCases.setVgap(1);
 
         for (int i = 0; i < 10; i++) {
-            this.add(createChiffre(i), i + 1, 0);
-            this.add(createLettres(i), 0, i + 1);
+            grilleCases.add(createChiffre(i), i + 1, 0);
+            grilleCases.add(createLettres(i), 0, i + 1);
         }
 
         for (int x = 0; x < 10; x++) {
             for (int y = 0; y < 10; y++) {
-                this.add(createCaseMer(x,y), x + 1, y + 1);
+                grilleCases.add(createCaseMer(x,y), x + 1, y + 1);
             }
         }
 
+        coucheBateaux.setTranslateX((TAILLE_CASE / 2.0) + 1);
+        coucheBateaux.setTranslateY((TAILLE_CASE / 2.0) + 1);
+        coucheBateaux.setPickOnBounds(false);
+
+
+        coucheBateaux.setManaged(false);
+        this.getChildren().add(new Pane(grilleCases, coucheBateaux));
         demarrerAnimationInterne();
     }
+
+
 
     private void demarrerAnimationInterne() {
         if (effetPulsation != null) effetPulsation.stop();
@@ -59,28 +76,20 @@ public class GrilleUI extends GridPane {
         effetPulsation = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                // Temps ralenti pour un effet liquide naturel
                 double t = now / 1_000_000_000.0 * 1.5;
 
                 for (int x = 0; x < 10; x++) {
                     for (int y = 0; y < 10; y++) {
-                        if ("VIDE".equals(rectangles[x][y].getUserData())) {
-
-                            // Coordonnées ajustées pour la taille des vagues
+                        if ("VIDE".equals(rectangles[x][y].getUserData()) || "BATEAU".equals(rectangles[x][y].getUserData())) {
                             double u = x * 0.4;
                             double v = y * 0.4;
 
-                            // On croise 3 ondes mathématiques (horizontale, verticale, diagonale)
                             double onde1 = Math.sin(u + t);
                             double onde2 = Math.cos(v + t * 0.8);
                             double onde3 = Math.sin(u + v - t * 1.2);
 
-                            // On mélange les vagues et on normalise entre 0.0 et 1.0
                             double surfaceEau = (onde1 + onde2 + onde3 + 3) / 6.0;
-
-                            // Math.pow accentue les pics : ça simule les reflets brillants de l'eau (effet 2.5D)
                             double cretesLumineuses = Math.pow(surfaceEau, 2.5);
-
                             double opacite = 0.04 + (cretesLumineuses * 0.35);
 
                             rectangles[x][y].setFill(Color.web(couleurThemeHex, Math.min(opacite, 1.0)));
@@ -185,18 +194,52 @@ public class GrilleUI extends GridPane {
     }
 
     public void rafraichir(GrilleOcean ocean) {
+
         for (int x = 0; x < 10; x++) {
             for (int y = 0; y < 10; y++) {
-                if (ocean.getPlateau()[x][y] != null) {
-                    rectangles[x][y].setUserData("BATEAU");
-                    rectangles[x][y].setFill(Color.web("#00ffff", 0.3));
-                    rectangles[x][y].setStroke(Color.web("#00FFFF", 1.0));
-                    rectangles[x][y].setStrokeWidth(2);
-                } else {
-                    if (!"TIR".equals(rectangles[x][y].getUserData())) {
-                        rectangles[x][y].setUserData("VIDE");
-                        rectangles[x][y].setStrokeWidth(1.5);
-                    }
+                if (!"TIR".equals(rectangles[x][y].getUserData())) {
+                    rectangles[x][y].setUserData("VIDE");
+                    rectangles[x][y].setFill(Color.web("#000000", 0.4));
+                    rectangles[x][y].setStrokeWidth(1.5);
+                    rectangles[x][y].setStroke(Color.web(couleurThemeHex, 0.8));
+                }
+            }
+        }
+
+        // Vider la couche des dessins de bateaux
+        coucheBateaux.getChildren().clear();
+
+        // Extraire les navires
+        List<Vaisseau> naviresPlaces = new ArrayList<>();
+        for (int x = 0; x < 10; x++) {
+            for (int y = 0; y < 10; y++) {
+                Vaisseau v = ocean.getVaisseauAt(x, y);
+                if (v != null && !naviresPlaces.contains(v)) {
+                    naviresPlaces.add(v);
+                }
+            }
+        }
+
+        // Et ensute je les place
+        for (Vaisseau navire : naviresPlaces) {
+            VaisseauUI dessinBateau = new VaisseauUI(navire);
+            dessinBateau.forcerOrientation(navire.estHorizontal());
+
+            double pixelX = navire.getX() * (TAILLE_CASE + 1);
+            double pixelY = navire.getY() * (TAILLE_CASE + 1);
+
+            dessinBateau.setLayoutX(pixelX);
+            dessinBateau.setLayoutY(pixelY);
+            dessinBateau.setMouseTransparent(true);
+
+            coucheBateaux.getChildren().add(dessinBateau);
+
+            for(int i = 0; i < navire.getTaille(); i++){
+                int cx = navire.estHorizontal() ? navire.getX() + i : navire.getX();
+                int cy = navire.estHorizontal() ? navire.getY() : navire.getY() + i;
+                if(cx < 10 && cy < 10 && !"TIR".equals(rectangles[cx][cy].getUserData())) {
+                    rectangles[cx][cy].setUserData("BATEAU");
+                    rectangles[cx][cy].setFill(Color.TRANSPARENT);
                 }
             }
         }

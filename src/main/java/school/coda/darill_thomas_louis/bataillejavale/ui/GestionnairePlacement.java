@@ -30,11 +30,20 @@ public class GestionnairePlacement {
         for (Vaisseau navire : new ArrayList<>(plateau.getFlotteRestante())) {
             boolean place = false;
             while (!place) {
-                place = plateau.getEtatJeuBackend().getJoueur1().getGrilleOcean().placerVaisseau(navire, random.nextInt(10), random.nextInt(10), random.nextBoolean());
-                if (place) plateau.getEtatJeuBackend().getJoueur1().getFlotte().add(navire);
+                int x = random.nextInt(10);
+                int y = random.nextInt(10);
+                boolean estHorizontal = random.nextBoolean();
+
+                place = plateau.getEtatJeuBackend().getJoueur1().getGrilleOcean().placerVaisseau(navire, x, y, estHorizontal);
+                if (place) {
+                    navire.placer(x, y, estHorizontal);
+                    plateau.getEtatJeuBackend().getJoueur1().getFlotte().add(navire);
+                }
             }
         }
         plateau.getFlotteRestante().clear();
+        plateau.actualiserMenuBateaux();
+
         vueOcean.rafraichir(plateau.getEtatJeuBackend().getJoueur1().getGrilleOcean());
         plateau.getBtnPret().setDisable(false);
     }
@@ -64,6 +73,7 @@ public class GestionnairePlacement {
         if (navire == null) return;
 
         grille.rafraichir(plateau.getEtatJeuBackend().getJoueur1().getGrilleOcean());
+
         boolean valide = plateau.getEtatJeuBackend().getJoueur1().getGrilleOcean().estPlacementValide(navire, x, y, estHorizontal);
         Color couleurApercu = valide ? Color.color(0, 1, 0, 0.6) : Color.color(1, 0, 0, 0.6);
 
@@ -73,17 +83,23 @@ public class GestionnairePlacement {
     public void gererDragDroppedOcean(GrilleUI grille, int x, int y, String nomNavire, boolean estHorizontal) {
         if (plateau.isPhaseBataille()) return;
         Vaisseau navire = trouverVaisseauRestant(nomNavire);
-        if (navire == null) return;
+        if (navire == null) {
+            grille.rafraichir(plateau.getEtatJeuBackend().getJoueur1().getGrilleOcean());
+            return;
+        }
 
         boolean success = plateau.getEtatJeuBackend().getJoueur1().getGrilleOcean().placerVaisseau(navire, x, y, estHorizontal);
         if (success) {
+            navire.placer(x, y, estHorizontal);
+
             plateau.getEtatJeuBackend().getJoueur1().getFlotte().add(navire);
             plateau.getFlotteRestante().remove(navire);
             plateau.retirerVaisseauZoneSelection(nomNavire);
-            grille.rafraichir(plateau.getEtatJeuBackend().getJoueur1().getGrilleOcean());
-
-            if (plateau.getFlotteRestante().isEmpty()) plateau.getBtnPret().setDisable(false);
         }
+
+        grille.rafraichir(plateau.getEtatJeuBackend().getJoueur1().getGrilleOcean());
+
+        if (plateau.getFlotteRestante().isEmpty()) plateau.getBtnPret().setDisable(false);
     }
 
     // ==========================================
