@@ -597,11 +597,17 @@ public class PlateauDeJeu {
         texteFin.setFont(Font.font(TEXT_FONT, 40));
         texteFin.setFill(couleur);
         texteFin.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+        Button btnMenu = styleBouton("RETOUR AU MENU", "#00ffff");
+        btnMenu.setOnAction(_ -> {
+            FXGL.getGameScene().clearUINodes();
+            FXGL.addUINode(new MenuUI());
+        });
         Button btnQuitter = styleBouton("QUITTER", "#ff0000");
         btnQuitter.setOnAction(_ -> FXGL.getGameController().exit());
-        VBox ecranFin = new VBox(40, texteFin, btnQuitter);
+        HBox boutonsBox = new HBox(30, btnMenu, btnQuitter);
+        boutonsBox.setAlignment(Pos.CENTER);
+        VBox ecranFin = new VBox(40, texteFin, boutonsBox);
         ecranFin.setAlignment(Pos.CENTER);
-
         racineVisuelle.getChildren().addAll(voileObscur, ecranFin);
     }
 

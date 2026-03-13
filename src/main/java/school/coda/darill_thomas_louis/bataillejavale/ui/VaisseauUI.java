@@ -20,22 +20,21 @@ import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
 
 public class VaisseauUI extends Pane {
 
-    // --- PALETTE DE COULEURS : COQUE BLEUE, DÉTAILS BLANCS ---
+    // --- PALETTE DE COULEURS ---
 
-    // Bordures principales du navire (Bleu cyan)
+    // Bordures principales du navire
     private static final Color BORDER_PRIMARY = Color.web("#4fc3f7");
 
-    // Remplissage de la coque (Bleu profond semi-transparent)
+    // Remplissage de la coque
     private static final Color HULL_FILL = Color.web("#0277bd", 0.55);
 
-    // Remplissage des superstructures (Bleu foncé, un peu plus dense)
+    // Remplissage des superstructures
     private static final Color SUPERSTRUCTURE_FILL = Color.web("#01579b", 0.65);
 
-    // --- NOUVEAU : Détails et accents en BLANC ---
-    // Lignes de ponts, écoutilles, contours internes (Blanc à 75% d'opacité)
+    // Lignes de ponts, écoutilles, contours internes
     private static final Color DETAIL_LINE = Color.web("#ffffff", 0.75);
 
-    // Armement, antennes, centre des radars (Blanc pur éclatant)
+    // Armement, antennes, centre des radars
     private static final Color ACCENT = Color.web("#ffffff", 1.0);
 
     private static final double CELL = 40.0;
