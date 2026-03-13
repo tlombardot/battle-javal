@@ -1,5 +1,7 @@
 package school.coda.darill_thomas_louis.bataillejavale.core.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Vaisseau {
 
     private String nom;
@@ -43,7 +45,10 @@ public class Vaisseau {
     public int getY() { return y; }
     public void setY(int y) { this.y = y; }
 
+    @JsonProperty("horizontal")
     public boolean estHorizontal() { return horizontal; }
+
+    @JsonProperty("horizontal")
     public void setHorizontal(boolean horizontal) { this.horizontal = horizontal; }
 
 

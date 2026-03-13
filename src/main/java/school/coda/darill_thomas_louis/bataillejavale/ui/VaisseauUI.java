@@ -54,10 +54,15 @@ public class VaisseauUI extends Pane {
         dessinerBlueprint();
 
         dessinHolographique.setEffect(glowEffect);
+        forcerOrientation(navire.estHorizontal());
 
         this.setOnMouseClicked(e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
-                forcerOrientation(!estHorizontal);
+                if (navire.getX() == -1) {
+                    forcerOrientation(!estHorizontal);
+                } else {
+                    IO.println("Pour pivoter ce navire, remettez-le d'abord dans la zone de départ !");
+                }
             }
         });
 

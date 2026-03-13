@@ -31,7 +31,7 @@ public class PartieRepository {
                 return rs.getInt("id");
             }
         } catch (SQLException | JsonProcessingException e) {
-            System.err.println("Erreur lors de la création en DB : " + e.getMessage());
+            IO.println("Erreur lors de la création en DB : " + e.getMessage());
         }
         return -1;
     }
@@ -157,7 +157,7 @@ public class PartieRepository {
                 return mapper.readValue(rs.getString("etat_jeu"), EtatJeu.class);
             }
         } catch (SQLException | JsonProcessingException e) {
-            System.err.println("Erreur de polling DB : " + e.getMessage());
+            IO.println("Erreur de polling DB : " + e.getMessage());
         }
         return null;
     }
