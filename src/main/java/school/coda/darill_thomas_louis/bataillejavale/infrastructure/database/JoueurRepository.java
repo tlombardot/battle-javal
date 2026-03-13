@@ -82,7 +82,7 @@ public class JoueurRepository {
             pstmt.executeUpdate();
 
         } catch (Exception e) {
-            System.out.println("Erreur sauvegarde stats : " + e.getMessage());
+            IO.println("Erreur sauvegarde stats : " + e.getMessage());
         }
     }
 }

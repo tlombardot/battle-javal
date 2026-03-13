@@ -108,11 +108,18 @@ public class MenuUI extends Pane {
             }
         })));
 
-        menuButtons.add(new TechButton("SETTINGS_", () -> IO.println("Ouverture paramètres.")));
+        menuButtons.add(new TechButton("SETTINGS_", () -> {
+            isActive = false;
+            ParametresUI ecranParametres = new ParametresUI(this, () -> {
+                isActive = true;
+            });
+            getChildren().add((ecranParametres));
+        }));
         menuButtons.add(new TechButton("EXIT_", () -> FXGL.getGameController().exit()));
 
         for (TechButton btn : menuButtons) {
             completeMenuBox.getChildren().add(btn.visual);
+
         }
         getChildren().add(completeMenuBox);
     }
@@ -135,20 +142,23 @@ public class MenuUI extends Pane {
         profilBox.setTranslateX(1020);
         profilBox.setTranslateY(30);
 
-        Rectangle fondProfil = new Rectangle(230, 45, Color.web("#0a0f18", 0.15));
-        fondProfil.setArcWidth(5);
-        fondProfil.setArcHeight(5);
-        fondProfil.setStroke(Color.web("#00ffff", 0.6));
-        fondProfil.setStrokeWidth(2);
-        fondProfil.setStrokeType(StrokeType.INSIDE);
+        Rectangle fondProfil = new Rectangle(230, 65, Color.web("#0a0f18", 0.6));
+        fondProfil.setArcWidth(5); fondProfil.setArcHeight(5);
+        fondProfil.setStroke(Color.web("#00ffff", 0.6)); fondProfil.setStrokeWidth(2);
         fondProfil.setEffect(new DropShadow(15, Color.web("#00ffff", 0.3)));
 
-        Text txtProfil = new Text("PROFIL : " + Session.pseudo);
+        Text txtProfil = new Text("PROFIL : " + Session.pseudo.toUpperCase());
         txtProfil.setFont(FontUtils.getPolice(20));
         txtProfil.setFill(Color.web("#ffffff"));
-        txtProfil.setEffect(new DropShadow(10, Color.web("#00ffff")));
 
-        profilBox.getChildren().addAll(fondProfil, txtProfil);
+        Text txtStats = new Text("VICTOIRES: " + Session.victoires + " | DÉFAITES: " + Session.defaites);
+        txtStats.setFont(FontUtils.getPolice(14));
+        txtStats.setFill(Color.web("#ffaa00"));
+
+        VBox textesBox = new VBox(3, txtProfil, txtStats);
+        textesBox.setAlignment(Pos.CENTER);
+
+        profilBox.getChildren().addAll(fondProfil, textesBox);
         getChildren().add(profilBox);
     }
 
@@ -327,18 +337,18 @@ public class MenuUI extends Pane {
                 // Création d'une "Carte" pour chaque sauvegarde
                 StackPane carte = new StackPane();
                 Rectangle fondCarte = new Rectangle(550, 70, Color.web("#11151c"));
-                fondCarte.setStroke(Color.web(info.statut.equals("EN_COURS") ? "#4fc3f7" : "#555555"));
+                fondCarte.setStroke(Color.web(info.statut().equals("EN_COURS") ? "#4fc3f7" : "#555555"));
                 fondCarte.setStrokeWidth(2);
                 fondCarte.setArcWidth(8); fondCarte.setArcHeight(8);
 
-                Text txtHaut = new Text("MISSION #" + info.id + "  |  TOUR : " + info.tour);
+                Text txtHaut = new Text("MISSION #" + info.id() + "  |  TOUR : " + info.tour());
                 txtHaut.setFont(FontUtils.getPolice(20));
                 txtHaut.setFill(Color.WHITE);
                 txtHaut.setTranslateY(-12);
 
-                Text txtBas = new Text("STATUT : " + info.statut + "  |  DATE : " + info.date);
+                Text txtBas = new Text("STATUT : " + info.statut() + "  |  DATE : " + info.date());
                 txtBas.setFont(FontUtils.getPolice(14));
-                txtBas.setFill(info.statut.equals("EN_COURS") ? Color.web("#00ffcc") : Color.web("#ffaa00"));
+                txtBas.setFill(info.statut().equals("EN_COURS") ? Color.web("#00ffcc") : Color.web("#ffaa00"));
                 txtBas.setTranslateY(15);
 
                 carte.getChildren().addAll(fondCarte, txtHaut, txtBas);
@@ -350,9 +360,9 @@ public class MenuUI extends Pane {
 
                 // Action au clic : Lancer la partie !
                 carte.setOnMouseClicked(e -> {
-                    EtatJeu sauvegarde = repo.chargerPartieActiveOuTerminee(info.id);
+                    EtatJeu sauvegarde = repo.chargerPartieActiveOuTerminee(info.id());
                     if (sauvegarde != null) {
-                        lancerEcranLoading(PlateauDeJeu.ModeJeu.SOLO, sauvegarde, info.id);
+                        lancerEcranLoading(PlateauDeJeu.ModeJeu.SOLO, sauvegarde, info.id());
                     }
                 });
 
