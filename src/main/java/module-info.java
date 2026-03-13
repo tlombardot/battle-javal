@@ -4,7 +4,6 @@ module school.coda.darill_thomas_louis.bataillejavale {
     requires javafx.media;
 
     requires org.controlsfx.controls;
-    requires org.kordamp.ikonli.javafx;
     requires com.almasb.fxgl.all;
     requires java.sql;
     requires annotations;

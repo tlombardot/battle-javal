@@ -2,6 +2,7 @@ package school.coda.darill_thomas_louis.bataillejavale.ui;
 
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -23,11 +24,13 @@ import school.coda.darill_thomas_louis.bataillejavale.infrastructure.config.Pref
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.JoueurRepository;
 import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
 
+import java.awt.event.KeyEvent;
 import java.util.Objects;
 
 public class ParametresUI extends StackPane {
 
-    private AppPreferences prefs;
+    private final AppPreferences prefs;
+    private KeyEvent escKeyHandler;
 
     public ParametresUI(Pane menuParent, Runnable actionFermeture) {
         this.prefs = PreferencesManager.getInstance().getPreferences();
@@ -105,6 +108,17 @@ public class ParametresUI extends StackPane {
         javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(Duration.seconds(0.4), this);
         ft.setToValue(1);
         ft.play();
+
+        this.setFocusTraversable(true);
+        this.setOnKeyPressed(event -> {
+            if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                fermerFenetre(menuParent, actionFermeture);
+                event.consume();
+            }
+        });
+
+        Platform.runLater(this::requestFocus);
+
     }
 
     private void buildBackground() {
@@ -265,6 +279,7 @@ public class ParametresUI extends StackPane {
     }
 
     private void fermerFenetre(Pane menuParent, Runnable actionFermeture) {
+        this.setOnKeyPressed(null);
         javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(Duration.seconds(0.3), this);
         ft.setToValue(0);
         ft.setOnFinished(e -> {

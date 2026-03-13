@@ -61,6 +61,16 @@ public class GestionnairePlacement {
         vue.getBtnPret().setDisable(false);
     }
 
+    /**
+     * permet de déplacer les bâteaux sur la grille
+     * @param grille
+     * paramètre de la grille
+     * @param x
+     * Paramètre position sur les abscisses x
+     * @param y
+     * Paramètre position sur les ordonné y
+     * @return
+     */
     public String gererDragStartOcean(GrilleUI grille, int x, int y) {
         if (controleur.isPhaseBataille()) return null;
         Vaisseau navire = controleur.getEtat().getJoueur1().getGrilleOcean().getVaisseauAt(x, y);
@@ -75,6 +85,19 @@ public class GestionnairePlacement {
         return navire.getNom() + ";" + h;
     }
 
+    /**
+     * Permet d'avoir un aperçu du bâteau et de son placement sur la grille
+     * @param grille
+     * paramètre de la grille
+     * @param x
+     * paramètre de la position x
+     * @param y
+     * paramètre de la position y
+     * @param nomNavire
+     *Nom du navire qu'on déplace
+     * @param h
+     *Orientation du bâteau
+     */
     public void gererDragOverOcean(GrilleUI grille, int x, int y, String nomNavire, boolean h) {
         if (controleur.isPhaseBataille()) return;
         Vaisseau navire = trouverVaisseauRestant(nomNavire);
@@ -88,6 +111,19 @@ public class GestionnairePlacement {
         }
     }
 
+    /**
+     *Déposer les navires sur la grille
+     * @param grille
+     * Paramètre de la grille
+     * @param x
+     * Paramètre de la position x
+     * @param y
+     * paramètre de la position y
+     * @param nomNavire
+     *Nom du navire qu'on pose sur la grille
+     * @param h
+     *Orientation du bâteau
+     */
     public void gererDragDroppedOcean(GrilleUI grille, int x, int y, String nomNavire, boolean h) {
         if (controleur.isPhaseBataille()) return;
         Vaisseau navire = trouverVaisseauRestant(nomNavire);
@@ -102,10 +138,24 @@ public class GestionnairePlacement {
         if (controleur.getFlotteRestante().isEmpty()) vue.getBtnPret().setDisable(false);
     }
 
+    /**
+     * cherche les vaisseaux restants
+     * @param nom
+     * Nom du vaisseau
+     */
     private Vaisseau trouverVaisseauRestant(String nom) {
         return controleur.getFlotteRestante().stream().filter(v -> v.getNom().equals(nom)).findFirst().orElse(null);
     }
 
+    /**
+     * vérifie si un vaisseau s'étend vers la gauche ou la droite
+     * @param x
+     * Paramètre de la position x
+     * @param y
+     * paramètre de la position y
+     * @param navire
+     * Représente le vaisseau "navire"
+     */
     private boolean estVaisseauHorizontal(int x, int y, Vaisseau navire) {
         GrilleOcean ocean = controleur.getEtat().getJoueur1().getGrilleOcean();
         return (x + 1 < 10 && ocean.getVaisseauAt(x + 1, y) == navire) || (x - 1 >= 0 && ocean.getVaisseauAt(x - 1, y) == navire);

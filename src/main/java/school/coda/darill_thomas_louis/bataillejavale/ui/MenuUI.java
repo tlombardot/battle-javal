@@ -73,23 +73,52 @@ public class MenuUI extends Pane {
             logoTitle.setTranslateY(5);
             getChildren().add(logoTitle);
         } catch (Exception _) {
-            System.out.println("Logo non trouvé.");
+            IO.println("Logo non trouvé.");
         }
     }
 
+    /**
+     * Ajout des boutons dans le menu principal
+     */
     private void buildButtons() {
         VBox completeMenuBox = new VBox(20);
         completeMenuBox.setTranslateX(100);
         completeMenuBox.setTranslateY(320);
 
         // 1. SOLO VS CPU
-        menuButtons.add(new TechButton("START GAME_", () -> lancerEcranLoading(ModeJeu.SOLO, null, -1)));
+        menuButtons.add(new TechButton("START GAME_", () -> {
+            isActive = false;
+
+            PreGamePopupUI popupHost = new PreGamePopupUI(
+                    this,
+                    () -> {
+                        isActive = true;
+                    },
+                    () -> {
+                        lancerEcranLoading(ModeJeu.SOLO, null, -1);
+                    }
+            );
+            getChildren().add(popupHost);
+        }));
 
         // 2. REPRENDRE UNE PARTIE
         menuButtons.add(new TechButton("LOAD SAVED GAME_", this::afficherListeSauvegardes));
 
         // 3. CRÉER UN SALON MULTIJOUEUR
-        menuButtons.add(new TechButton("HOST MULTIPLAYER_", () -> lancerEcranLoading(ModeJeu.MULTI_HOTE, null, -1)));
+        menuButtons.add(new TechButton("HOST MULTIPLAYER_", () -> {
+            isActive = false;
+
+            PreGamePopupUI popupHost = new PreGamePopupUI(
+                this,
+                () -> {
+                    isActive = true;
+                },
+                () -> {
+                    lancerEcranLoading(ModeJeu.MULTI_HOTE, null, -1);
+                }
+            );
+            getChildren().add(popupHost);
+        }));
 
         // 4. REJOINDRE UN SALON MULTIJOUEUR
         menuButtons.add(new TechButton("JOIN MULTIPLAYER_", () -> FXGL.getDialogService().showInputBox("Entrez l'ID du Salon :", input -> {
@@ -124,6 +153,9 @@ public class MenuUI extends Pane {
         getChildren().add(completeMenuBox);
     }
 
+    /**
+     * Création des crédits
+     */
     private void buildCredits() {
         VBox creditsBox = new VBox(5);
         creditsBox.setAlignment(Pos.CENTER_RIGHT);
@@ -185,7 +217,16 @@ public class MenuUI extends Pane {
         }
     }
 
-    private void lancerEcranLoading(PlateauDeJeu.ModeJeu mode, EtatJeu sauvegarde, int idPartie) {
+    /**
+     * Lancement de l'écran de chargement
+     * @param mode
+     *
+     * @param sauvegarde
+     *
+     * @param idPartie
+     *
+     */
+    private void lancerEcranLoading(ModeJeu mode, EtatJeu sauvegarde, int idPartie) {
         isActive = false;
         getChildren().clear();
 

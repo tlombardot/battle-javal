@@ -14,6 +14,9 @@ public final class PreferencesManager {
     private final ObjectMapper mapper =  new ObjectMapper();
     private final File fichierPrefs;
 
+    /**
+     * Création du fichier de préférence et chargement des préférences
+     */
     private PreferencesManager() {
         String userHome = System.getProperty("user.home");
         File dossierJeu = new File(userHome, ".bataillejavale");
@@ -24,6 +27,9 @@ public final class PreferencesManager {
         chargerPreferences();
     }
 
+    /**
+     * Il existe que une seule instance
+     */
     public static PreferencesManager getInstance() {
         if (instance == null) {
             instance = new PreferencesManager();
@@ -35,6 +41,9 @@ public final class PreferencesManager {
         return preferences;
     }
 
+    /**
+     * chargement des préférences
+     */
     private void chargerPreferences() {
         if (fichierPrefs.exists()) {
             try {
@@ -49,6 +58,9 @@ public final class PreferencesManager {
         }
     }
 
+    /**
+     * Sauvegarde les préférences
+     */
     public void sauvegarderPreferences() {
         try {
             mapper.writerWithDefaultPrettyPrinter().writeValue(fichierPrefs, preferences);

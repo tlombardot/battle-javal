@@ -70,7 +70,7 @@ public class PlateauDeJeu {
     }
 
     // ==========================================
-    // DECOUPAGE UI POUR ÉVITER LE NCSS > 15
+    // DECOUPAGE UI POUR ALLEGER LA COMPLEXITE
     // ==========================================
 
     private void initialiserUI() {
@@ -238,7 +238,7 @@ public class PlateauDeJeu {
     }
 
     // ==========================================
-    // COMMANDES DU CONTROLEUR (UI UPDATES)
+    // CONTROLEUR
     // ==========================================
 
     public void afficherModeBataille(boolean aMoi, int idPartie, ModeJeu modeActuel) {
