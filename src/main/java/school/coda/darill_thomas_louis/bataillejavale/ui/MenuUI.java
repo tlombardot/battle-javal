@@ -98,7 +98,16 @@ public class MenuUI extends Pane {
         }));
 
         // 2. REPRENDRE UNE PARTIE
-        menuButtons.add(new TechButton("LOAD SAVED GAME_", this::afficherListeSauvegardes));
+        menuButtons.add(new TechButton("LOAD SAVED GAME_", () -> {
+            isActive = false;
+
+            LoadGamePopupUI loadPopup = new LoadGamePopupUI(
+                    this,
+                    () -> isActive = true,
+                    (sauvegarde, idPartie) -> lancerEcranLoading(ModeJeu.SOLO, sauvegarde, idPartie)
+            );
+            getChildren().add(loadPopup);
+        }));
 
         // 3. CRÉER UN SALON MULTIJOUEUR
         menuButtons.add(new TechButton("HOST MULTIPLAYER_", () -> {
@@ -131,10 +140,10 @@ public class MenuUI extends Pane {
                             if (salon != null) {
                                 lancerEcranLoading(ModeJeu.MULTI_INVITE, salon, idSalon);
                             } else {
-                                FXGL.getDialogService().showMessageBox("Salon introuvable ou la partie a déjà commencé !");
+                                getChildren().add(new CustomMessageBoxUI(this, "MESSAGE SYSTÈME", "Salon inexistant ou déjà complet.", null));
                             }
                         } catch (NumberFormatException _) {
-                            FXGL.getDialogService().showMessageBox("L'ID doit être un nombre valide !");
+                            getChildren().add(new CustomMessageBoxUI(this, "MESSAGE SYSTÈME", "L'ID doit être un nombre entier valide.", null));
                         }
                     }
             );
@@ -338,98 +347,4 @@ public class MenuUI extends Pane {
         }
     }
 
-    private void afficherListeSauvegardes() {
-        isActive = false;
-
-        PartieRepository repo = new PartieRepository();
-        List<PartieRepository.PartieInfo> saves = repo.getListePartiesJoueur();
-
-        StackPane overlay = new StackPane();
-        overlay.setPrefSize(1280, 720);
-        Rectangle bg = new Rectangle(1280, 720, Color.color(0, 0, 0, 0.85));
-
-        // Le conteneur du menu
-        VBox conteneur = new VBox(20);
-        conteneur.setAlignment(Pos.CENTER);
-        conteneur.setMaxSize(650, 550);
-        conteneur.setStyle("-fx-background-color: #0c121e; -fx-border-color: #00ffff; -fx-border-width: 2px; -fx-padding: 30; -fx-border-radius: 8; -fx-background-radius: 8;");
-        conteneur.setEffect(new DropShadow(30, Color.web("#00ffff", 0.5)));
-
-        Text titre = new Text("ARCHIVES SATELLITES");
-        titre.setFont(FontUtils.getPolice(32));
-        titre.setFill(Color.web("#00ffff"));
-
-        VBox listeSaves = new VBox(15);
-        listeSaves.setAlignment(Pos.TOP_CENTER);
-
-        javafx.scene.control.ScrollPane scroll = new javafx.scene.control.ScrollPane(listeSaves);
-        scroll.setPrefHeight(400);
-        scroll.setFitToWidth(true);
-        scroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
-        scroll.setVbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER);
-
-        if (saves.isEmpty()) {
-            Text vide = new Text("AUCUNE DONNÉE TROUVÉE DANS LE CLOUD.");
-            vide.setFill(Color.web("#a0a0a0"));
-            vide.setFont(FontUtils.getPolice(18));
-            listeSaves.getChildren().add(vide);
-        } else {
-            for (PartieRepository.PartieInfo info : saves) {
-                StackPane carte = new StackPane();
-                Rectangle fondCarte = new Rectangle(550, 70, Color.web("#11151c"));
-                fondCarte.setStroke(Color.web(info.statut().equals("EN_COURS") ? "#4fc3f7" : "#555555"));
-                fondCarte.setStrokeWidth(2);
-                fondCarte.setArcWidth(8); fondCarte.setArcHeight(8);
-
-                Text txtHaut = new Text("MISSION #" + info.id() + "  |  TOUR : " + info.tour());
-                txtHaut.setFont(FontUtils.getPolice(20));
-                txtHaut.setFill(Color.WHITE);
-                txtHaut.setTranslateY(-12);
-
-                Text txtBas = new Text("STATUT : " + info.statut() + "  |  DATE : " + info.date());
-                txtBas.setFont(FontUtils.getPolice(14));
-                txtBas.setFill(info.statut().equals("EN_COURS") ? Color.web("#00ffcc") : Color.web("#ffaa00"));
-                txtBas.setTranslateY(15);
-
-                carte.getChildren().addAll(fondCarte, txtHaut, txtBas);
-                carte.setStyle("-fx-cursor: hand;");
-
-                carte.setOnMouseEntered(_ -> fondCarte.setFill(Color.web("#1e2b40")));
-                carte.setOnMouseExited(_ -> fondCarte.setFill(Color.web("#11151c")));
-
-                carte.setOnMouseClicked(_ -> {
-                    EtatJeu sauvegarde = repo.chargerPartieActiveOuTerminee(info.id());
-                    if (sauvegarde != null) {
-                        lancerEcranLoading(ModeJeu.SOLO, sauvegarde, info.id());
-                    }
-                });
-
-                listeSaves.getChildren().add(carte);
-            }
-        }
-
-        // Bouton Retour
-        javafx.scene.control.Button btnFermer = new javafx.scene.control.Button("FERMER LES ARCHIVES");
-        btnFermer.setFont(FontUtils.getPolice(18));
-        btnFermer.setPrefSize(250, 45);
-        btnFermer.setStyle("-fx-background-color: transparent; -fx-text-fill: #ff3333; -fx-border-color: #ff3333; -fx-border-width: 2px; -fx-cursor: hand;");
-
-        btnFermer.setOnMouseEntered(_ -> btnFermer.setStyle("-fx-background-color: #ff3333; -fx-text-fill: #eeeeee; -fx-border-color: #ff3333; -fx-border-width: 2px; -fx-cursor: hand;"));
-        btnFermer.setOnMouseExited(_ -> btnFermer.setStyle("-fx-background-color: transparent; -fx-text-fill: #ff3333; -fx-border-color: #ff3333; -fx-border-width: 2px; -fx-cursor: hand;"));
-
-        btnFermer.setOnAction(e -> {
-            getChildren().remove(overlay);
-            isActive = true;
-        });
-
-        conteneur.getChildren().addAll(titre, scroll, btnFermer);
-        overlay.getChildren().addAll(bg, conteneur);
-
-        // Animation d'apparition
-        overlay.setOpacity(0);
-        getChildren().add(overlay);
-        FadeTransition ft = new FadeTransition(Duration.seconds(0.3), overlay);
-        ft.setToValue(1);
-        ft.play();
-    }
 }

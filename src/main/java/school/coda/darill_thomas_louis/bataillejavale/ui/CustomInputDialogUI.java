@@ -17,6 +17,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
+import school.coda.darill_thomas_louis.bataillejavale.utils.UIUtils;
 
 import java.util.function.Consumer;
 
@@ -102,15 +103,6 @@ public class CustomInputDialogUI extends StackPane {
     }
 
     private void fermerDialog(Pane menuParent, Runnable actionApresFermeture) {
-        this.setOnKeyPressed(null);
-        FadeTransition ft = new FadeTransition(Duration.seconds(0.2), this);
-        ft.setToValue(0);
-        ft.setOnFinished(_ -> {
-            menuParent.getChildren().remove(this);
-            if (actionApresFermeture != null) {
-                actionApresFermeture.run();
-            }
-        });
-        ft.play();
+        UIUtils.fermerFenetre(this, menuParent, actionApresFermeture);
     }
 }

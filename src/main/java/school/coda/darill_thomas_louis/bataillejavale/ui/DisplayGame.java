@@ -26,6 +26,9 @@ public class DisplayGame extends GameApplication {
         gameSettings.setHeight(720);
         gameSettings.setTitle("Javale-Battle");
         gameSettings.setVersion("Test-Version");
+
+        gameSettings.setGameMenuEnabled(false);
+        gameSettings.setMenuKey(KeyCode.HOME);
     }
 
     /**

@@ -19,6 +19,7 @@ import javafx.util.Duration;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.AppPreferences;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.config.PreferencesManager;
 import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
+import school.coda.darill_thomas_louis.bataillejavale.utils.UIUtils;
 
 public class PreGamePopupUI extends StackPane {
 
@@ -131,15 +132,6 @@ public class PreGamePopupUI extends StackPane {
     }
 
     private void fermerPopup(Pane menuParent, Runnable actionApresFermeture) {
-        this.setOnKeyPressed(null);
-        FadeTransition ft = new FadeTransition(Duration.seconds(0.2), this);
-        ft.setToValue(0);
-        ft.setOnFinished(_ -> {
-            menuParent.getChildren().remove(this);
-            if (actionApresFermeture != null) {
-                actionApresFermeture.run();
-            }
-        });
-        ft.play();
+        UIUtils.fermerFenetre(this, menuParent, actionApresFermeture);
     }
 }

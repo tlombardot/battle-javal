@@ -24,6 +24,7 @@ import school.coda.darill_thomas_louis.bataillejavale.core.model.AppPreferences;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.config.PreferencesManager;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.JoueurRepository;
 import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
+import school.coda.darill_thomas_louis.bataillejavale.utils.UIUtils;
 
 import java.awt.event.KeyEvent;
 import java.util.Objects;
@@ -279,13 +280,6 @@ public class ParametresUI extends StackPane {
     }
 
     private void fermerFenetre(Pane menuParent, Runnable actionFermeture) {
-        this.setOnKeyPressed(null);
-        javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(Duration.seconds(0.3), this);
-        ft.setToValue(0);
-        ft.setOnFinished(e -> {
-            menuParent.getChildren().remove(this);
-            actionFermeture.run();
-        });
-        ft.play();
+        UIUtils.fermerFenetre(this, menuParent, actionFermeture);
     }
 }

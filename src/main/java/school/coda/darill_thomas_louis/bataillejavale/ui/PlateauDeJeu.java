@@ -151,6 +151,8 @@ public class PlateauDeJeu {
         scroll.setPrefHeight(400);
         scroll.setMinHeight(250);
         scroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         return scroll;
     }
 
