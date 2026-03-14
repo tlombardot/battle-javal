@@ -91,12 +91,8 @@ public class MenuUI extends Pane {
 
             PreGamePopupUI popupHost = new PreGamePopupUI(
                     this,
-                    () -> {
-                        isActive = true;
-                    },
-                    () -> {
-                        lancerEcranLoading(ModeJeu.SOLO, null, -1);
-                    }
+                    () -> isActive = true,
+                    () -> lancerEcranLoading(ModeJeu.SOLO, null, -1)
             );
             getChildren().add(popupHost);
         }));
@@ -110,38 +106,44 @@ public class MenuUI extends Pane {
 
             PreGamePopupUI popupHost = new PreGamePopupUI(
                 this,
-                () -> {
-                    isActive = true;
-                },
-                () -> {
-                    lancerEcranLoading(ModeJeu.MULTI_HOTE, null, -1);
-                }
+                () -> isActive = true,
+                () -> lancerEcranLoading(ModeJeu.MULTI_HOTE, null, -1)
             );
             getChildren().add(popupHost);
         }));
 
         // 4. REJOINDRE UN SALON MULTIJOUEUR
-        menuButtons.add(new TechButton("JOIN MULTIPLAYER_", () -> FXGL.getDialogService().showInputBox("Entrez l'ID du Salon :", input -> {
-            try {
-                int idSalon = Integer.parseInt(input);
-                PartieRepository repo = new PartieRepository();
-                EtatJeu salon = repo.chargerSalonAttente(idSalon);
+        menuButtons.add(new TechButton("JOIN MULTIPLAYER_", () -> {
+            isActive = false;
 
-                if (salon != null) {
-                    lancerEcranLoading(ModeJeu.MULTI_INVITE, salon, idSalon);
-                } else {
-                    FXGL.getDialogService().showMessageBox("Salon introuvable ou la partie a déjà commencé !");
-                }
-            } catch (NumberFormatException _) {
-                FXGL.getDialogService().showMessageBox("ID invalide !");
-            }
-        })));
+            CustomInputDialogUI joinDialog = new CustomInputDialogUI(
+                    this,
+                    "SATELLITE LINK : JOIN LOBBY",
+                    "Entrez l'ID du Salon à rejoindre...",
+                    () -> isActive = true,
+                    (input) -> {
+                        isActive = true;
+                        try {
+                            int idSalon = Integer.parseInt(input);
+                            PartieRepository repo = new PartieRepository();
+                            EtatJeu salon = repo.chargerSalonAttente(idSalon);
+
+                            if (salon != null) {
+                                lancerEcranLoading(ModeJeu.MULTI_INVITE, salon, idSalon);
+                            } else {
+                                FXGL.getDialogService().showMessageBox("Salon introuvable ou la partie a déjà commencé !");
+                            }
+                        } catch (NumberFormatException _) {
+                            FXGL.getDialogService().showMessageBox("L'ID doit être un nombre valide !");
+                        }
+                    }
+            );
+            getChildren().add(joinDialog);
+        }));
 
         menuButtons.add(new TechButton("SETTINGS_", () -> {
             isActive = false;
-            ParametresUI ecranParametres = new ParametresUI(this, () -> {
-                isActive = true;
-            });
+            ParametresUI ecranParametres = new ParametresUI(this, () -> isActive = true);
             getChildren().add((ecranParametres));
         }));
         menuButtons.add(new TechButton("EXIT_", () -> FXGL.getGameController().exit()));
@@ -337,12 +339,11 @@ public class MenuUI extends Pane {
     }
 
     private void afficherListeSauvegardes() {
-        isActive = false; // Désactive les touches du menu principal
+        isActive = false;
 
         PartieRepository repo = new PartieRepository();
         List<PartieRepository.PartieInfo> saves = repo.getListePartiesJoueur();
 
-        // Le fond sombre qui recouvre tout
         StackPane overlay = new StackPane();
         overlay.setPrefSize(1280, 720);
         Rectangle bg = new Rectangle(1280, 720, Color.color(0, 0, 0, 0.85));
@@ -358,7 +359,6 @@ public class MenuUI extends Pane {
         titre.setFont(FontUtils.getPolice(32));
         titre.setFill(Color.web("#00ffff"));
 
-        // La liste défilante
         VBox listeSaves = new VBox(15);
         listeSaves.setAlignment(Pos.TOP_CENTER);
 
@@ -375,7 +375,6 @@ public class MenuUI extends Pane {
             listeSaves.getChildren().add(vide);
         } else {
             for (PartieRepository.PartieInfo info : saves) {
-                // Création d'une "Carte" pour chaque sauvegarde
                 StackPane carte = new StackPane();
                 Rectangle fondCarte = new Rectangle(550, 70, Color.web("#11151c"));
                 fondCarte.setStroke(Color.web(info.statut().equals("EN_COURS") ? "#4fc3f7" : "#555555"));
@@ -395,12 +394,10 @@ public class MenuUI extends Pane {
                 carte.getChildren().addAll(fondCarte, txtHaut, txtBas);
                 carte.setStyle("-fx-cursor: hand;");
 
-                // Effets de survol
-                carte.setOnMouseEntered(e -> fondCarte.setFill(Color.web("#1e2b40")));
-                carte.setOnMouseExited(e -> fondCarte.setFill(Color.web("#11151c")));
+                carte.setOnMouseEntered(_ -> fondCarte.setFill(Color.web("#1e2b40")));
+                carte.setOnMouseExited(_ -> fondCarte.setFill(Color.web("#11151c")));
 
-                // Action au clic : Lancer la partie !
-                carte.setOnMouseClicked(e -> {
+                carte.setOnMouseClicked(_ -> {
                     EtatJeu sauvegarde = repo.chargerPartieActiveOuTerminee(info.id());
                     if (sauvegarde != null) {
                         lancerEcranLoading(ModeJeu.SOLO, sauvegarde, info.id());
@@ -417,12 +414,12 @@ public class MenuUI extends Pane {
         btnFermer.setPrefSize(250, 45);
         btnFermer.setStyle("-fx-background-color: transparent; -fx-text-fill: #ff3333; -fx-border-color: #ff3333; -fx-border-width: 2px; -fx-cursor: hand;");
 
-        btnFermer.setOnMouseEntered(e -> btnFermer.setStyle("-fx-background-color: #ff3333; -fx-text-fill: #11151c; -fx-border-color: #ff3333; -fx-border-width: 2px; -fx-cursor: hand;"));
-        btnFermer.setOnMouseExited(e -> btnFermer.setStyle("-fx-background-color: transparent; -fx-text-fill: #ff3333; -fx-border-color: #ff3333; -fx-border-width: 2px; -fx-cursor: hand;"));
+        btnFermer.setOnMouseEntered(_ -> btnFermer.setStyle("-fx-background-color: #ff3333; -fx-text-fill: #eeeeee; -fx-border-color: #ff3333; -fx-border-width: 2px; -fx-cursor: hand;"));
+        btnFermer.setOnMouseExited(_ -> btnFermer.setStyle("-fx-background-color: transparent; -fx-text-fill: #ff3333; -fx-border-color: #ff3333; -fx-border-width: 2px; -fx-cursor: hand;"));
 
         btnFermer.setOnAction(e -> {
             getChildren().remove(overlay);
-            isActive = true; // Réactive le menu derrière
+            isActive = true;
         });
 
         conteneur.getChildren().addAll(titre, scroll, btnFermer);

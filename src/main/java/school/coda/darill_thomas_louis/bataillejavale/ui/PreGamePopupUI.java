@@ -1,12 +1,14 @@
 package school.coda.darill_thomas_louis.bataillejavale.ui;
 
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -82,6 +84,16 @@ public class PreGamePopupUI extends StackPane {
         boiteCentrale.getChildren().addAll(titre, separateur, boxGrille, boxModules, boxBoutons);
         this.getChildren().add(boiteCentrale);
 
+        this.setFocusTraversable(true);
+        this.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                fermerPopup(menuParent, actionFermeture);
+                event.consume();
+            }
+        });
+
+        Platform.runLater(this::requestFocus);
+
         // animation d'entrée
         this.setOpacity(0);
         FadeTransition ft = new FadeTransition(Duration.seconds(0.2), this);
@@ -102,7 +114,7 @@ public class PreGamePopupUI extends StackPane {
         Button btn = new Button("CRÉER LE SALON");
         btn.setPrefSize(200, 40);
         btn.setFont(FontUtils.getPolice(16));
-        btn.setStyle("-fx-background-color: #00ffff; -fx-text-fill: #050810; -fx-font-weight: bold; -fx-cursor: hand;");
+        btn.setStyle("-fx-background-color: #00ffff; -fx-text-fill: #050810; -fx-cursor: hand;");
         btn.setOnAction(_ -> action.run());
         return btn;
     }
@@ -119,6 +131,7 @@ public class PreGamePopupUI extends StackPane {
     }
 
     private void fermerPopup(Pane menuParent, Runnable actionApresFermeture) {
+        this.setOnKeyPressed(null);
         FadeTransition ft = new FadeTransition(Duration.seconds(0.2), this);
         ft.setToValue(0);
         ft.setOnFinished(_ -> {

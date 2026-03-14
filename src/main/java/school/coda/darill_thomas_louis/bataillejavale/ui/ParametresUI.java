@@ -13,6 +13,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -30,7 +31,6 @@ import java.util.Objects;
 public class ParametresUI extends StackPane {
 
     private final AppPreferences prefs;
-    private KeyEvent escKeyHandler;
 
     public ParametresUI(Pane menuParent, Runnable actionFermeture) {
         this.prefs = PreferencesManager.getInstance().getPreferences();
@@ -46,7 +46,7 @@ public class ParametresUI extends StackPane {
         StackPane btnExit = creerBoutonExit(menuParent, actionFermeture);
         topBar.getChildren().add(btnExit);
 
-        HBox titleBox = buildTitreBox("SYSTEM SETTINGS");
+        HBox titleBox = buildTitreBox();
         VBox.setMargin(titleBox, new Insets(20, 0, 60, 0));
 
         HBox splitContent = new HBox(150);
@@ -60,7 +60,7 @@ public class ParametresUI extends StackPane {
         boxDb.getChildren().add(champDb);
 
         VBox boxAudio = buildSection("AUDIO SYSTEM");
-        CheckBox checkSon = creerCheckBoxDesign("ACTIVER LE SON", prefs.sonActive);
+        CheckBox checkSon = creerCheckBoxDesign("ACTIVATE SOUND", prefs.sonActive);
         VBox sliderVolBox = creerSliderDesign("VOLUME MUSIQUE", prefs.volumeMusique);
         boxAudio.getChildren().addAll(checkSon, sliderVolBox);
 
@@ -111,7 +111,7 @@ public class ParametresUI extends StackPane {
 
         this.setFocusTraversable(true);
         this.setOnKeyPressed(event -> {
-            if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+            if (event.getCode() == KeyCode.ESCAPE) {
                 fermerFenetre(menuParent, actionFermeture);
                 event.consume();
             }
@@ -136,14 +136,14 @@ public class ParametresUI extends StackPane {
         this.getChildren().add(filtreNoir);
     }
 
-    private HBox buildTitreBox(String text) {
+    private HBox buildTitreBox() {
         HBox box = new HBox(20);
         box.setAlignment(Pos.CENTER);
 
         Line ligneGauche = new Line(0, 0, 200, 0);
         ligneGauche.setStroke(Color.web("#ffffff", 0.3));
 
-        Text titre = new Text(text);
+        Text titre = new Text("SYSTEM SETTINGS");
         titre.setFont(FontUtils.getPolice(24));
         titre.setFill(Color.web("#ffffff", 0.8));
 
@@ -227,10 +227,10 @@ public class ParametresUI extends StackPane {
         RotateTransition rotAnim = new RotateTransition(Duration.seconds(0.3), boxCroix);
         ScaleTransition scaleAnim = new ScaleTransition(Duration.seconds(0.2), textEsc);
 
-        conteneurExit.setOnMouseEntered(e -> {
+        conteneurExit.setOnMouseEntered(_ -> {
             textEsc.setFill(Color.WHITE);
             fondCroix.setStroke(Color.WHITE);
-            l1.setStroke(Color.web("#00ffff")); // Devient cyan
+            l1.setStroke(Color.web("#00ffff"));
             l2.setStroke(Color.web("#00ffff"));
 
             rotAnim.setToAngle(90);
@@ -240,7 +240,7 @@ public class ParametresUI extends StackPane {
             scaleAnim.play();
         });
 
-        conteneurExit.setOnMouseExited(e -> {
+        conteneurExit.setOnMouseExited(_ -> {
             textEsc.setFill(Color.web("#a0a0a0"));
             fondCroix.setStroke(Color.web("#a0a0a0"));
             l1.setStroke(Color.web("#a0a0a0"));
@@ -264,12 +264,12 @@ public class ParametresUI extends StackPane {
         btn.setPrefSize(250, 45);
         btn.setStyle("-fx-background-color: transparent; -fx-text-fill: #00ffff; -fx-border-color: #00ffff; -fx-border-width: 1px; -fx-cursor: hand;");
 
-        btn.setOnMouseEntered(e -> {
+        btn.setOnMouseEntered(_ -> {
             btn.setStyle("-fx-background-color: #00ffff; -fx-text-fill: #0a0f18; -fx-border-color: #00ffff; -fx-border-width: 1px; -fx-cursor: hand;");
             btn.setEffect(new DropShadow(15, Color.web("#00ffff")));
         });
 
-        btn.setOnMouseExited(e -> {
+        btn.setOnMouseExited(_ -> {
             btn.setStyle("-fx-background-color: transparent; -fx-text-fill: #00ffff; -fx-border-color: #00ffff; -fx-border-width: 1px; -fx-cursor: hand;");
             btn.setEffect(null);
         });
