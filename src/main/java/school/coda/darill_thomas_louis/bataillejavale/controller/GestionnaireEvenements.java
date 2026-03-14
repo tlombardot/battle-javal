@@ -27,9 +27,17 @@ public class GestionnaireEvenements {
      * Méthode appelée à la fin de chaque manche complète (quand c'est de nouveau au joueur 1 de jouer)
      */
     public void evaluerFinDeManche(EtatJeu etat) {
-        gererEffetsEnCours();
 
         if (!config.isEvenementsActifs()) return;
+
+        if (toursRestantsBrouillage > 0) {
+            toursRestantsBrouillage--;
+            if (toursRestantsBrouillage == 0) {
+                vue.activerBrouillageVisuel(false);
+                vue.notificationBox.afficherAlerteTaille("VISIBILITÉ RADAR RÉTABLIE", "#00ffff", 16);
+                vue.sideBar.ajouterLog("» Fin de tempête. Le radar est de nouveau opérationnel.", "INFO");
+            }
+        }
 
         if (etat.getMancheActuelle() >= 30) {
             declencherMeteores(etat, "APOCALYPSE ! LA PLUIE DE MÉTÉORES EST INCESSANTE !");
@@ -39,10 +47,10 @@ public class GestionnaireEvenements {
         int tirage = random.nextInt(100);
 
         if (tirage < 5) {
-            //5%
+            // 5% de chances
             declencherMeteores(etat, "PLUIE DE MÉTÉORES DÉTECTÉE SUR LE CHAMP DE BATAILLE !");
-        } else if (tirage < 25) {
-            //20% de chance pour brouillage Radar
+
+        } else if (tirage < 25 && toursRestantsBrouillage == 0) {
             declencherBrouillage();
         }
     }
@@ -50,7 +58,9 @@ public class GestionnaireEvenements {
     private void declencherBrouillage() {
         toursRestantsBrouillage = 2;
         //alerte visuelle
+        vue.activerBrouillageVisuel(true);
         vue.notificationBox.afficherAlerteTaille("TEMPÊTE MAGNÉTIQUE ! RADAR BROUILLÉ (2 TOURS)", "#ffaa00", 16);
+        vue.sideBar.ajouterLog("» TEMPÊTE MAGNÉTIQUE ! Visibilité radar réduite pour 2 tours.", "ALERTE");
 
         // TODO : Coder l'effet visuel sur la grille radar plus tard
         System.out.println(">>> EVENT : Brouillage activé !");
@@ -93,13 +103,4 @@ public class GestionnaireEvenements {
         }
     }
 
-    private void gererEffetsEnCours() {
-        if (toursRestantsBrouillage > 0) {
-            toursRestantsBrouillage--;
-            if (toursRestantsBrouillage == 0) {
-                vue.notificationBox.afficherAlerteTaille("FIN DU BROUILLAGE. RADAR OPÉRATIONNEL.", "#00ffff", 20);
-                System.out.println(">>> EVENT : Fin du brouillage");
-            }
-        }
-    }
 }

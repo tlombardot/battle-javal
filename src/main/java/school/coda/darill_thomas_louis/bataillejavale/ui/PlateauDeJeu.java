@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
@@ -56,7 +57,7 @@ public class PlateauDeJeu {
 
     private GrilleUI vueOcean;
     private GrilleUI vueRadar;
-    private SideBarUI sideBar;
+    public SideBarUI sideBar;
     public NotificationUI notificationBox;
     private SelectBoard zoneSelectionBateaux;
     private VBox conteneurOcean;
@@ -267,8 +268,9 @@ public class PlateauDeJeu {
 
     private StackPane creerVoileAttente() {
         StackPane voile = new StackPane();
-        voile.setStyle("-fx-background-color: rgba(0, 0, 0, 0.75);");
-        Text texteAttente = creerTexte("EN ATTENTE...", 25, Color.RED, null);
+        voile.setStyle("-fx-background-color: rgba(0, 0, 0, 0.4);");
+        Text texteAttente = creerTexte("EN ATTENTE...", 25, Color.RED,null);
+
         voile.getChildren().add(texteAttente);
         voile.setVisible(false);
         voile.setOpacity(0);
@@ -355,7 +357,12 @@ public class PlateauDeJeu {
     public void activerMonTour(int tour) {
         sideBar.setTexteManche(tour);
         sideBar.setPhase("PHASE DE BATAILLE : À VOUS !");
-        conteneurRadar.setEffect(new DropShadow(25, Color.web(COLOR_RED_HEX)));
+
+        if (conteneurRadar.getEffect() == null || conteneurRadar.getEffect() instanceof DropShadow || conteneurRadar.getEffect() instanceof ColorAdjust) {
+            if (!(conteneurRadar.getEffect() instanceof ColorAdjust && ((ColorAdjust) conteneurRadar.getEffect()).getInput() instanceof BoxBlur)) {
+                conteneurRadar.setEffect(new DropShadow(25, Color.web(COLOR_RED_HEX)));
+            }
+        }
 
         FadeTransition ft = new FadeTransition(Duration.seconds(0.3), voileAttenteRadar);
         ft.setToValue(0.0);
@@ -365,7 +372,20 @@ public class PlateauDeJeu {
 
     public void bloquerTour(String phase, String message) {
         sideBar.setPhase(phase);
-        conteneurRadar.setEffect(null);
+
+        boolean estBrouille = false;
+        if (conteneurRadar.getEffect() instanceof ColorAdjust) {
+            ColorAdjust effetActuel = (ColorAdjust) conteneurRadar.getEffect();
+            if (effetActuel.getInput() instanceof BoxBlur) {
+                estBrouille = true;
+            }
+        }
+
+        if (!estBrouille) {
+            ColorAdjust desaturate = new ColorAdjust();
+            desaturate.setBrightness(-0.5);
+            conteneurRadar.setEffect(desaturate);
+        }
 
         voileAttenteRadar.setVisible(true);
         ((Text) voileAttenteRadar.getChildren().get(0)).setText(message);
@@ -469,5 +489,23 @@ public class PlateauDeJeu {
         box.setAlignment(Pos.CENTER);
 
         racineVisuelle.getChildren().addAll(voile, box);
+    }
+
+    public void activerBrouillageVisuel(boolean actif) {
+        if (actif) {
+            BoxBlur blur = new BoxBlur(30, 30, 3);
+
+            ColorAdjust glitchColor = new ColorAdjust();
+            glitchColor.setHue(0.75);
+            glitchColor.setSaturation(0.4);
+            glitchColor.setBrightness(0.2);
+            glitchColor.setContrast(0.8);
+            glitchColor.setInput(blur);
+
+            conteneurRadar.setEffect(glitchColor);
+
+        } else {
+            conteneurRadar.setEffect(new DropShadow(25, Color.web(COLOR_RED_HEX)));
+        }
     }
 }
