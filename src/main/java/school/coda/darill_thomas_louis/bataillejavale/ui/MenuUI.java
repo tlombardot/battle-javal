@@ -241,11 +241,24 @@ public class MenuUI extends Pane {
         isActive = false;
         getChildren().clear();
 
-        Rectangle blackScreen = new Rectangle(1280, 720, Color.web("#05080c"));
+        Rectangle blackScreen = new Rectangle(1280, 720, Color.web("#000000"));
         getChildren().add(blackScreen);
 
         StackPane loadingPane = new StackPane();
         loadingPane.setPrefSize(1280, 720);
+
+        try {
+            String imagePath = Objects.requireNonNull(getClass().getResource("/assets/textures/load_animes.gif")).toExternalForm();
+            Image gifImage = new Image(imagePath);
+            ImageView gifView = new ImageView(gifImage);
+
+            loadingPane.getChildren().add(gifView);
+
+        } catch (NullPointerException e) {
+            System.err.println("Le fichier GIF est introuvable à ce chemin ! Vérifie l'orthographe.");
+        } catch (Exception e) {
+            System.err.println("Erreur lors du chargement du GIF : " + e.getMessage());
+        }
 
         Text loadingText = new Text("ESTABLISHING SATELLITE CONNECTIONS...");
         loadingText.setFont(FontUtils.getPolice(28));
@@ -255,7 +268,7 @@ public class MenuUI extends Pane {
         FadeTransition blink = new FadeTransition(Duration.seconds(0.6), loadingText);
         blink.setFromValue(1.0);
         blink.setToValue(0.3);
-        blink.setCycleCount(Animation.INDEFINITE);
+        blink.setCycleCount(javafx.animation.Animation.INDEFINITE);
         blink.setAutoReverse(true);
         blink.play();
 
@@ -267,13 +280,13 @@ public class MenuUI extends Pane {
 
         FXGL.getGameTimer().runOnceAfter(() -> {
             FXGL.getGameScene().clearUINodes();
-            IO.println("Lancement de la partie en mode : " + mode);
+            System.out.println("Lancement de la partie en mode : " + mode);
 
             PlateauDeJeu plateau;
             if (sauvegarde == null) {
-                plateau = new PlateauDeJeu(mode); // Nouvelle partie
+                plateau = new PlateauDeJeu(mode);
             } else {
-                plateau = new PlateauDeJeu(mode, sauvegarde, idPartie); // Chargement ou Rejoindre
+                plateau = new PlateauDeJeu(mode, sauvegarde, idPartie);
             }
 
             FXGL.addUINode(plateau.getRacineVisuelle());
