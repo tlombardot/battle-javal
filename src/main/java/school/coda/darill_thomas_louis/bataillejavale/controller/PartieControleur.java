@@ -31,6 +31,7 @@ public class PartieControleur {
     private TimerAction pollingTimer;
 
     private ConfigPartie config;
+    private GestionnaireEvenements gestionnaireEvenements;
 
     public PartieControleur(PlateauDeJeu vue, ModeJeu mode, EtatJeu etat, int idPartie, ConfigPartie config) {
         this.vue = vue;
@@ -39,6 +40,7 @@ public class PartieControleur {
         this.idPartie = idPartie;
         this.flotteRestante = moteur.genererFlotteStandard();
         this.config = config;
+        this.gestionnaireEvenements = new GestionnaireEvenements(this, vue, this.config);
     }
 
     public void initialiserPartieExistante() {
@@ -93,7 +95,10 @@ public class PartieControleur {
         vue.afficherImpactVisuel(rapport.x, rapport.y, rapport.resultat, rapport.cible, false);
 
         if (rapport.partieTerminee) terminerPartie(rapport.victoire);
-        else { tourJoueur = true; vue.activerMonTour(etat.getMancheActuelle()); }
+        else {
+            gestionnaireEvenements.evaluerFinDeManche(etat);
+            tourJoueur = true; vue.activerMonTour(etat.getMancheActuelle());
+        }
     }
 
     private void demarrerPollingAttenteJoueur2() {
@@ -121,6 +126,7 @@ public class PartieControleur {
                     moteur.enregistrerDefaiteDistante();
                     terminerPartie(false);
                 } else {
+                    gestionnaireEvenements.evaluerFinDeManche(etat);
                     tourJoueur = true;
                     vue.activerMonTour(etat.getMancheActuelle());
                 }

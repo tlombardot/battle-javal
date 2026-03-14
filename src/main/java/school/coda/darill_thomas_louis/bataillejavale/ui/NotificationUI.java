@@ -28,7 +28,6 @@ public class NotificationUI extends StackPane {
         setMouseTransparent(true);
         setMaxSize(600, 65);
         StackPane.setAlignment(this, Pos.TOP_CENTER);
-//        setTranslateX(-100);
         setTranslateY(-100);
 
         fondAlerte = new Rectangle(600, 65);
@@ -38,7 +37,7 @@ public class NotificationUI extends StackPane {
         fondAlerte.setStrokeWidth(3);
 
         messageText = new Text();
-        messageText.setFont(FontUtils.getPolice(23));
+        messageText.setFont(FontUtils.getPolice(21));
         messageText.setFill(Color.WHITE);
 
         getChildren().addAll(fondAlerte, messageText);
@@ -92,5 +91,10 @@ public class NotificationUI extends StackPane {
         animationActuelle.setOnFinished(_ -> setVisible(false));
 
         animationActuelle.play();
+    }
+
+    public void afficherAlerteTaille(String message, String couleurHex, int taille) {
+        messageText.setFont(FontUtils.getPolice(taille));
+        afficherAlerte(message, couleurHex);
     }
 }

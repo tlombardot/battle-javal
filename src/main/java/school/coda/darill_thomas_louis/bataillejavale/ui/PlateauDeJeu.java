@@ -57,7 +57,7 @@ public class PlateauDeJeu {
     private GrilleUI vueOcean;
     private GrilleUI vueRadar;
     private SideBarUI sideBar;
-    private NotificationUI notificationBox;
+    public NotificationUI notificationBox;
     private SelectBoard zoneSelectionBateaux;
     private VBox conteneurOcean;
     private VBox conteneurRadar;
