@@ -20,7 +20,9 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import school.coda.darill_thomas_louis.bataillejavale.controller.GestionnaireAudio;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.AppPreferences;
+import school.coda.darill_thomas_louis.bataillejavale.core.model.ConfigPartie;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.config.PreferencesManager;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.JoueurRepository;
 import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
@@ -95,6 +97,11 @@ public class ParametresUI extends StackPane {
 
             JoueurRepository repo = new JoueurRepository();
             repo.sauvegarderPreferencesDansCloud(prefs);
+
+            ConfigPartie nouvelleConfig = new ConfigPartie(prefs);
+            GestionnaireAudio.getInstance().setConfig(nouvelleConfig);
+
+            fermerFenetre(menuParent, actionFermeture);
 
             fermerFenetre(menuParent, actionFermeture);
         });
@@ -192,6 +199,12 @@ public class ParametresUI extends StackPane {
         Slider slider = new Slider(0, 1, valDefaut);
         slider.setPrefWidth(350);
         slider.setStyle("-fx-control-inner-background: #111; -fx-accent: #00ffff;");
+
+        slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            prefs.volumeMusique = newValue.doubleValue();
+            ConfigPartie configTempo = new ConfigPartie(prefs);
+            GestionnaireAudio.getInstance().setConfig(configTempo);
+        });
 
         box.getChildren().addAll(label, slider);
         return box;

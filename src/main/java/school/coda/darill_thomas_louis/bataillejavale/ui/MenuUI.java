@@ -15,6 +15,7 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Polygon;
+import school.coda.darill_thomas_louis.bataillejavale.controller.GestionnaireAudio;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.ConfigPartie;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.ModeJeu;
 import javafx.scene.shape.Rectangle;
@@ -42,6 +43,11 @@ public class MenuUI extends Pane {
         buildButtons();
         buildCredits();
         updateSelection();
+
+        ConfigPartie configInitiale = new ConfigPartie(PreferencesManager.getInstance().getPreferences());
+        GestionnaireAudio audio = GestionnaireAudio.getInstance();
+        audio.setConfig(configInitiale);
+        audio.jouerMusiqueEtAmbiance("menu_sound.mp3", "orage.wav");
     }
 
     /**
@@ -289,6 +295,8 @@ public class MenuUI extends Pane {
         FXGL.getGameTimer().runOnceAfter(() -> {
             FXGL.getGameScene().clearUINodes();
             System.out.println("Lancement de la partie en mode : " + mode);
+
+            GestionnaireAudio.getInstance().stopperTout();
 
             PlateauDeJeu plateau;
             if (sauvegarde == null) {
