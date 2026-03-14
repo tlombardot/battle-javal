@@ -22,6 +22,7 @@ import javafx.util.Duration;
 import school.coda.darill_thomas_louis.bataillejavale.controller.GestionnairePlacement;
 import school.coda.darill_thomas_louis.bataillejavale.controller.PartieControleur;
 import school.coda.darill_thomas_louis.bataillejavale.core.event.ResultatTir;
+import school.coda.darill_thomas_louis.bataillejavale.core.model.ConfigPartie;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.ModeJeu;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Vaisseau;
@@ -71,16 +72,18 @@ public class PlateauDeJeu {
     // CONSTRUCTEURS
     // ==========================================
 
-    public PlateauDeJeu(ModeJeu mode) {
-        this.controleur = new PartieControleur(this, mode, null, -1);
+
+    public PlateauDeJeu(ModeJeu mode, ConfigPartie config) {
+        // On passe la config au contrôleur
+        this.controleur = new PartieControleur(this, mode, null, -1, config);
         this.gestionnairePlacement = new GestionnairePlacement(controleur, this);
         initialiserBaseUI(mode.toString());
         rafraichirOcean();
         notificationBox.afficherAlerte("DÉPLOIEMENT DE FLOTTE !", COLOR_CYAN_HEX);
     }
 
-    public PlateauDeJeu(ModeJeu mode, EtatJeu sauvegarde, int idPartie) {
-        this.controleur = new PartieControleur(this, mode, sauvegarde, idPartie);
+    public PlateauDeJeu(ModeJeu mode, EtatJeu sauvegarde, int idPartie, ConfigPartie config) {
+        this.controleur = new PartieControleur(this, mode, sauvegarde, idPartie, config);
         this.gestionnairePlacement = new GestionnairePlacement(controleur, this);
         initialiserBaseUI("Sauvegarde (ID: " + idPartie + ")");
         controleur.initialiserPartieExistante();

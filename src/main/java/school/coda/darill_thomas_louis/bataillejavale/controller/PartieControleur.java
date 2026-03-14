@@ -4,6 +4,7 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.time.TimerAction;
 import javafx.util.Duration;
 import school.coda.darill_thomas_louis.bataillejavale.core.engine.MoteurJeu;
+import school.coda.darill_thomas_louis.bataillejavale.core.model.ConfigPartie;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.ModeJeu;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Vaisseau;
@@ -29,12 +30,15 @@ public class PartieControleur {
     private boolean tourJoueur = false;
     private TimerAction pollingTimer;
 
-    public PartieControleur(PlateauDeJeu vue, ModeJeu mode, EtatJeu etat, int idPartie) {
+    private ConfigPartie config;
+
+    public PartieControleur(PlateauDeJeu vue, ModeJeu mode, EtatJeu etat, int idPartie, ConfigPartie config) {
         this.vue = vue;
         this.modeActuel = mode;
         this.etat = etat == null ? new EtatJeu() : etat;
         this.idPartie = idPartie;
         this.flotteRestante = moteur.genererFlotteStandard();
+        this.config = config;
     }
 
     public void initialiserPartieExistante() {

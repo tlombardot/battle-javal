@@ -17,15 +17,18 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import school.coda.darill_thomas_louis.bataillejavale.core.model.AppPreferences;
+import school.coda.darill_thomas_louis.bataillejavale.core.model.ConfigPartie;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.config.PreferencesManager;
 import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
 import school.coda.darill_thomas_louis.bataillejavale.utils.UIUtils;
+
+import java.util.function.Consumer;
 
 public class PreGamePopupUI extends StackPane {
 
     private final AppPreferences prefsGlobales;
 
-    public PreGamePopupUI(Pane menuParent, Runnable actionFermeture, Runnable actionCreerPartie) {
+    public PreGamePopupUI(Pane menuParent, Runnable actionFermeture, Consumer<ConfigPartie> actionCreerPartie) {
         this.prefsGlobales = PreferencesManager.getInstance().getPreferences();
 
         Rectangle fondGris = new Rectangle(1280, 720, Color.color(0, 0, 0, 0.8));
@@ -40,7 +43,7 @@ public class PreGamePopupUI extends StackPane {
         boiteCentrale.setStyle("-fx-background-color: #050810; -fx-border-color: #00ffff; -fx-border-width: 2px;");
         boiteCentrale.setEffect(new DropShadow(20, Color.color(0, 1, 1, 0.3)));
 
-        Text titre = new Text("HOST MATCH CONFIGURATION");
+        Text titre = new Text("MATCH CONFIGURATION");
         titre.setStyle("-fx-font-size: 20px; -fx-fill: white; -fx-letter-spacing: 2px;");
         Line separateur = new Line(0, 0, 400, 0);
         separateur.setStroke(Color.web("#00ffff", 0.5));
@@ -74,10 +77,17 @@ public class PreGamePopupUI extends StackPane {
         Button btnCancel = creerBoutonSecondaire( () -> fermerPopup(menuParent, actionFermeture));
 
         Button btnCreate = creerBoutonPrincipal(() -> {
-            System.out.println("Taille choisie : " + comboTaille.getValue());
-            System.out.println("Ravitaillement : " + checkRavi.isSelected());
+            ConfigPartie config = new ConfigPartie(prefsGlobales);
 
-            fermerPopup(menuParent, actionCreerPartie);
+            int taille = 10;
+            if (comboTaille.getValue().startsWith("15")) taille = 15;
+            else if (comboTaille.getValue().startsWith("20")) taille = 20;
+
+            config.setDimensionsGrille(taille);
+            config.setRavitaillementActif(checkRavi.isSelected());
+            config.setEvenementsActifs(checkEvents.isSelected());
+
+            fermerPopup(menuParent, () -> actionCreerPartie.accept(config));
         });
 
         boxBoutons.getChildren().addAll(btnCancel, btnCreate);
@@ -112,7 +122,7 @@ public class PreGamePopupUI extends StackPane {
     }
 
     private Button creerBoutonPrincipal(Runnable action) {
-        Button btn = new Button("CRÉER LE SALON");
+        Button btn = new Button("LANCER");
         btn.setPrefSize(200, 40);
         btn.setFont(FontUtils.getPolice(16));
         btn.setStyle("-fx-background-color: #00ffff; -fx-text-fill: #050810; -fx-cursor: hand;");

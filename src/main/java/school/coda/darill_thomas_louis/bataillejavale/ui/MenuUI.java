@@ -15,12 +15,14 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Polygon;
+import school.coda.darill_thomas_louis.bataillejavale.core.model.ConfigPartie;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.ModeJeu;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Session;
+import school.coda.darill_thomas_louis.bataillejavale.infrastructure.config.PreferencesManager;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository;
 import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
 
@@ -92,11 +94,10 @@ public class MenuUI extends Pane {
             PreGamePopupUI popupHost = new PreGamePopupUI(
                     this,
                     () -> isActive = true,
-                    () -> lancerEcranLoading(ModeJeu.SOLO, null, -1)
+                    (configChoisie) -> lancerEcranLoading(ModeJeu.SOLO, null, -1, configChoisie)
             );
             getChildren().add(popupHost);
         }));
-
         // 2. REPRENDRE UNE PARTIE
         menuButtons.add(new TechButton("LOAD SAVED GAME_", () -> {
             isActive = false;
@@ -104,7 +105,10 @@ public class MenuUI extends Pane {
             LoadGamePopupUI loadPopup = new LoadGamePopupUI(
                     this,
                     () -> isActive = true,
-                    (sauvegarde, idPartie) -> lancerEcranLoading(ModeJeu.SOLO, sauvegarde, idPartie)
+                    (sauvegarde, idPartie) -> {
+                        ConfigPartie configParDefaut = new ConfigPartie(PreferencesManager.getInstance().getPreferences());
+                        lancerEcranLoading(ModeJeu.SOLO, sauvegarde, idPartie, configParDefaut);
+                    }
             );
             getChildren().add(loadPopup);
         }));
@@ -114,9 +118,9 @@ public class MenuUI extends Pane {
             isActive = false;
 
             PreGamePopupUI popupHost = new PreGamePopupUI(
-                this,
-                () -> isActive = true,
-                () -> lancerEcranLoading(ModeJeu.MULTI_HOTE, null, -1)
+                    this,
+                    () -> isActive = true,
+                    (configChoisie) -> lancerEcranLoading(ModeJeu.MULTI_HOTE, null, -1, configChoisie)
             );
             getChildren().add(popupHost);
         }));
@@ -138,7 +142,8 @@ public class MenuUI extends Pane {
                             EtatJeu salon = repo.chargerSalonAttente(idSalon);
 
                             if (salon != null) {
-                                lancerEcranLoading(ModeJeu.MULTI_INVITE, salon, idSalon);
+                                ConfigPartie configParDefaut = new ConfigPartie(PreferencesManager.getInstance().getPreferences());
+                                lancerEcranLoading(ModeJeu.MULTI_INVITE, salon, idSalon, configParDefaut);
                             } else {
                                 getChildren().add(new CustomMessageBoxUI(this, "MESSAGE SYSTÈME", "Salon inexistant ou déjà complet.", null));
                             }
@@ -237,7 +242,10 @@ public class MenuUI extends Pane {
      * @param idPartie
      *
      */
-    private void lancerEcranLoading(ModeJeu mode, EtatJeu sauvegarde, int idPartie) {
+    /**
+     * Lancement de l'écran de chargement
+     */
+    private void lancerEcranLoading(ModeJeu mode, EtatJeu sauvegarde, int idPartie, ConfigPartie config) {
         isActive = false;
         getChildren().clear();
 
@@ -284,9 +292,9 @@ public class MenuUI extends Pane {
 
             PlateauDeJeu plateau;
             if (sauvegarde == null) {
-                plateau = new PlateauDeJeu(mode);
+                plateau = new PlateauDeJeu(mode, config);
             } else {
-                plateau = new PlateauDeJeu(mode, sauvegarde, idPartie);
+                plateau = new PlateauDeJeu(mode, sauvegarde, idPartie, config);
             }
 
             FXGL.addUINode(plateau.getRacineVisuelle());

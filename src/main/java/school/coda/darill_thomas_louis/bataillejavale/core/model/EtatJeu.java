@@ -1,5 +1,7 @@
 package school.coda.darill_thomas_louis.bataillejavale.core.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class EtatJeu {
 
     private JoueurPlay joueur1;
@@ -26,6 +28,7 @@ public class EtatJeu {
     public int getTourCourant() { return tourCourant; }
     public void setTourCourant(int tourCourant) { this.tourCourant = tourCourant; }
 
+    @JsonIgnore
     public int getMancheActuelle() {
         return (tourCourant / 2) + 1;
     }
