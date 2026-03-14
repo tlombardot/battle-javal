@@ -2,6 +2,7 @@ package school.coda.darill_thomas_louis.bataillejavale.ui;
 
 import com.almasb.fxgl.dsl.FXGL;
 import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -46,6 +47,8 @@ public class PlateauDeJeu {
     private VBox panneauPlacement;
     private Button btnPret;
     private StackPane voileAttenteRadar;
+    private PauseMenuUI menuPause;
+    private Node boutonPause;
 
     // ==========================================
     // CONSTRUCTEURS
@@ -106,8 +109,27 @@ public class PlateauDeJeu {
         Rectangle fond = new Rectangle(FXGL.getAppWidth(), FXGL.getAppHeight());
         fond.setFill(new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, new Stop(0, Color.web("#050814")), new Stop(1, Color.web("#0a1526"))));
 
+        boutonPause = creerBoutonPause();
+        AnchorPane calqueAbsolu = new AnchorPane();
+        calqueAbsolu.setPickOnBounds(false);
+
+        AnchorPane.setTopAnchor(boutonPause, 25.0);
+        AnchorPane.setLeftAnchor(boutonPause, 350.0);
+        calqueAbsolu.getChildren().add(boutonPause);
+
+        notificationBox.setTranslateX(160);
+
         racineVisuelle = new StackPane();
-        racineVisuelle.getChildren().addAll(fond, layoutPrincipal, notificationBox);
+        racineVisuelle.getChildren().addAll(fond, layoutPrincipal, notificationBox, calqueAbsolu);
+
+        racineVisuelle.setFocusTraversable(true);
+        racineVisuelle.setOnKeyPressed(event -> {
+            if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                toggleMenuPause();
+                event.consume();
+            }
+        });
+        javafx.application.Platform.runLater(() -> racineVisuelle.requestFocus());
     }
 
     private void creerPanneauPlacement() {
@@ -206,6 +228,48 @@ public class PlateauDeJeu {
         scroll.setContent(zoneSelectionBateaux);
     }
 
+    private Node creerBoutonPause() {
+        Text escText = new Text("ESC");
+        escText.setFont(FontUtils.getPolice(14));
+        escText.setFill(Color.web("#a0aab5"));
+
+        Rectangle barre1 = new Rectangle(2, 12, Color.web("#a0aab5"));
+        Rectangle barre2 = new Rectangle(2, 12, Color.web("#a0aab5"));
+        HBox iconPause = new HBox(3, barre1, barre2);
+        iconPause.setAlignment(Pos.CENTER);
+
+        StackPane iconBox = new StackPane(iconPause);
+        iconBox.setPrefSize(28, 28);
+        iconBox.setStyle("-fx-border-color: #a0aab5; -fx-border-width: 1px; -fx-background-color: transparent;");
+
+        HBox boutonGlobal = new HBox(8, escText, iconBox);
+        boutonGlobal.setAlignment(Pos.CENTER);
+        boutonGlobal.setCursor(javafx.scene.Cursor.HAND);
+
+        boutonGlobal.setOnMouseEntered(_ -> {
+            escText.setFill(Color.web("#00ffff"));
+            barre1.setFill(Color.web("#00ffff"));
+            barre2.setFill(Color.web("#00ffff"));
+            iconBox.setStyle("-fx-border-color: #00ffff; -fx-border-width: 1px; -fx-background-color: rgba(0, 255, 255, 0.1);");
+            iconBox.setEffect(new DropShadow(10, Color.web("#00ffff")));
+        });
+
+        boutonGlobal.setOnMouseExited(_ -> {
+            escText.setFill(Color.web("#a0aab5"));
+            barre1.setFill(Color.web("#a0aab5"));
+            barre2.setFill(Color.web("#a0aab5"));
+            iconBox.setStyle("-fx-border-color: #a0aab5; -fx-border-width: 1px; -fx-background-color: transparent;");
+            iconBox.setEffect(null);
+        });
+
+        boutonGlobal.setOnMouseClicked(event -> {
+            toggleMenuPause();
+            event.consume();
+        });
+
+        return boutonGlobal;
+    }
+
     public void retirerVaisseauZoneSelection(String nomNavire) { zoneSelectionBateaux.retirerVaisseau(nomNavire); }
     public void rafraichirOcean() { vueOcean.rafraichir(controleur.getEtat().getJoueur1().getGrilleOcean()); }
 
@@ -250,6 +314,11 @@ public class PlateauDeJeu {
         layoutPrincipal.setCenter(zoneBataille);
         layoutPrincipal.setRight(sideBar);
 
+        if (boutonPause != null) {
+            AnchorPane.setLeftAnchor(boutonPause, 30.0);
+        }
+        notificationBox.setTranslateX(-160);
+
         if (aMoi) activerMonTour(controleur.getEtat().getTourCourant());
         else bloquerTour("ATTENTE ADVERSAIRE...", modeActuel == ModeJeu.MULTI_HOTE ? "ID: " + idPartie : "RÉFLEXION ENNEMIE...");
     }
@@ -288,6 +357,25 @@ public class PlateauDeJeu {
 
     public void notifierAdversaireRejoint() {
         notificationBox.afficherAlerte("L'ADVERSAIRE A REJOINT !", "#00ffff");
+    }
+
+    private void toggleMenuPause() {
+        if (menuPause != null && racineVisuelle.getChildren().contains(menuPause)) {
+            racineVisuelle.getChildren().remove(menuPause);
+            menuPause = null;
+        }
+        else {
+            menuPause = new PauseMenuUI(
+                    this::toggleMenuPause,
+
+                    () -> {
+                        controleur.stopperControleur();
+                        FXGL.getGameScene().clearUINodes();
+                        FXGL.addUINode(new MenuUI());
+                    }
+            );
+            racineVisuelle.getChildren().add(menuPause);
+        }
     }
 
     public void afficherEcranFin(boolean victoire) {

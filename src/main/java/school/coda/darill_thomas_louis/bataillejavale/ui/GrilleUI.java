@@ -224,6 +224,11 @@ public class GrilleUI extends StackPane {
 
         // Et ensute je les place
         for (Vaisseau navire : naviresPlaces) {
+
+            if (navire.getX() < 0 || navire.getY() < 0) {
+                continue; //si un bateau est pas placé je passe au suivant
+            }
+
             VaisseauUI dessinBateau = new VaisseauUI(navire);
             dessinBateau.forcerOrientation(navire.estHorizontal());
 
