@@ -45,8 +45,13 @@ public class PartieControleur {
 
     public void initialiserPartieExistante() {
         moteur.reparerLiensMemoireSauvegarde(etat);
+        tourJoueur = true;
         passerEnModeBataille(false);
         vue.restaurerVisuelBataille(etat);
+    }
+
+    public void reparerSauvegarde() {
+        moteur.reparerLiensMemoireSauvegarde(etat);
     }
 
     public void passerEnModeBataille(boolean estNouvelle) {
