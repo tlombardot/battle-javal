@@ -84,7 +84,7 @@ public class PlateauDeJeu {
         this.gestionnairePlacement = new GestionnairePlacement(controleur, this);
         initialiserBaseUI("Sauvegarde (ID: " + idPartie + ")");
         controleur.initialiserPartieExistante();
-        sideBar.setTexteManche(controleur.getEtat().getTourCourant());
+        sideBar.setTexteManche(controleur.getEtat().getMancheActuelle());
     }
 
     private void initialiserBaseUI(String logInfo) {
@@ -345,7 +345,7 @@ public class PlateauDeJeu {
         }
         notificationBox.setTranslateX(-NOTIF_OFFSET_X);
 
-        if (aMoi) activerMonTour(controleur.getEtat().getTourCourant());
+        if (aMoi) activerMonTour(controleur.getEtat().getMancheActuelle());
         else bloquerTour("ATTENTE ADVERSAIRE...", modeActuel == ModeJeu.MULTI_HOTE ? "ID: " + idPartie : "RÉFLEXION ENNEMIE...");
     }
 

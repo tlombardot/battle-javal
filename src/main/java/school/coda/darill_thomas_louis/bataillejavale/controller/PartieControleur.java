@@ -89,7 +89,7 @@ public class PartieControleur {
         vue.afficherImpactVisuel(rapport.x, rapport.y, rapport.resultat, rapport.cible, false);
 
         if (rapport.partieTerminee) terminerPartie(rapport.victoire);
-        else { tourJoueur = true; vue.activerMonTour(etat.getTourCourant()); }
+        else { tourJoueur = true; vue.activerMonTour(etat.getMancheActuelle()); }
     }
 
     private void demarrerPollingAttenteJoueur2() {
@@ -100,7 +100,7 @@ public class PartieControleur {
                 if (dbEtat != null) etat = dbEtat;
                 tourJoueur = true;
                 vue.notifierAdversaireRejoint();
-                vue.activerMonTour(etat.getTourCourant());
+                vue.activerMonTour(etat.getMancheActuelle());
             }
         }, Duration.seconds(2.0));
     }
@@ -118,7 +118,7 @@ public class PartieControleur {
                     terminerPartie(false);
                 } else {
                     tourJoueur = true;
-                    vue.activerMonTour(etat.getTourCourant());
+                    vue.activerMonTour(etat.getMancheActuelle());
                 }
             }
         }, Duration.seconds(2.0));

@@ -25,4 +25,8 @@ public class EtatJeu {
 
     public int getTourCourant() { return tourCourant; }
     public void setTourCourant(int tourCourant) { this.tourCourant = tourCourant; }
+
+    public int getMancheActuelle() {
+        return (tourCourant / 2) + 1;
+    }
 }
