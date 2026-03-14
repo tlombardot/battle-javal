@@ -44,6 +44,7 @@ Un simulateur de bataille navale mais avec pas mal de d'ajout comparé au jeu cl
 
 La logique métier est totalement isolée de l'interface graphique.
 
+```text
 📦 `school.coda.darill_thomas_louis.bataillejavale`
 ┣ 📂 **`controller`** *(Le Contrôleur)*
 ┃ ┣ 📜 `PartieControleur` : Chef d'orchestre, gère les tours, le réseau et connecte l'UI au Moteur.
@@ -59,8 +60,9 @@ La logique métier est totalement isolée de l'interface graphique.
 ┃ ┗ 📂 `database` > `PartieRepository`, `JoueurRepository` : Requêtes SQL via JDBC (PostgreSQL).
 ┃
 ┗ 📂 **`ui`** *(La Vue)*
-┗ 📜 `PlateauDeJeu`, `MenuUI`, Popups : Classes purement graphiques. Ne contiennent aucune logique métier, elles ne font qu'écouter le joueur et obéir au Contrôleur.
-
+┗ 📜 `PlateauDeJeu`, `MenuUI`, Popups : Classes purement graphiques.
+┗ Ne contiennent aucune logique métier, elles ne font qu'écouter le joueur et obéir au Contrôleur.
+```
 ---
 
 ## 🛠️ Prérequis et Exécution
