@@ -84,11 +84,26 @@ public class PlateauDeJeu {
     }
 
     public PlateauDeJeu(ModeJeu mode, EtatJeu sauvegarde, int idPartie, ConfigPartie config) {
+        if (mode == ModeJeu.MULTI_INVITE && sauvegarde != null) {
+            var hote = sauvegarde.getJoueur1();
+            sauvegarde.setJoueur1(sauvegarde.getJoueur2());
+            sauvegarde.setJoueur2(hote);
+        }
+
         this.controleur = new PartieControleur(this, mode, sauvegarde, idPartie, config);
         this.gestionnairePlacement = new GestionnairePlacement(controleur, this);
-        initialiserBaseUI("Sauvegarde (ID: " + idPartie + ")");
-        controleur.initialiserPartieExistante();
-        sideBar.setTexteManche(controleur.getEtat().getMancheActuelle());
+
+        if (mode == ModeJeu.REPLAY) {
+            initialiserBaseUI("Sauvegarde (ID: " + idPartie + ")");
+            controleur.initialiserPartieExistante(); // Lance la bataille direct
+            sideBar.setTexteManche(controleur.getEtat().getMancheActuelle());
+
+        } else if (mode == ModeJeu.MULTI_INVITE) {
+            initialiserBaseUI("Salon rejoint (ID: " + idPartie + ")");
+            controleur.reparerSauvegarde();
+            rafraichirOcean();
+            notificationBox.afficherAlerte("DÉPLOIEMENT DE FLOTTE !", COLOR_CYAN_HEX);
+        }
     }
 
     private void initialiserBaseUI(String logInfo) {
