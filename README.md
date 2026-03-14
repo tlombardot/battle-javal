@@ -1,140 +1,142 @@
 # 🚢 BATAILLE JAVALE : Opération Cyber-Océan 🌊
 
-![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white)
-![JavaFX](https://img.shields.io/badge/JavaFX-FF0000?style=for-the-badge&logo=java&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![FXGL](https://img.shields.io/badge/FXGL-Game_Engine-blue?style=for-the-badge)
+<p align="center">
+  <img src="https://img.shields.io/badge/Java%2025-ED8B00?style=for-the-badge&logo=java&logoColor=white" alt="Java"/>
+  <img src="https://img.shields.io/badge/JavaFX-FF0000?style=for-the-badge&logo=java&logoColor=white" alt="JavaFX"/>
+  <img src="https://img.shields.io/badge/FXGL%20Engine-0055FF?style=for-the-badge&logo=nintendo-gamecube&logoColor=white" alt="FXGL"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL"/>
+  <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase"/>
+</p>
 
-> **"ESTABLISHING SATELLITE CONNECTIONS..."**
-> Bataille Javale est une réinvention moderne, dynamique et multijoueur du célèbre jeu de plateau Touché-Coulé (Bataille Navale), développée en Java avec le moteur FXGL. 
+> **"ESTABLISHING SATELLITE CONNECTIONS... LINK SECURED."** > *Bataille Javale* est une réinvention moderne, dynamique et multijoueur du célèbre jeu de plateau *Touché-Coulé*, développée en Java avec le moteur FXGL. Plongez dans un poste de commandement aux allures de terminal militaire cyberpunk.
 
 ---
 
-## 📸 Aperçu du Projet
+## 📸 Aperçu du Centre de Commandement
 
 <p align="center">
-  <img src="lien/vers/ton/image_menu_principal.png" alt="Menu Principal Bataille Javale" width="800"/>
+  <img src="./menu_img.png" alt="Menu Principal Bataille Javale" width="800"/>
   <br>
-  <em>Interface satellite principale et gestion de profil cloud.</em>
+  <em>Interface satellite principale : Gestion de profil, Lobbies et Paramètres dynamiques.</em>
 </p>
 
 ---
 
-## 🚀 Fonctionnalités Principales
+## 🚀 Fonctionnalités Principales & Innovation
 
-Notre vision était d'aller plus loin qu'une simple grille cliquable. Nous avons intégré des mécaniques de jeu avancées et une interface immersive :
+Nous avons repoussé les limites de la simple grille cliquable pour offrir une véritable expérience vidéoludique :
 
-* **🎙️ Ambiance Sonore Immersive :** Moteur audio personnalisé gérant simultanément les musiques de fond, les bruits d'ambiance (océan, orage) et les effets sonores (SFX) superposables lors des tirs.
-* **🤖 Mode Solo vs IA :** Affrontez une intelligence artificielle directement depuis votre poste de commandement.
-* **🌐 Multijoueur en Ligne :** Hébergez ou rejoignez des salons (Lobbies) via une base de données cloud (Supabase/PostgreSQL).
-* **💾 Sauvegarde Cloud & Reprise :** Sauvegarde de l'état de la partie, des statistiques (Victoires/Défaites) et des préférences utilisateur.
-* **⚙️ Modules de Jeu Personnalisables :**
-    * *Ravitaillement :* Récupérez des munitions ou des bonus en cours de partie.
-    * *Événements Aléatoires :* Des tempêtes ou des pannes radar peuvent survenir et bouleverser la stratégie.
+* **🌐 Multijoueur Cloud-Native :** Système de salons (Lobbies) en temps réel hébergés sur une base PostgreSQL (Supabase). Invitez un adversaire via un ID de session sécurisé.
+* **💾 Sauvegarde & Reprise Persistante :** Sauvegarde complète de l'état du plateau, des statistiques globales du profil (Victoires/Défaites) et des préférences (son, interface).
+* **🎙️ Moteur Audio Superposé (Custom) :** Un gestionnaire audio complet (`GestionnaireAudio.java`) capable de lire des ambiances en boucle (océan, orage) tout en superposant dynamiquement des effets sonores (SFX) lors des impacts spatiaux.
+* **🎨 UI/UX "Terminal Sci-Fi" :** Interface graphique 100% personnalisée codée en Java pur. Utilisation avancée des `DropShadow`, `FadeTransition`, et `ColorAdjust` pour simuler des écrans radars, des brouillages et des néons.
+* **🤖 Intelligence Artificielle (Solo) :** Mode entraînement contre un CPU avec algorithme de traque intégré.
+* **⚙️ Modules de Gameplay Aléatoires :**
+    * *Événements Météorologiques :* Des pluies de météores peuvent frapper la zone, endommageant alliés comme ennemis.
+    * *Ravitaillement Stratégique :* (En développement) Récupération de bonus tactiques.
 
 ---
 
-## 📋 Consignes et Implémentation
+## 📋 Architecture & Respect du Cahier des Charges
 
 <details>
-<summary><strong>👉 Cliquez pour voir le respect du cahier des charges</strong></summary>
+<summary><strong>👉 Cliquez pour explorer les détails techniques de notre implémentation</strong></summary>
 <br>
 
-Ce projet a été réalisé dans le cadre d'un cursus de développement. Voici comment nous avons répondu aux exigences :
+Ce projet académique a été conçu avec une rigueur professionnelle, répondant aux critères d'excellence algorithmique et architecturale :
 
-1.  **Architecture Orientée Objet (POO) :** Code découpé proprement (Modèle, Vue, Contrôleur, Infrastructure) avec l'utilisation de design patterns (ex: Singleton pour le `GestionnaireAudio` et `PreferencesManager`).
-2.  **Interface Graphique (GUI) :** Utilisation avancée de JavaFX et FXGL pour des animations fluides (`FadeTransition`, `RotateTransition`), des ombres portées (DropShadow) et un rendu visuel "Tech/Néon".
-3.  **Persistance des Données :** Implémentation d'un `PartieRepository` et `JoueurRepository` connectés à une base PostgreSQL distante pour garantir la persistance des salons, des profils et des sauvegardes de jeu.
-4.  **Règles du jeu de base :** Placement des navires, gestion des tirs (Touché, Coulé, À l'eau), détection de fin de partie.
-5.  **Fonctionnalités Bonus :** Les modules additionnels (Événements, sons, notifcations, multijoeur) ajoutent la rejouabilité demandée par les critères d'excellence.
+1.  **Architecture MVC & Modulaire :** Séparation stricte entre la logique métier (`core/model`), les interfaces graphiques (`ui`), et les contrôleurs de flux (`controller`).
+2.  **Design Patterns Déployés :**
+    * *Singleton :* Utilisé pour le `GestionnaireAudio` et le `PreferencesManager` afin de garantir une instance unique accessible globalement.
+    * *Repository Pattern :* Création de `PartieRepository` et `JoueurRepository` pour abstraire et sécuriser les requêtes SQL vers la base distante.
+    * *Observer / Listener :* Mise en place de `GrilleListener` pour gérer proprement les interactions de glisser-déposer (Drag & Drop) sans coupler la vue et le modèle.
+3.  **Gestion Complexe des Données :** Implémentation d'un système de conversion/sérialisation pour stocker l'état complet d'une grille 2D dans le cloud et la reconstruire fidèlement lors du chargement.
+4.  **Mécaniques de Jeu Robustes :** Placement dynamique avec vérification des collisions, gestion des rotations, système de tours par états (Attente, Tir, Fin de manche).
 
 </details>
 
 ---
 
-## 🛠️ Installation et Lancement
+## 🛠️ Installation et Déploiement
 
-### Prérequis
-* **Java Development Kit (JDK) 21** (ou version compatible avec FXGL 17/21).
-* **Maven** ou **Gradle** (selon la configuration de votre IDE).
-* Une connexion internet active (requise pour le Cloud et le Multijoueur).
+### Prérequis Système
+* **Java Development Kit (JDK) 25** (Recommandé pour FXGL 17+).
+* **Maven** (pour la gestion des dépendances : FXGL, Pilotes PostgreSQL).
+* Connexion internet active (indispensable pour les accès Cloud).
 
-### Étapes d'installation
+### Démarrage Rapide
 
-1. **Cloner le dépôt :**
+1. **Cloner le dépôt localement :**
    ```bash
-   git clone [https://github.com/votre-nom/bataille-javale.git](https://github.com/votre-nom/bataille-javale.git)
-   cd bataille-javale
+   git clone https://github.com/tlombardot/battle-javal.git
+Compiler le projet via Maven :
 
-```
-
-2. **Construire le projet (avec Maven) :**
-```bash
+Bash
 mvn clean install
+Lancer le Centre de Commandement :
+Exécutez la classe principale du jeu située dans :
+school.coda...ui.DisplayGame.java (ou via la commande Maven exec).
 
-```
-
-
-3. **Lancer le jeu :**
-   Exécutez la classe principale (DisplayGame.java dans le dossier ui).
-
----
-
-## 📡 Guide : Lancer une Partie Multijoueur
-
-Le système multijoueur fonctionne via des "Salons" (Lobbies) synchronisés sur notre base de données cloud.
+📡 Guide Stratégique : Protocole Multijoueur
+Le système multijoueur contourne les limitations locales (LAN) grâce à notre architecture Cloud.
 
 <details>
-<summary><strong>Créer un salon (Héberger)</strong></summary>
+<summary><strong>Créer une Opération (Hôte)</strong></summary>
 
-1. Dans le menu principal, cliquez sur **`HOST MULTIPLAYER_`**.
-2. Configurez les options de votre partie (Taille de grille, modules actifs).
-3. Le système va "Établir la connexion satellite" et générer un **ID de Salon**.
-4. Communiquez cet ID (ex: `1042`) à votre adversaire.
-5. Attendez qu'il rejoigne pour que le placement des flottes commence !
+Depuis le menu, initialisez le mode HOST MULTIPLAYER_.
+
+Sélectionnez les modules d'anomalies (Événements aléatoires).
+
+Le système validera la liaison satellite et générera un ID DE SALON unique.
+
+Transmettez cet ID (ex: 1042) à votre allié/adversaire.
+
+Une fois connecté, le déploiement de la flotte commence.
 
 </details>
 
 <details>
-<summary><strong>Rejoindre un salon (Invité)</strong></summary>
+<summary><strong>Rejoindre une Opération (Invité)</strong></summary>
 
-1. Dans le menu principal, cliquez sur **`JOIN MULTIPLAYER_`**.
-2. Une boîte de dialogue s'ouvre : *SATELLITE LINK : JOIN LOBBY*.
-3. Entrez l'**ID de Salon** fourni par l'hôte.
-4. Si le salon est valide et en attente, vous serez instantanément connecté au plateau de jeu de l'hôte.
+Accédez à JOIN MULTIPLAYER_.
+
+Sur l'invite SATELLITE LINK, entrez l'ID DE SALON cible.
+
+En cas de ping réussi, la synchronisation du plateau s'effectuera en quelques secondes.
 
 </details>
 
 <p align="center">
-<img src="lien/vers/ton/image_multijoueur.png" alt="Interface Multijoueur" width="600"/>
+<img src="./settings_img.png" alt="Settings" width="800"/>
+<img src="./ingame_img.png" alt="Plateau de jeu en pleine bataille" width="800"/>
+
+
+<em>Phase de bataille : Radar ennemi (gauche) et Flotte alliée (droite).</em>
 </p>
 
----
+💡 Astuces de Commandants
+Calibrage Audio : Jouez-vous sur Discord ? Accédez aux SETTINGS_ pour baisser la musique tout en conservant les SFX d'impact au maximum. Les volumes s'ajustent en temps réel !
 
-## 💡 Astuces de Commandants (Tips & Tricks)
+Anticipation Météorologique : Si les modules d'événements sont actifs, espacez vos cuirassés. Une pluie de météores ciblée sur un cluster de navires peut détruire la moitié de votre flotte d'un coup.
 
-* **Gérez le volume intelligemment :** Si vous jouez avec un ami en vocal (Discord), baissez le volume de la musique dans les **`SETTINGS_`** pour mieux entendre les tirs (SFX), tout en gardant une légère ambiance de fond (l'ambiance océanique s'ajuste automatiquement !).
-* **Anticipez les Événements :** Si le module "Événements Aléatoires" est activé, ne regroupez pas tous vos navires au même endroit. Une tempête ciblée pourrait révéler ou endommager un large secteur d'un coup.
-* **Tirez parti du Ravitaillement :** Parfois, rater un tir sur une case mystère peut vous octroyer un bonus radar bien plus utile qu'un simple "Touché".
+Le Brouillage Radar : Ne paniquez pas si votre écran devient flou et glitché (BoxBlur). C'est simplement que ce n'est pas votre tour de tirer !
 
----
+🧠 Retours d'Expérience (Feedbacks & Défis)
+Construire Bataille Javale a été un immense défi technique :
 
-## 🧠 Retours d'Expérience (Feedbacks)
+Contraintes Audio de JavaFX : Gérer plusieurs flux audio simultanés sans latence a nécessité de créer une classe mémoire (MediaPlayer pour la boucle, AudioClip pour les tirs) pour contourner les blocages de l'API standard.
 
-La réalisation de Bataille Javale a été un défi technique riche en apprentissages :
+Asynchronisme et Base de Données : Connecter une interface graphique (Thread UI) à une base distante (PostgreSQL) menaçait de figer le jeu. Nous avons dû gérer des écrans de chargement animés (Establishing Connections) pendant la résolution des requêtes réseau.
 
-* **Intégration Audio avec JavaFX :** Nous avons dû construire un `GestionnaireAudio` sur-mesure pour contourner les limitations strictes des chemins de ressources Java (`.toExternalForm()`) et permettre la superposition d'ambiances en boucle avec des SFX instantanés.
-* **Base de données distante :** L'utilisation de PostgreSQL (via Supabase) pour lister les parties en temps réel a demandé une gestion fine des exceptions et des chargements asynchrones pour ne pas bloquer l'interface (d'où l'écran de chargement *Establishing Satellite Connections*).
-* **Design UI/UX :** Créer des composants graphiques (boutons, sliders) full custom en Java pur (sans CSS lourd) via des `StackPane` et des `DropShadow` nous a permis d'obtenir exactement l'esthétique "Terminal Militaire Sci-Fi" souhaitée, rendant l'expérience unique.
+Design "Full-Code" : Ne pas utiliser de CSS externe mais tout coder via l'API JavaFX (Gradients, Ombres, Flous) nous a donné un contrôle total sur l'esthétique Cyberpunk, rendant les animations (FadeTransition) beaucoup plus nerveuses.
 
----
+👨‍💻 Escouade de Développement
+Opération menée à bien par :
 
-## 👨‍💻 Équipe de Développement
+👑 KING_DARILL_ (Darill) - Dev / Architecture
 
-Créé avec passion par :
+🤖 CYBER080THOMAS_ (Thomas) - Dev / Data / UI
 
-* **KING_DARILL_** (Darill)
-* **CYBER080THOMAS_** (Thomas)
-* **JAVA_LOUIS_** (Louis)
+☕ JAVA_LOUIS_ (Louis) - Dev / Logique Métier
 
-*Projet académique réalisé pour [Coda].*
+Projet de validation académique réalisé pour [Coda].
