@@ -1,5 +1,6 @@
 package school.coda.darill_thomas_louis.bataillejavale.controller;
 
+import school.coda.darill_thomas_louis.bataillejavale.core.event.ResultatTir;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.ConfigPartie;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
 import school.coda.darill_thomas_louis.bataillejavale.ui.PlateauDeJeu;
@@ -30,17 +31,16 @@ public class GestionnaireEvenements {
 
         if (!config.isEvenementsActifs()) return;
 
-        //vérification de l'Apocalypse (Manche 30+) vu qu'il annule tous les autres évènements
         if (etat.getMancheActuelle() >= 30) {
-            declencherMeteores("ALERTE : APOCALYPSE ! LA PLUIE DE MÉTÉORES EST INCESSANTE !");
+            declencherMeteores(etat, "APOCALYPSE ! LA PLUIE DE MÉTÉORES EST INCESSANTE !");
             return;
         }
 
         int tirage = random.nextInt(100);
 
         if (tirage < 5) {
-            //5% de chanc météores
-            declencherMeteores("ALERTE : PLUIE DE MÉTÉORES DÉTECTÉE SUR LE CHAMP DE BATAILLE !");
+            //5%
+            declencherMeteores(etat, "PLUIE DE MÉTÉORES DÉTECTÉE SUR LE CHAMP DE BATAILLE !");
         } else if (tirage < 25) {
             //20% de chance pour brouillage Radar
             declencherBrouillage();
@@ -50,24 +50,54 @@ public class GestionnaireEvenements {
     private void declencherBrouillage() {
         toursRestantsBrouillage = 2;
         //alerte visuelle
-        vue.notificationBox.afficherAlerteTaille("ÉVÉNEMENT : TEMPÊTE MAGNÉTIQUE ! RADAR BROUILLÉ (2 TOURS)", "#ffaa00", 15);
+        vue.notificationBox.afficherAlerteTaille("TEMPÊTE MAGNÉTIQUE ! RADAR BROUILLÉ (2 TOURS)", "#ffaa00", 16);
 
         // TODO : Coder l'effet visuel sur la grille radar plus tard
         System.out.println(">>> EVENT : Brouillage activé !");
     }
 
-    private void declencherMeteores(String messageAlerte) {
-        vue.notificationBox.afficherAlerteTaille(messageAlerte, "#ff0000", 16);
-
-        // TODO : Faire tomber 2 météores au hasard sur les grilles des deux joueurs
+    private void declencherMeteores(EtatJeu etat, String messageAlerte) {
+        vue.notificationBox.afficherAlerteTaille(messageAlerte, "#ffaa00", 17);
         System.out.println(">>> EVENT : Météores en approche !");
+
+        for (int i = 0; i < 2; i++) {
+
+            int x1, y1;
+            do {
+                x1 = random.nextInt(10);
+                y1 = random.nextInt(10);
+            } while (etat.getJoueur2().getGrilleRadar().getHistoriqueTirs()[x1][y1] != null);
+
+            ResultatTir res1 = etat.getJoueur1().getGrilleOcean().recevoirTir(x1, y1);
+            etat.getJoueur2().getGrilleRadar().enregistrerTir(x1, y1, res1);
+
+            vue.afficherImpactMeteore(x1, y1, res1, etat.getJoueur1().getGrilleOcean().getVaisseauAt(x1, y1), false);
+
+
+            int x2, y2;
+            do {
+                x2 = random.nextInt(10);
+                y2 = random.nextInt(10);
+            } while (etat.getJoueur1().getGrilleRadar().getHistoriqueTirs()[x2][y2] != null);
+
+            ResultatTir res2 = etat.getJoueur2().getGrilleOcean().recevoirTir(x2, y2);
+            etat.getJoueur1().getGrilleRadar().enregistrerTir(x2, y2, res2);
+
+            vue.afficherImpactMeteore(x2, y2, res2, etat.getJoueur2().getGrilleOcean().getVaisseauAt(x2, y2), true);
+        }
+
+        if (etat.getJoueur1().aPerdu()) {
+            controleur.terminerPartie(false);
+        } else if (etat.getJoueur2().aPerdu()) {
+            controleur.terminerPartie(true);
+        }
     }
 
     private void gererEffetsEnCours() {
         if (toursRestantsBrouillage > 0) {
             toursRestantsBrouillage--;
             if (toursRestantsBrouillage == 0) {
-                vue.notificationBox.afficherAlerte("FIN DU BROUILLAGE. RADAR OPÉRATIONNEL.", "#00ffff");
+                vue.notificationBox.afficherAlerteTaille("FIN DU BROUILLAGE. RADAR OPÉRATIONNEL.", "#00ffff", 20);
                 System.out.println(">>> EVENT : Fin du brouillage");
             }
         }

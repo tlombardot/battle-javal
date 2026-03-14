@@ -134,7 +134,7 @@ public class PartieControleur {
         }, Duration.seconds(2.0));
     }
 
-    private void terminerPartie(boolean victoire) {
+    public void terminerPartie(boolean victoire) {
         phaseBataille = false;
         if (pollingTimer != null) pollingTimer.expire();
         vue.afficherEcranFin(victoire);

@@ -387,7 +387,31 @@ public class PlateauDeJeu {
                 sideBar.ajouterLog(moiTire ? "Cible touchée !" : "Navire allié touché !", "TOUCHE");
             } else {
                 sideBar.ajouterLog(moiTire ? "BOUM ! " + cible.getNom() + " coulé !" : "DÉSASTRE ! " + cible.getNom() + " coulé !", "ALERTE");
-                notificationBox.afficherAlerte(moiTire ? "NAVIRE ENNEMI DÉTRUIT" : "NAVIRE ALLIÉ PERDU", moiTire ? COLOR_WARN_HEX : COLOR_RED_HEX);
+                notificationBox.afficherAlerteTaille(moiTire ? "NAVIRE ENNEMI DÉTRUIT" : "NAVIRE ALLIÉ PERDU", moiTire ? COLOR_WARN_HEX : COLOR_RED_HEX, 21);
+            }
+        }
+    }
+
+    public void afficherImpactMeteore(int x, int y, ResultatTir res, Vaisseau cible, boolean surZoneEnnemie) {
+        GrilleUI grille = surZoneEnnemie ? vueRadar : vueOcean;
+        String coord = (char)('A' + y) + "-" + (x + 1);
+
+        if (res == ResultatTir.RATE) {
+            grille.colorierCase(x, y, surZoneEnnemie ? Color.WHITE : Color.LIGHTCYAN);
+            sideBar.ajouterLog("» MÉTÉORE DANS L'EAU EN " + coord, "RATE");
+        } else {
+            grille.colorierCase(x, y, Color.web(COLOR_WARN_HEX));
+
+            if (res == ResultatTir.TOUCHE) {
+                sideBar.ajouterLog("» IMPACT MÉTÉORE SUR " + (surZoneEnnemie ? "NAVIRE ENNEMI" : "VOTRE NAVIRE") + " EN " + coord + " !", "ALERTE");
+            } else {
+                if (surZoneEnnemie) {
+                    sideBar.ajouterLog("» BOUM ! " + cible.getNom().toUpperCase() + " ENNEMI ÉCRASÉ PAR LES MÉTÉORES !", "ALERTE");
+                    notificationBox.afficherAlerteTaille("NAVIRE ENNEMI ÉCRASÉ", COLOR_WARN_HEX, 20);
+                } else {
+                    sideBar.ajouterLog("» FATAL ! VOTRE " + cible.getNom().toUpperCase() + " A ÉTÉ ÉCRASÉ !", "ALERTE");
+                    notificationBox.afficherAlerteTaille("NAVIRE ALLIÉ ÉCRASÉ", COLOR_RED_HEX, 20);
+                }
             }
         }
     }
