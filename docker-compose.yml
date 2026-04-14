@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: bataille-a-db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=bataille_javale_a
+    ports:
+      - "5436:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql

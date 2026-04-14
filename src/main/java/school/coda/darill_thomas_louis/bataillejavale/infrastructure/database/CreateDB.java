@@ -10,10 +10,11 @@ public class CreateDB {
     public CreateDB() {
         initDatabase();
     }
-    // L'URL de Supabase se trouve dans Settings > Database > Connection String > JDBC
-    private static final String URL = "jdbc:postgresql://aws-1-eu-central-2.pooler.supabase.com:6543/postgres";
-    private static final String USER = "postgres.wswxgvauucumhkgbssnx";
-    private static final String PASSWORD = "hL3VHKQ2iPgvIJXO";
+    // L'URL de PostgreSQL se trouve dans Settings > Database > Connection String > JDBC
+
+    private static final String URL = "jdbc:postgresql://localhost:5436/bataille_javale_a";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "password";
 
     /**
      * Fonction pour établir la connexion avec la base de données PostgreSQL.
