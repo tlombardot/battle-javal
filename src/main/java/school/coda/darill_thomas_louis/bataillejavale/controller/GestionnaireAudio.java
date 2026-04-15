@@ -121,6 +121,7 @@ public class GestionnaireAudio {
     // BRUITAGES - SFX (Superposables)
     // ==========================================
 
+    // 🚨 jamais utilisée
     public void jouerSon(String nomFichier) {
         if (config != null && !config.isSonActif()) return;
 
