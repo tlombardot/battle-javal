@@ -8,7 +8,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
+import school.coda.darill_thomas_louis.bataillejavale.ui.utils.FontUtils;
 
 public class SideBarUI extends VBox {
 

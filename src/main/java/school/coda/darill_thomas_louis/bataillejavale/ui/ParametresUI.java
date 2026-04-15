@@ -25,8 +25,8 @@ import school.coda.darill_thomas_louis.bataillejavale.core.model.AppPreferences;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.ConfigPartie;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.config.PreferencesManager;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.JoueurRepository;
-import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
-import school.coda.darill_thomas_louis.bataillejavale.utils.UIUtils;
+import school.coda.darill_thomas_louis.bataillejavale.ui.utils.FontUtils;
+import school.coda.darill_thomas_louis.bataillejavale.ui.utils.UIUtils;
 
 import java.awt.event.KeyEvent;
 import java.util.Objects;

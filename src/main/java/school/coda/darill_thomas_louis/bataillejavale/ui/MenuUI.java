@@ -25,7 +25,7 @@ import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Session;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.config.PreferencesManager;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository;
-import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
+import school.coda.darill_thomas_louis.bataillejavale.ui.utils.FontUtils;
 
 import java.util.ArrayList;
 import java.util.List;

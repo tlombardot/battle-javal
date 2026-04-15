@@ -27,7 +27,7 @@ import school.coda.darill_thomas_louis.bataillejavale.core.model.ConfigPartie;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.ModeJeu;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Vaisseau;
-import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
+import school.coda.darill_thomas_louis.bataillejavale.ui.utils.FontUtils;
 
 public class PlateauDeJeu {
 

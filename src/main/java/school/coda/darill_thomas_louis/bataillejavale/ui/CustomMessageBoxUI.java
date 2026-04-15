@@ -14,8 +14,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
-import school.coda.darill_thomas_louis.bataillejavale.utils.UIUtils;
+import school.coda.darill_thomas_louis.bataillejavale.ui.utils.FontUtils;
+import school.coda.darill_thomas_louis.bataillejavale.ui.utils.UIUtils;
 
 public class CustomMessageBoxUI extends StackPane {
 

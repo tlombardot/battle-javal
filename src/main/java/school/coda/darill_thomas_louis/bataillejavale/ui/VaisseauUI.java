@@ -16,7 +16,7 @@ import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.Vaisseau;
-import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
+import school.coda.darill_thomas_louis.bataillejavale.ui.utils.FontUtils;
 
 public class VaisseauUI extends Pane {
 

@@ -16,8 +16,8 @@ import javafx.util.Duration;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.ModeJeu;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository;
-import school.coda.darill_thomas_louis.bataillejavale.utils.FontUtils;
-import school.coda.darill_thomas_louis.bataillejavale.utils.UIUtils;
+import school.coda.darill_thomas_louis.bataillejavale.ui.utils.FontUtils;
+import school.coda.darill_thomas_louis.bataillejavale.ui.utils.UIUtils;
 
 import java.util.List;
 import java.util.function.BiConsumer;

@@ -1,9 +1,10 @@
-package school.coda.darill_thomas_louis.bataillejavale.utils;
+package school.coda.darill_thomas_louis.bataillejavale.ui.utils;
 
 import javafx.animation.FadeTransition;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
+// 🚨 devrait être dans le package ui
 public class UIUtils {
 
     /**
