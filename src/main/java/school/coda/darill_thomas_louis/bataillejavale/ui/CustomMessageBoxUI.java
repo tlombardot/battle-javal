@@ -28,11 +28,14 @@ public class CustomMessageBoxUI extends StackPane {
         boiteCentrale.setAlignment(Pos.CENTER);
         boiteCentrale.setPadding(new Insets(30, 40, 30, 40));
         boiteCentrale.setMaxSize(450, 250);
+        // 🚨 Constante pour couleur ou feuille de style ?
         boiteCentrale.setStyle("-fx-background-color: #0c121e; -fx-border-color: #ff3333; -fx-border-width: 2px; -fx-border-radius: 5; -fx-background-radius: 5;");
+        // 🚨 Constante pour couleur
         boiteCentrale.setEffect(new DropShadow(20, Color.web("#ff3333", 0.4)));
 
         Text titre = new Text(titreDialog);
         titre.setFont(FontUtils.getPolice(22));
+        // 🚨 Constante pour couleur
         titre.setFill(Color.web("#ff3333"));
 
         Text texteMessage = new Text(message);
@@ -44,6 +47,7 @@ public class CustomMessageBoxUI extends StackPane {
         Button btnOk = new Button("OK");
         btnOk.setFont(FontUtils.getPolice(14));
         btnOk.setPrefSize(120, 40);
+        // 🚨 Constante pour couleurs ou feuille de style ?
         btnOk.setStyle("-fx-background-color: transparent; -fx-text-fill: #ff3333; -fx-border-color: #ff3333; -fx-border-width: 1px; -fx-cursor: hand;");
         btnOk.setOnMouseEntered(_ -> btnOk.setStyle("-fx-background-color: #ff333333; -fx-text-fill: #ff3333; -fx-border-color: #ff3333; -fx-border-width: 1px; -fx-cursor: hand;"));
         btnOk.setOnMouseExited(_ -> btnOk.setStyle("-fx-background-color: transparent; -fx-text-fill: #ff3333; -fx-border-color: #ff3333; -fx-border-width: 1px; -fx-cursor: hand;"));

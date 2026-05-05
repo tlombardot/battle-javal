@@ -23,17 +23,23 @@ public class PauseMenuUI extends StackPane {
         VBox menuBox = new VBox(25);
         menuBox.setAlignment(Pos.CENTER);
         menuBox.setMaxSize(400, 350);
+        // 🚨 Constante pour couleur ou feuille de style
         menuBox.setStyle("-fx-background-color: #0a0f18; -fx-border-color: #00ffff; -fx-border-width: 1px; -fx-padding: 30;");
+        // 🚨 Constante pour couleur
         menuBox.setEffect(new DropShadow(25, Color.web("#00ffff", 0.3)));
 
         Text titre = new Text("MENU SYSTÈME");
         titre.setFont(FontUtils.getPolice(32));
+        // 🚨 Constante pour couleur
         titre.setFill(Color.web("#00ffff"));
         titre.setTranslateY(-10);
 
         // 4. BOUTONS
+        // 🚨 Constante pour couleur
         Button btnReprendre = creerBouton("REPRENDRE", "#00ffff", actionReprendre);
+        // 🚨 Constante pour couleur
         Button btnMenu = creerBouton("RETOUR AU MENU", "#ffaa00", actionRetourMenu);
+        // 🚨 Constante pour couleur
         Button btnQuitter = creerBouton("QUITTER LE JEU", "#ff0000", () -> FXGL.getGameController().exit());
 
         menuBox.getChildren().addAll(titre, btnReprendre, btnMenu, btnQuitter);
@@ -53,7 +59,9 @@ public class PauseMenuUI extends StackPane {
         btn.setFont(FontUtils.getPolice(18));
         btn.setPrefSize(300, 45);
 
+        // 🚨 Constante pour couleur ou feuile de style
         String styleNormal = "-fx-background-color: transparent; -fx-text-fill: " + couleurBase + "; -fx-border-color: " + couleurBase + "; -fx-border-width: 2px; -fx-cursor: hand;";
+        // 🚨 Constante pour couleur ou feuile de style
         String styleHover = "-fx-background-color: " + couleurBase + "; -fx-text-fill: #0a0f18; -fx-border-color: " + couleurBase + "; -fx-border-width: 2px; -fx-cursor: hand;";
 
         btn.setStyle(styleNormal);

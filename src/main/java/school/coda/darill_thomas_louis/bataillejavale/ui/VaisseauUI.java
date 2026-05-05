@@ -42,6 +42,7 @@ public class VaisseauUI extends Pane {
     public VaisseauUI(Vaisseau navire) {
         this.navire = navire;
 
+        // 🚨 Constante pour couleur
         glowEffect = new DropShadow(8, Color.web("#4fc3f7", 0.4));
         glowEffect.setSpread(0.2);
 
@@ -118,9 +119,11 @@ public class VaisseauUI extends Pane {
         texte.setFill(Color.WHITE);
 
         StackPane fond = new StackPane(texte);
+        // 🚨 Constante pour couleur ou feuille de style
         fond.setStyle("-fx-background-color: rgba(0, 0, 0, 0.9); -fx-background-radius: 4; -fx-border-color: #4fc3f7; -fx-border-radius: 4; -fx-padding: 4 10 4 10;");
 
         Polygon pointe = new Polygon(0.0, 0.0, 12.0, 0.0, 6.0, 6.0);
+        // 🚨 Constante pour couleur
         pointe.setFill(Color.web("#4fc3f7"));
 
         conteneur.getChildren().addAll(fond, pointe);

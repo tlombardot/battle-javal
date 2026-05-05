@@ -136,6 +136,7 @@ public class ParametresUI extends StackPane {
             bgImage.setEffect(new GaussianBlur(10));
             this.getChildren().add(bgImage);
         } catch (Exception e) {
+            // 🚨 Constante pour couleur
             this.getChildren().add(new Rectangle(1280, 720, Color.web("#050810")));
         }
 
@@ -148,6 +149,7 @@ public class ParametresUI extends StackPane {
         box.setAlignment(Pos.CENTER);
 
         Line ligneGauche = new Line(0, 0, 200, 0);
+        // 🚨 Constante pour couleur
         ligneGauche.setStroke(Color.web("#ffffff", 0.3));
 
         Text titre = new Text("SYSTEM SETTINGS");
@@ -155,6 +157,7 @@ public class ParametresUI extends StackPane {
         titre.setFill(Color.web("#ffffff", 0.8));
 
         Line ligneDroite = new Line(0, 0, 200, 0);
+        // 🚨 Constante pour couleur
         ligneDroite.setStroke(Color.web("#ffffff", 0.3));
 
         box.getChildren().addAll(ligneGauche, titre, ligneDroite);
@@ -165,9 +168,11 @@ public class ParametresUI extends StackPane {
         VBox section = new VBox(20);
         Text t = new Text(title);
         t.setFont(FontUtils.getPolice(16));
+        // 🚨 Constante pour couleur
         t.setFill(Color.web("#00ffff"));
 
         Line separator = new Line(0, 0, 350, 0);
+        // 🚨 Constante pour couleur
         separator.setStroke(Color.web("#ffffff", 0.2));
 
         section.getChildren().addAll(t, separator);
@@ -177,6 +182,7 @@ public class ParametresUI extends StackPane {
     private TextField creerChampTexteDesign(String valeurDefaut) {
         TextField tf = new TextField(valeurDefaut);
         tf.setPrefWidth(350);
+        // 🚨 Constante pour couleur ou feuille de style
         tf.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: transparent transparent #00ffff transparent; -fx-border-width: 0 0 1 0; -fx-font-family: 'Consolas'; -fx-font-size: 14px;");
         return tf;
     }
@@ -197,6 +203,7 @@ public class ParametresUI extends StackPane {
 
         Slider slider = new Slider(0, 1, valDefaut);
         slider.setPrefWidth(350);
+        // 🚨 Constante pour couleur ou feuille de style
         slider.setStyle("-fx-control-inner-background: #111; -fx-accent: #00ffff;");
 
         slider.valueProperty().addListener((_, _, newValue) -> {
@@ -218,18 +225,22 @@ public class ParametresUI extends StackPane {
 
         Text textEsc = new Text("ESC");
         textEsc.setFont(FontUtils.getPolice(16));
+        // 🚨 Constante pour couleur
         textEsc.setFill(Color.web("#a0a0a0"));
 
         StackPane boxCroix = new StackPane();
         Rectangle fondCroix = new Rectangle(30, 30, Color.TRANSPARENT);
+        // 🚨 Constante pour couleur
         fondCroix.setStroke(Color.web("#a0a0a0"));
         fondCroix.setStrokeWidth(1);
 
         Line l1 = new Line(-8, -8, 8, 8);
+        // 🚨 Constante pour couleur
         l1.setStroke(Color.web("#a0a0a0"));
         l1.setStrokeWidth(2);
 
         Line l2 = new Line(-8, 8, 8, -8);
+        // 🚨 Constante pour couleur
         l2.setStroke(Color.web("#a0a0a0"));
         l2.setStrokeWidth(2);
 
@@ -243,7 +254,9 @@ public class ParametresUI extends StackPane {
         conteneurExit.setOnMouseEntered(_ -> {
             textEsc.setFill(Color.WHITE);
             fondCroix.setStroke(Color.WHITE);
+            // 🚨 Constante pour couleur
             l1.setStroke(Color.web("#00ffff"));
+            // 🚨 Constante pour couleur
             l2.setStroke(Color.web("#00ffff"));
 
             rotAnim.setToAngle(90);
@@ -254,9 +267,13 @@ public class ParametresUI extends StackPane {
         });
 
         conteneurExit.setOnMouseExited(_ -> {
+            // 🚨 Constante pour couleur
             textEsc.setFill(Color.web("#a0a0a0"));
+            // 🚨 Constante pour couleur
             fondCroix.setStroke(Color.web("#a0a0a0"));
+            // 🚨 Constante pour couleur
             l1.setStroke(Color.web("#a0a0a0"));
+            // 🚨 Constante pour couleur
             l2.setStroke(Color.web("#a0a0a0"));
 
             rotAnim.setToAngle(0);
@@ -275,14 +292,17 @@ public class ParametresUI extends StackPane {
         Button btn = new Button("APPLY SETTINGS");
         btn.setFont(FontUtils.getPolice(18));
         btn.setPrefSize(250, 45);
+        // 🚨 Constante pour couleur ou feuille de style
         btn.setStyle("-fx-background-color: transparent; -fx-text-fill: #00ffff; -fx-border-color: #00ffff; -fx-border-width: 1px; -fx-cursor: hand;");
 
         btn.setOnMouseEntered(_ -> {
+        // 🚨 Constante pour couleur ou feuille de style
             btn.setStyle("-fx-background-color: #00ffff; -fx-text-fill: #0a0f18; -fx-border-color: #00ffff; -fx-border-width: 1px; -fx-cursor: hand;");
             btn.setEffect(new DropShadow(15, Color.web("#00ffff")));
         });
 
         btn.setOnMouseExited(_ -> {
+        // 🚨 Constante pour couleur ou feuille de style
             btn.setStyle("-fx-background-color: transparent; -fx-text-fill: #00ffff; -fx-border-color: #00ffff; -fx-border-width: 1px; -fx-cursor: hand;");
             btn.setEffect(null);
         });

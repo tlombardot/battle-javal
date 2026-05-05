@@ -24,19 +24,24 @@ public class SideBarUI extends VBox {
         setSpacing(25);
         setAlignment(Pos.TOP_CENTER);
 
+        // 🚨 Constante pour couleur ou feuille de style
         setStyle("-fx-background-color: linear-gradient(to bottom right, rgba(15, 25, 35, 0.95), rgba(5, 10, 15, 0.95)); " +
-                "-fx-border-color: #00ffff; " +
-                "-fx-border-width: 0 0 0 3; " +
-                "-fx-border-style: solid;");
+                 "-fx-border-color: #00ffff; " +
+                 "-fx-border-width: 0 0 0 3; " +
+                 "-fx-border-style: solid;");
 
 
+        // 🚨 Constante pour couleur
         texteManche = creerTexteStylise("MANCHE : 1", 28, "#ffffff", true);
+        // 🚨 Constante pour couleur
         texteTour = creerTexteStylise("PHASE DE PLACEMENT", 18, "#00ffff", true);
 
         VBox headerBox = new VBox(10, texteManche, texteTour);
         headerBox.setAlignment(Pos.CENTER);
 
+        // 🚨 Constante pour couleur
         Rectangle separateur = new Rectangle(280, 2, Color.web("#00ffff", 0.6));
+        // 🚨 Constante pour couleur
         Text logTitre = creerTexteStylise("HISTORIQUE DE COMBAT_", 16, "#a0a0a0", false);
 
         logContainer = new VBox(8);
@@ -46,6 +51,7 @@ public class SideBarUI extends VBox {
         scrollPane.setPrefHeight(550);
         scrollPane.setFitToWidth(true);
 
+        // 🚨 Constante pour couleur ou feuille de style
         scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-control-inner-background: transparent; -fx-padding: 0;");
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);

@@ -54,8 +54,10 @@ public class NotificationUI extends StackPane {
 
         LinearGradient stylePlaque = new LinearGradient(
                 0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                // 🚨 Constante pour couleur
                 new Stop(0, Color.web("#11151c", 0.95)),
                 new Stop(0.5, couleurBase.deriveColor(0, 1, 0.35, 0.85)),
+                // 🚨 Constante pour couleur
                 new Stop(1, Color.web("#080b0f", 0.95))
         );
 

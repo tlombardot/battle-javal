@@ -23,7 +23,12 @@ import java.util.function.Consumer;
 
 public class CustomInputDialogUI extends StackPane {
 
-    public CustomInputDialogUI(Pane menuParent, String titreDialog, String promptMsg, Runnable actionAnnuler, Consumer<String> actionValider) {
+    public CustomInputDialogUI(
+            Pane menuParent,
+            String titreDialog,
+            String promptMsg,
+            Runnable actionAnnuler,
+            Consumer<String> actionValider) {
 
         Rectangle fondOverlay = new Rectangle(1280, 720, Color.color(0, 0, 0, 0.85));
         this.getChildren().add(fondOverlay);

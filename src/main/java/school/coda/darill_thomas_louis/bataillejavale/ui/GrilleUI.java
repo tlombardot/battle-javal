@@ -108,6 +108,7 @@ public class GrilleUI extends StackPane {
     private Rectangle createCaseMer(int x, int y) {
         Rectangle caseMer = new Rectangle(TAILLE_CASE, TAILLE_CASE);
         caseMer.setUserData("VIDE");
+        // 🚨 Constante pour couleur
         caseMer.setFill(Color.web("#000000", 0.4));
         caseMer.setStroke(Color.web(couleurThemeHex, 0.8));
         caseMer.setStrokeWidth(1.5);
@@ -202,6 +203,7 @@ public class GrilleUI extends StackPane {
             for (int y = 0; y < 10; y++) {
                 if (!"TIR".equals(rectangles[x][y].getUserData())) {
                     rectangles[x][y].setUserData("VIDE");
+                    // 🚨 Constante pour couleur
                     rectangles[x][y].setFill(Color.web("#000000", 0.4));
                     rectangles[x][y].setStrokeWidth(1.5);
                     rectangles[x][y].setStroke(Color.web(couleurThemeHex, 0.8));

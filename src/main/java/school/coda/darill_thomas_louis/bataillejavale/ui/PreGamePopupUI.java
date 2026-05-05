@@ -40,10 +40,12 @@ public class PreGamePopupUI extends StackPane {
         boiteCentrale.setPadding(new Insets(30, 50, 30, 50));
         boiteCentrale.setMaxSize(500, 450); // Taille fixe de la fenêtre modale
 
+        // 🚨 Constante pour couleur ou feuille de style
         boiteCentrale.setStyle("-fx-background-color: #050810; -fx-border-color: #00ffff; -fx-border-width: 2px;");
         boiteCentrale.setEffect(new DropShadow(20, Color.color(0, 1, 1, 0.3)));
 
         Text titre = new Text("MATCH CONFIGURATION");
+        // 🚨 Constante pour couleur ou feuile de style
         titre.setStyle("-fx-font-size: 20px; -fx-fill: white; -fx-letter-spacing: 2px;");
         Line separateur = new Line(0, 0, 400, 0);
         separateur.setStroke(Color.web("#00ffff", 0.5));
@@ -52,18 +54,21 @@ public class PreGamePopupUI extends StackPane {
         VBox boxGrille = new VBox(10);
         boxGrille.setAlignment(Pos.CENTER_LEFT);
         Text labelGrille = new Text("TAILLE DE LA GRILLE (GRILLE CARRÉE)");
+        // 🚨 Constante pour couleur ou feuille de style
         labelGrille.setStyle("-fx-font-size: 14px; -fx-fill: #00ffff;");
 
         ComboBox<String> comboTaille = new ComboBox<>();
         comboTaille.getItems().addAll("10 x 10 (Classique)", "15 x 15 (Tactique)", "20 x 20 (Guerre Totale)");
         comboTaille.getSelectionModel().select(0);
         comboTaille.setPrefWidth(400);
+        // 🚨 Constante pour couleur ou feuille de style
         comboTaille.setStyle("-fx-background-color: #111; -fx-text-fill: white; -fx-border-color: #555;");
         boxGrille.getChildren().addAll(labelGrille, comboTaille);
 
         VBox boxModules = new VBox(15);
         boxModules.setAlignment(Pos.CENTER_LEFT);
         Text labelModules = new Text("MODULES ACTIFS POUR CETTE PARTIE");
+        // 🚨 Constante pour couleur ou feuille de style
         labelModules.setStyle("-fx-font-size: 14px; -fx-fill: #00ffff;");
 
         CheckBox checkRavi = creerCheckBoxDesign("MODULE : RAVITAILLEMENT", prefsGlobales.ravitaillementActive);
@@ -125,6 +130,7 @@ public class PreGamePopupUI extends StackPane {
         Button btn = new Button("LANCER");
         btn.setPrefSize(200, 40);
         btn.setFont(FontUtils.getPolice(16));
+        // 🚨 Constante pour couleur ou feuille de style
         btn.setStyle("-fx-background-color: #00ffff; -fx-text-fill: #050810; -fx-cursor: hand;");
         btn.setOnAction(_ -> action.run());
         return btn;
@@ -134,8 +140,11 @@ public class PreGamePopupUI extends StackPane {
         Button btn = new Button("ANNULER");
         btn.setPrefSize(150, 40);
         btn.setFont(FontUtils.getPolice(16));
+        // 🚨 Constante pour couleur ou feuilles de style
         btn.setStyle("-fx-background-color: transparent; -fx-text-fill: #a0a0a0; -fx-border-color: #a0a0a0; -fx-cursor: hand;");
+        // 🚨 Constante pour couleur ou feuilles de style
         btn.setOnMouseEntered(_ -> btn.setStyle("-fx-background-color: rgba(255,255,255,0.1); -fx-text-fill: white; -fx-border-color: white; -fx-cursor: hand;"));
+        // 🚨 Constante pour couleur ou feuilles de style
         btn.setOnMouseExited(_ -> btn.setStyle("-fx-background-color: transparent; -fx-text-fill: #a0a0a0; -fx-border-color: #a0a0a0; -fx-cursor: hand;"));
         btn.setOnAction(_ -> action.run());
         return btn;

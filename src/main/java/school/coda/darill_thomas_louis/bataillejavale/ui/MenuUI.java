@@ -35,6 +35,9 @@ public class MenuUI extends Pane {
 
     private final List<TechButton> menuButtons = new ArrayList<>();
     private int currentSelection = 0;
+    // 🚨 Ce n'est pas clair à quoi sert cette variable
+    // true  -> les interactions avec les éléments d'interface sont actifs
+    // false -> on ne peut pas interagir avec les éléments d'interface (ex. pendant un menu modal)
     private boolean isActive = true;
 
     public MenuUI() {
@@ -81,6 +84,7 @@ public class MenuUI extends Pane {
             logoTitle.setTranslateY(5);
             getChildren().add(logoTitle);
         } catch (Exception _) {
+            // 🚨 Préférer la sortie en erreur
             IO.println("Logo non trouvé.");
         }
     }
@@ -186,6 +190,7 @@ public class MenuUI extends Pane {
 
         Text creditsText = new Text("CREATED BY KING_DARILL_ CYBER080THOMAS_ JAVA_LOUIS_");
         creditsText.setFont(FontUtils.getPolice(14));
+        // 🚨 Constante pour couleur
         creditsText.setFill(Color.web("#cccccc"));
         creditsText.setEffect(new DropShadow(5, Color.BLACK));
 
@@ -196,17 +201,21 @@ public class MenuUI extends Pane {
         profilBox.setTranslateX(1020);
         profilBox.setTranslateY(30);
 
+        // 🚨 Constante pour couleur
         Rectangle fondProfil = new Rectangle(230, 65, Color.web("#0a0f18", 0.6));
         fondProfil.setArcWidth(5); fondProfil.setArcHeight(5);
+        // 🚨 Constante pour couleur
         fondProfil.setStroke(Color.web("#00ffff", 0.6)); fondProfil.setStrokeWidth(2);
         fondProfil.setEffect(new DropShadow(15, Color.web("#00ffff", 0.3)));
 
         Text txtProfil = new Text("PROFIL : " + Session.pseudo.toUpperCase());
         txtProfil.setFont(FontUtils.getPolice(20));
+        // 🚨 Constante pour couleur
         txtProfil.setFill(Color.web("#ffffff"));
 
         Text txtStats = new Text("VICTOIRES: " + Session.victoires + " | DÉFAITES: " + Session.defaites);
         txtStats.setFont(FontUtils.getPolice(14));
+        // 🚨 Constante pour couleur
         txtStats.setFill(Color.web("#ffaa00"));
 
         VBox textesBox = new VBox(3, txtProfil, txtStats);
@@ -246,6 +255,7 @@ public class MenuUI extends Pane {
         isActive = false;
         getChildren().clear();
 
+        // 🚨 Constante pour couleur
         Rectangle blackScreen = new Rectangle(1280, 720, Color.web("#000000"));
         getChildren().add(blackScreen);
 
@@ -267,7 +277,9 @@ public class MenuUI extends Pane {
 
         Text loadingText = new Text("ESTABLISHING SATELLITE CONNECTIONS...");
         loadingText.setFont(FontUtils.getPolice(28));
+        // 🚨 Constante pour couleur
         loadingText.setFill(Color.web("#00ffff"));
+        // 🚨 Constante pour couleur
         loadingText.setEffect(new DropShadow(20, Color.web("#00ffff", 0.6)));
 
         FadeTransition blink = new FadeTransition(Duration.seconds(0.6), loadingText);
@@ -322,12 +334,15 @@ public class MenuUI extends Pane {
             techBand = new Polygon(0, 0, 420, 0, 390, 45, 0, 45);
 
             Stop[] stops = new Stop[] {
+                    // 🚨 Constante pour couleur
                     new Stop(0, Color.web("#00ffff", 0.15)),
+                    // 🚨 Constante pour couleur
                     new Stop(1, Color.web("#00ffff", 0.45))
             };
             LinearGradient gradient = new LinearGradient(0, 0, 1, 0, true, CycleMethod.NO_CYCLE, stops);
             techBand.setFill(gradient);
 
+            // 🚨 Constante pour couleur
             DropShadow glow = new DropShadow(30, Color.web("#00ffff"));
             glow.setSpread(0.2);
             techBand.setEffect(glow);
@@ -360,6 +375,7 @@ public class MenuUI extends Pane {
 
         public void setActive(boolean active) {
             techBand.setVisible(active);
+            // 🚨 Constante pour couleur
             textNode.setFill(active ? Color.WHITE : Color.web("#cccccc"));
 
             if (active) {
