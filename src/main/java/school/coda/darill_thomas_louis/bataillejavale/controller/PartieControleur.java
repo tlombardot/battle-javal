@@ -86,6 +86,7 @@ public class PartieControleur {
 
         MoteurJeu.RapportTir rapport = moteur.executerTirJoueur(etat, idPartie, x, y, modeActuel == ModeJeu.MULTI_INVITE);
         vue.afficherImpactVisuel(x, y, rapport.resultat, rapport.cible, true);
+        jouerSfxTir(rapport);
 
         if (rapport.partieTerminee) {
             terminerPartie(rapport.victoire);
@@ -99,15 +100,27 @@ public class PartieControleur {
         }
     }
 
+    private static void jouerSfxTir(MoteurJeu.RapportTir rapport) {
+        GestionnaireAudio audio = GestionnaireAudio.getInstance();
+        switch (rapport.resultat) {
+            case RATE -> audio.jouerSon(GestionnaireAudio.Sfx.RATE);
+            case TOUCHE -> audio.jouerSon(GestionnaireAudio.Sfx.TOUCHE);
+            case COULE -> audio.jouerSon(GestionnaireAudio.Sfx.COULE);
+            case DEJA_TIRE -> audio.jouerSon(GestionnaireAudio.Sfx.DEJA_TIRE);
+        }
+    }
+
     private void riposteDuCPU() {
         if (!phaseBataille) return;
         MoteurJeu.RapportTir rapport = moteur.executerTourCPU(etat, idPartie);
         vue.afficherImpactVisuel(rapport.x, rapport.y, rapport.resultat, rapport.cible, false);
+        jouerSfxTir(rapport);
 
         if (rapport.partieTerminee) terminerPartie(rapport.victoire);
         else {
             gestionnaireEvenements.evaluerFinDeManche(etat);
-            tourJoueur = true; vue.activerMonTour(etat.getMancheActuelle());
+            tourJoueur = true;
+            vue.activerMonTour(etat.getMancheActuelle());
         }
     }
 

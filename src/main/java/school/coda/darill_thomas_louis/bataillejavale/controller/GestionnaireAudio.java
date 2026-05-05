@@ -20,7 +20,8 @@ public class GestionnaireAudio {
     private String derniereMusique;
     private String derniereAmbiance;
 
-    private GestionnaireAudio() {}
+    private GestionnaireAudio() {
+    }
 
     public static GestionnaireAudio getInstance() {
         if (instance == null) {
@@ -124,9 +125,9 @@ public class GestionnaireAudio {
     // ==========================================
 
     // 🚨 jamais utilisée
-    public void jouerSon(String nomFichier) {
+    public void jouerSon(Sfx sfx) {
         if (config != null && !config.isSonActif()) return;
-
+        String nomFichier = sfx.getFileName();
         try {
             URL cheminSon = getClass().getResource("/assets/audio/sfx/" + nomFichier);
             if (cheminSon != null) {
@@ -138,6 +139,23 @@ public class GestionnaireAudio {
             }
         } catch (Exception e) {
             System.err.println("[AUDIO] Erreur effet sonore : " + e.getMessage());
+        }
+    }
+
+    public enum Sfx {
+        RATE("miss.wav"),
+        TOUCHE("explosion.wav"),
+        COULE("underwater_explosion.wav"),
+        DEJA_TIRE("error.wav");
+
+        private final String fileName;
+
+        Sfx(String fileName) {
+            this.fileName = fileName;
+        }
+
+        public String getFileName() {
+            return fileName;
         }
     }
 }
