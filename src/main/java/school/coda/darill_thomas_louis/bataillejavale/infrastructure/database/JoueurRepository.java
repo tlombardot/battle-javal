@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+// Préférer un nom qui indique la technologie sous-jascente
+// ex. JoueurPostgresRepository
 public class JoueurRepository {
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -31,7 +33,7 @@ public class JoueurRepository {
                     Session.idJoueur = rs.getInt("id");
                     Session.pseudo = pseudoOS;
                     chargerStats(rs.getString("stats")); // je lit... nous lisons ^^ le JSON de la DB
-
+                    // 🤣 — Le prof
                     chargerPreferences(rs.getString("preferences"));
 
                     IO.println("Bon retour " + Session.pseudo + " ! (V:" + Session.victoires + " / D:" + Session.defaites + ")");

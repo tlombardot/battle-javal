@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+// Préférer un nom qui indique la technologie sous-jascente
+// ex. CreatePostgresDB
 public class CreateDB {
 
     public CreateDB() {
@@ -12,6 +14,9 @@ public class CreateDB {
     }
     // L'URL de PostgreSQL se trouve dans Settings > Database > Connection String > JDBC
 
+    // 🚨 Les informations de connexion ne doivent jamais être présentes en dur dans le code
+    // passer par des variables d'envionnement ou des fichiers de properties
+    // dont les valeurs sont passées lors de l'exécution
     private static final String URL = "jdbc:postgresql://localhost:5436/bataille_javale_a";
     private static final String USER = "postgres";
     private static final String PASSWORD = "password";

@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+// Préférer un nom qui indique la technologie sous-jascente
+// ex. PartiePostgresRepository
 public class PartieRepository {
 
     private final ObjectMapper mapper = new ObjectMapper();
