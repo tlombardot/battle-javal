@@ -7,6 +7,8 @@ import school.coda.darill_thomas_louis.bataillejavale.core.model.ConfigPartie;
 
 import java.net.URL;
 
+// 👍 Utilisation pertinente du singleton : évite des fuites mémoire et permet la continuité entre les changements de scène.
+// 💡 Design pattern : Singleton — https://refactoring.guru/fr/design-patterns/singleton
 public class GestionnaireAudio {
 
     private static GestionnaireAudio instance;
