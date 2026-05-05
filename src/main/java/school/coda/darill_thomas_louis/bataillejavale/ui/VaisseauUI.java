@@ -159,6 +159,8 @@ public class VaisseauUI extends Pane {
     //  MÉTHODES DE DESSINS
     // ══════════════════════════════════════════════════════════════════════
 
+    // 👍 Usage de l'IA justifié : tâche complexe rébarbative pour un humain
+    // Ca aurait été bien si JavaFx proposait un système d'import de SVG -> Shapes mais ce n'est pas le cas 🤷‍♂️
     private void dessinerPorteAvions() {
         double L = 5 * CELL; double H = CELL; double cy = H / 2;
         Polygon coque = new Polygon(0, cy - 12, L - 40, cy - 14, L, cy, L - 40, cy + 14, 0, cy + 12); styleHull(coque);
