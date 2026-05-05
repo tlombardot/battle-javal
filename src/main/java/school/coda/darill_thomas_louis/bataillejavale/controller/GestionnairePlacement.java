@@ -155,5 +155,8 @@ public class GestionnairePlacement {
         // TODO: apply demeter law
         GrilleOcean ocean = controleur.getEtat().getJoueur1().getGrilleOcean();
         return (x + 1 < 10 && ocean.getVaisseauAt(x + 1, y) == navire) || (x - 1 >= 0 && ocean.getVaisseauAt(x - 1, y) == navire);
+
+        // 🚨 Est-ce que ceci fonctionnerait ?
+        // return navire.estHorizontal();
     }
 }
