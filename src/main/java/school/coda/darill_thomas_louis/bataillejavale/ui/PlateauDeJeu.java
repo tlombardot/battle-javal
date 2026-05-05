@@ -99,12 +99,12 @@ public class PlateauDeJeu {
         initialiserBaseUI("Chargement du mode : " + mode + " (ID: " + idPartie + ")");
 
         // 🚨 Code "au cas où" - le mode Replay n'est pas implémenté
-        if (mode == ModeJeu.REPLAY) {
-            initialiserBaseUI("Sauvegarde (ID: " + idPartie + ")");
-            controleur.initialiserPartieExistante();
-            sideBar.setTexteManche(controleur.getEtat().getMancheActuelle());
-
-        }else if (mode == ModeJeu.MULTI_INVITE || mode == ModeJeu.MULTI_HOTE) {
+        // if (mode == ModeJeu.REPLAY) {
+        //     initialiserBaseUI("Sauvegarde (ID: " + idPartie + ")");
+        //     controleur.initialiserPartieExistante();
+        //     sideBar.setTexteManche(controleur.getEtat().getMancheActuelle());
+        // }else
+            if (mode == ModeJeu.MULTI_INVITE || mode == ModeJeu.MULTI_HOTE) {
             controleur.reparerSauvegarde();
             rafraichirOcean();
             notificationBox.afficherAlerte("DÉPLOIEMENT DE FLOTTE !", COLOR_CYAN_HEX);

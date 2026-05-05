@@ -1,7 +1,7 @@
 package school.coda.darill_thomas_louis.bataillejavale.core.model;
 
 public enum ModeJeu {
-    SOLO, MULTI_HOTE, MULTI_INVITE,
+    SOLO, MULTI_HOTE, MULTI_INVITE
     // 🚨 Code "au cas où" - le mode Replay n'est pas implémenté
-    REPLAY
+    // REPLAY
 }
