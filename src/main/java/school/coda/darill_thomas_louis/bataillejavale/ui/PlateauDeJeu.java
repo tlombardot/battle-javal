@@ -304,7 +304,9 @@ public class PlateauDeJeu {
     private GrilleUI creerGrilleOcean() {
         GrilleUI grille = new GrilleUI(COLOR_CYAN_HEX);
         grille.setListener(new GrilleUI.GrilleListener() {
+            // 🚨 méthode vide
             @Override public void onCaseLeftClick(int x, int y) {}
+            // 🚨 méthode vide
             @Override public void onCaseRightClick(int x, int y) {}
             @Override public String onDragStart(int x, int y) { return gestionnairePlacement.gererDragStartOcean(grille, x, y); }
             @Override public void onDragOver(int x, int y, String n, boolean h) { gestionnairePlacement.gererDragOverOcean(grille, x, y, n, h); }
