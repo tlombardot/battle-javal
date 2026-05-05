@@ -14,9 +14,10 @@ module school.coda.darill_thomas_louis.bataillejavale {
 
     opens school.coda.darill_thomas_louis.bataillejavale.core.model to com.fasterxml.jackson.databind;
     opens school.coda.darill_thomas_louis.bataillejavale.core.event to com.fasterxml.jackson.databind;
-
     opens school.coda.darill_thomas_louis.bataillejavale.ui to javafx.fxml;
     exports school.coda.darill_thomas_louis.bataillejavale.ui;
+    exports school.coda.darill_thomas_louis.bataillejavale.core.model;
+    exports school.coda.darill_thomas_louis.bataillejavale.core.event;
     exports school.coda.darill_thomas_louis.bataillejavale.controller;
     opens school.coda.darill_thomas_louis.bataillejavale.controller to javafx.fxml;
 }
