@@ -155,8 +155,19 @@ public class PartieControleur {
     }
 
     // --- GETTERS POUR LA VUE ET LE PLACEMENT ---
-    public EtatJeu getEtat() { return etat; }
-    public List<Vaisseau> getFlotteRestante() { return flotteRestante; }
-    public void setFlotteRestante(List<Vaisseau> flotteRestante) { this.flotteRestante = flotteRestante; }
-    public boolean isPhaseBataille() { return phaseBataille; }
+    public EtatJeu getEtat() {
+        return etat;
+    }
+
+    public List<Vaisseau> getFlotteRestante() {
+        return flotteRestante;
+    }
+
+    public void setFlotteRestante(List<Vaisseau> flotteRestante) {
+        this.flotteRestante = flotteRestante;
+    }
+
+    public boolean isPhaseBataille() {
+        return phaseBataille;
+    }
 }
