@@ -9,6 +9,9 @@ public class AppPreferences {
     public boolean evenementsActive = false;
     public boolean systemeRecompensesActive = true;
 
+    // 🚨 Les informations sensibles ne devraient pas être en dur dans le code
+    // Il est préférable de les charger via des variablesd d'environnement
+    // ou via des fichiers de properties dont les valeurs peuvent être fournies lors de l'exécution
     public String dbConnectionString = "jdbc:postgresql://aws-1-eu-central-2.pooler.supabase.com:6543/postgres";
     private static final String USER = "postgres.wswxgvauucumhkgbssnx";
     private static final String PASSWORD = "hL3VHKQ2iPgvIJXO";
