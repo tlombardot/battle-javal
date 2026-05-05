@@ -73,10 +73,13 @@ public class GestionnairePlacement {
         Vaisseau navire = controleur.getEtat().getJoueur1().getGrilleOcean().getVaisseauAt(x, y);
         if (navire == null) return null;
         boolean h = estVaisseauHorizontal(x, y, navire);
+        // TODO: apply demeter law
         controleur.getEtat().getJoueur1().getGrilleOcean().retirerVaisseau(navire);
+        // TODO: apply demeter law
         controleur.getEtat().getJoueur1().getFlotte().remove(navire);
         controleur.getFlotteRestante().add(navire);
         vue.actualiserMenuBateaux();
+        // TODO: apply demeter law
         grille.rafraichir(controleur.getEtat().getJoueur1().getGrilleOcean());
         vue.getBtnPret().setDisable(true);
         return navire.getNom() + ";" + h;
@@ -91,7 +94,9 @@ public class GestionnairePlacement {
         if (controleur.isPhaseBataille()) return;
         Vaisseau navire = trouverVaisseauRestant(nomNavire);
         if (navire == null) return;
+        // TODO: apply demeter law
         grille.rafraichir(controleur.getEtat().getJoueur1().getGrilleOcean());
+        // TODO: apply demeter law
         boolean valide = controleur.getEtat().getJoueur1().getGrilleOcean().estPlacementValide(navire, x, y, h);
         Color c = valide ? Color.color(0, 1, 0, 0.6) : Color.color(1, 0, 0, 0.6);
         for (int i = 0; i < navire.getTaille(); i++) {
@@ -108,14 +113,23 @@ public class GestionnairePlacement {
     public void gererDragDroppedOcean(GrilleUI grille, int x, int y, String nomNavire, boolean h) {
         if (controleur.isPhaseBataille()) return;
         Vaisseau navire = trouverVaisseauRestant(nomNavire);
-        if (navire == null) { grille.rafraichir(controleur.getEtat().getJoueur1().getGrilleOcean()); return; }
+        if (navire == null) {
+            // TODO: apply demeter law
+            grille.rafraichir(controleur.getEtat().getJoueur1().getGrilleOcean());
+            return;
+        }
+        // TODO: apply demeter law
         if (controleur.getEtat().getJoueur1().getGrilleOcean().placerVaisseau(navire, x, y, h)) {
             navire.placer(x, y, h);
+            // TODO: apply demeter law
             controleur.getEtat().getJoueur1().getFlotte().add(navire);
+            // TODO: apply demeter law
             controleur.getFlotteRestante().remove(navire);
             vue.retirerVaisseauZoneSelection(nomNavire);
         }
+        // TODO: apply demeter law
         grille.rafraichir(controleur.getEtat().getJoueur1().getGrilleOcean());
+        // TODO: apply demeter law
         if (controleur.getFlotteRestante().isEmpty()) vue.getBtnPret().setDisable(false);
     }
 
@@ -132,6 +146,7 @@ public class GestionnairePlacement {
      * vérifie si un vaisseau s'étend vers la gauche ou la droite
      */
     private boolean estVaisseauHorizontal(int x, int y, Vaisseau navire) {
+        // TODO: apply demeter law
         GrilleOcean ocean = controleur.getEtat().getJoueur1().getGrilleOcean();
         return (x + 1 < 10 && ocean.getVaisseauAt(x + 1, y) == navire) || (x - 1 >= 0 && ocean.getVaisseauAt(x - 1, y) == navire);
     }
