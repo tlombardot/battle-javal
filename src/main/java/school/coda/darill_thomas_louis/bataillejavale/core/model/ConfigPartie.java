@@ -29,13 +29,17 @@ public class ConfigPartie {
         this.systemeRecompensesActif = globales.systemeRecompensesActive;
     }
 
+    // 🚨 jamais utilisée
     public int getLargeurGrille() { return largeurGrille; }
+    // 🚨 jamais utilisée
     public int getHauteurGrille() { return hauteurGrille; }
     public boolean isEvenementsActifs() { return evenementsActifs; }
+    // 🚨 jamais utilisée
     public boolean isRavitaillementActif() { return ravitaillementActif; }
     public boolean isSonActif() { return sonActif; }
     public double getVolumeMusique() { return volumeMusique; }
     public double getVolumeEffets() { return volumeEffets; }
+    // 🚨 jamais utilisée
     public boolean isSystemeRecompensesActif() { return systemeRecompensesActif; }
 
     public void setDimensionsGrille(int taille) {

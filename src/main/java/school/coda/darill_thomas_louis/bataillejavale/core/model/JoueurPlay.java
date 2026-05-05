@@ -21,16 +21,20 @@ public class JoueurPlay implements Joueur {
 
     @Override
     public String getPseudo() { return pseudo; }
+    // 🚨 jamais utilisée
     public void setPseudo(String pseudo) { this.pseudo = pseudo; }
 
     public GrilleOcean getGrilleOcean() { return grilleOcean; }
+    // 🚨 jamais utilisée
     public void setGrilleOcean(GrilleOcean grilleOcean) { this.grilleOcean = grilleOcean; }
 
     public GrilleRadar getGrilleRadar() { return grilleRadar; }
+    // 🚨 jamais utilisée
     public void setGrilleRadar(GrilleRadar grilleRadar) { this.grilleRadar = grilleRadar; }
 
     @Override
     public List<Vaisseau> getFlotte() { return flotte; }
+    // 🚨 jamais utilisée
     public void setFlotte(List<Vaisseau> flotte) { this.flotte = flotte; }
 
     @Override

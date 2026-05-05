@@ -21,11 +21,14 @@ public class Vaisseau {
     }
 
     public String getNom() { return nom; }
+    // 🚨 jamais utilisée
     public void setNom(String nom) { this.nom = nom; }
 
     public int getTaille() { return taille; }
+    // 🚨 jamais utilisée
     public void setTaille(int taille) { this.taille = taille; }
 
+    // 🚨 jamais utilisée
     public int getCasesTouchees() { return casesTouchees; }
     public void setCasesTouchees(int casesTouchees) { this.casesTouchees = casesTouchees; }
 
@@ -56,7 +59,7 @@ public class Vaisseau {
         return casesTouchees >= taille;
     }
 
-    public boolean recevoirDegat(int x, int y){
+    public boolean recevoirDegat(int x, int y){ // 🚨 arguments non utilisés
         casesTouchees++;
         return estCoule();
     }

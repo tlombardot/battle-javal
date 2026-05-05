@@ -8,6 +8,7 @@ public class EtatJeu {
     private JoueurPlay joueur2;
     private int tourCourant;
 
+    // 🚨 jamais utilisée
     private boolean tourDuJoueur1;
 
     public EtatJeu() {

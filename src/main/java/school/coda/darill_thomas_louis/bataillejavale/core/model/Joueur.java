@@ -4,6 +4,7 @@ import java.util.List;
 
 public interface Joueur {
 
+    // 🚨 jamais utilisée
     String getPseudo();
 
     List<Vaisseau> getFlotte();

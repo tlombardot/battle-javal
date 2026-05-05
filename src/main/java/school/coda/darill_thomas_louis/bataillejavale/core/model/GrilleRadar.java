@@ -28,6 +28,7 @@ public class GrilleRadar implements Grille {
 
     // Getter & Setter pour JSON
     public ResultatTir[][] getHistoriqueTirs() { return historiqueTirs; }
+    // 🚨 jamais utilisée
     public void setHistoriqueTirs(ResultatTir[][] historiqueTirs) {
         this.historiqueTirs = historiqueTirs;
     }

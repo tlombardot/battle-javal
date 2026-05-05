@@ -87,6 +87,7 @@ public class GrilleOcean implements Grille {
         }
     }
 
+    // 🚨 jamais utilisée
     public void setPlateau(Vaisseau[][] plateau) {
         this.plateau = plateau;
     }
