@@ -15,6 +15,7 @@ public class PartieRepository {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
+    // 🚨 statut pourrait être enum
     public record PartieInfo(int id, String statut, int tour, String date) {
     }
 
