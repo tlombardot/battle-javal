@@ -9,7 +9,11 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -19,7 +23,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-
 import school.coda.darill_thomas_louis.bataillejavale.controller.GestionnairePlacement;
 import school.coda.darill_thomas_louis.bataillejavale.controller.PartieControleur;
 import school.coda.darill_thomas_louis.bataillejavale.core.event.ResultatTir;
@@ -35,9 +38,9 @@ public class PlateauDeJeu {
     // CONSTANTES DE DESIGN
     // ==========================================
     private static final String COLOR_CYAN_HEX = "#00ffff";
-    private static final String COLOR_RED_HEX  = "#ff0000";
+    private static final String COLOR_RED_HEX = "#ff0000";
     private static final String COLOR_WARN_HEX = "#ffaa00";
-    private static final String COLOR_BTN_BG   = "#0c121e";
+    private static final String COLOR_BTN_BG = "#0c121e";
     private static final String COLOR_PAUSE_IDLE = "#a0aab5";
 
     private static final int PANEL_LEFT_WIDTH = 320;
@@ -289,7 +292,7 @@ public class PlateauDeJeu {
     private StackPane creerVoileAttente() {
         StackPane voile = new StackPane();
         voile.setStyle("-fx-background-color: rgba(0, 0, 0, 0.4);");
-        Text texteAttente = creerTexte("EN ATTENTE...", 25, Color.RED,null);
+        Text texteAttente = creerTexte("EN ATTENTE...", 25, Color.RED, null);
 
         voile.getChildren().add(texteAttente);
         voile.setVisible(false);
@@ -305,13 +308,34 @@ public class PlateauDeJeu {
         GrilleUI grille = new GrilleUI(COLOR_CYAN_HEX);
         grille.setListener(new GrilleUI.GrilleListener() {
             // 🚨 méthode vide
-            @Override public void onCaseLeftClick(int x, int y) {}
+            @Override
+            public void onCaseLeftClick(int x, int y) {
+            }
+
             // 🚨 méthode vide
-            @Override public void onCaseRightClick(int x, int y) {}
-            @Override public String onDragStart(int x, int y) { return gestionnairePlacement.gererDragStartOcean(grille, x, y); }
-            @Override public void onDragOver(int x, int y, String n, boolean h) { gestionnairePlacement.gererDragOverOcean(grille, x, y, n, h); }
-            @Override public void onDragExited() { if (!controleur.isPhaseBataille()) rafraichirOcean(); }
-            @Override public void onDragDropped(int x, int y, String n, boolean h) { gestionnairePlacement.gererDragDroppedOcean(grille, x, y, n, h); }
+            @Override
+            public void onCaseRightClick(int x, int y) {
+            }
+
+            @Override
+            public String onDragStart(int x, int y) {
+                return gestionnairePlacement.gererDragStartOcean(grille, x, y);
+            }
+
+            @Override
+            public void onDragOver(int x, int y, String n, boolean h) {
+                gestionnairePlacement.gererDragOverOcean(grille, x, y, n, h);
+            }
+
+            @Override
+            public void onDragExited() {
+                if (!controleur.isPhaseBataille()) rafraichirOcean();
+            }
+
+            @Override
+            public void onDragDropped(int x, int y, String n, boolean h) {
+                gestionnairePlacement.gererDragDroppedOcean(grille, x, y, n, h);
+            }
         });
         return grille;
     }
@@ -319,12 +343,31 @@ public class PlateauDeJeu {
     private GrilleUI creerGrilleRadar() {
         GrilleUI radar = new GrilleUI(COLOR_RED_HEX);
         radar.setListener(new GrilleUI.GrilleListener() {
-            @Override public void onCaseLeftClick(int x, int y) { controleur.gererTirJoueur(x, y); }
-            @Override public void onCaseRightClick(int x, int y) {}
-            @Override public void onDragOver(int x, int y, String n, boolean h) {}
-            @Override public void onDragDropped(int x, int y, String n, boolean h) {}
-            @Override public void onDragExited() {}
-            @Override public String onDragStart(int x, int y) { return null; }
+            @Override
+            public void onCaseLeftClick(int x, int y) {
+                controleur.gererTirJoueur(x, y);
+            }
+
+            @Override
+            public void onCaseRightClick(int x, int y) {
+            }
+
+            @Override
+            public void onDragOver(int x, int y, String n, boolean h) {
+            }
+
+            @Override
+            public void onDragDropped(int x, int y, String n, boolean h) {
+            }
+
+            @Override
+            public void onDragExited() {
+            }
+
+            @Override
+            public String onDragStart(int x, int y) {
+                return null;
+            }
         });
         return radar;
     }
@@ -333,8 +376,13 @@ public class PlateauDeJeu {
     // 4. GETTERS & ACTIONS SIMPLES
     // ==========================================
 
-    public StackPane getRacineVisuelle() { return racineVisuelle; }
-    public Button getBtnPret() { return btnPret; }
+    public StackPane getRacineVisuelle() {
+        return racineVisuelle;
+    }
+
+    public Button getBtnPret() {
+        return btnPret;
+    }
 
     public void actualiserMenuBateaux() {
         ScrollPane scroll = (ScrollPane) panneauPlacement.getChildren().get(2);
@@ -373,7 +421,8 @@ public class PlateauDeJeu {
         notificationBox.setTranslateX(-NOTIF_OFFSET_X);
 
         if (aMoi) activerMonTour(controleur.getEtat().getMancheActuelle());
-        else bloquerTour("ATTENTE ADVERSAIRE...", modeActuel == ModeJeu.MULTI_HOTE ? "ID: " + idPartie : "RÉFLEXION ENNEMIE...");
+        else
+            bloquerTour("ATTENTE ADVERSAIRE...", modeActuel == ModeJeu.MULTI_HOTE ? "ID: " + idPartie : "RÉFLEXION ENNEMIE...");
     }
 
     public void activerMonTour(int tour) {
@@ -422,7 +471,7 @@ public class PlateauDeJeu {
 
         if (res == ResultatTir.RATE) {
             grille.colorierCase(x, y, moiTire ? Color.WHITE : Color.LIGHTCYAN);
-            sideBar.ajouterLog((moiTire ? "Tir allié" : "Tir ennemi") + " en " + (char)('A' + y) + "-" + (x + 1) + " : Raté", "RATE");
+            sideBar.ajouterLog((moiTire ? "Tir allié" : "Tir ennemi") + " en " + (char) ('A' + y) + "-" + (x + 1) + " : Raté", "RATE");
         } else {
             grille.colorierCase(x, y, moiTire ? Color.RED : Color.DARKRED);
             if (res == ResultatTir.TOUCHE) {
@@ -436,7 +485,7 @@ public class PlateauDeJeu {
 
     public void afficherImpactMeteore(int x, int y, ResultatTir res, Vaisseau cible, boolean surZoneEnnemie) {
         GrilleUI grille = surZoneEnnemie ? vueRadar : vueOcean;
-        String coord = (char)('A' + y) + "-" + (x + 1);
+        String coord = (char) ('A' + y) + "-" + (x + 1);
 
         if (res == ResultatTir.RATE) {
             grille.colorierCase(x, y, surZoneEnnemie ? Color.WHITE : Color.LIGHTCYAN);
@@ -460,15 +509,15 @@ public class PlateauDeJeu {
 
     public void restaurerVisuelBataille(EtatJeu etat) {
         rafraichirOcean();
-        for(int x=0; x<10; x++) {
-            for(int y=0; y<10; y++) {
+        for (int x = 0; x < 10; x++) {
+            for (int y = 0; y < 10; y++) {
                 ResultatTir tirJ1 = etat.getJoueur1().getGrilleRadar().getHistoriqueTirs()[x][y];
-                if(tirJ1 != null) {
+                if (tirJ1 != null) {
                     vueRadar.colorierCase(x, y, tirJ1 == ResultatTir.RATE ? Color.WHITE : Color.RED);
                 }
 
                 ResultatTir tirJ2 = etat.getJoueur2().getGrilleRadar().getHistoriqueTirs()[x][y];
-                if(tirJ2 != null) {
+                if (tirJ2 != null) {
                     vueOcean.colorierCase(x, y, tirJ2 == ResultatTir.RATE ? Color.LIGHTCYAN : Color.DARKRED);
                 }
             }
