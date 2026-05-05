@@ -81,6 +81,7 @@ public class SideBarUI extends VBox {
         logText.setFont(FontUtils.getPolice(14));
         logText.setWrappingWidth(270);
 
+        // 💡 utiliser enum (voir plus bas) ?
         switch (type.toUpperCase()) {
             case "INFO": logText.setFill(Color.web("#b0c4de")); break;
             case "TOUCHE": logText.setFill(Color.web("#ff3333")); break;
@@ -94,4 +95,33 @@ public class SideBarUI extends VBox {
         scrollPane.layout();
         scrollPane.setVvalue(1.0);
     }
+
+    // Exemple d'usage :
+    // logText.setFill(LogLevel.fromText(type).getColor());
+    //    public enum LogLevel {
+    //        INFO("INFO", Color.web("#b0c4de")),
+    //        TOUCHE("TOUCHE", Color.web("#ff3333")),
+    //        RATE("RATE", Color.web("#708090")),
+    //        ALERTE("ALERTE", Color.web("#ffcc00")),
+    //        DEFAULT(null, Color.web("#ffffff"));
+    //
+    //        private final String level;
+    //        private final Color color;
+    //
+    //        LogLevel(String level, Color color) {
+    //            this.level = level;
+    //            this.color = color;
+    //        }
+    //
+    //        public Color getColor() {
+    //            return color;
+    //        }
+    //
+    //        public static LogLevel fromText(String text) {
+    //            return Arrays.stream(values())
+    //                    .filter(logLevel -> Objects.equals(logLevel.level, text))
+    //                    .findFirst()
+    //                    .orElse(DEFAULT);
+    //        }
+    //    }
 }
