@@ -23,8 +23,8 @@ public class GestionnairePlacement {
 
     /**
      * Vider la grille du joueur
-     * @param vueOcean
-     * Grille du joueur
+     *
+     * @param vueOcean Grille du joueur
      */
     public void viderGrille(GrilleUI vueOcean) {
         controleur.getEtat().getJoueur1().getGrilleOcean().vider();
@@ -37,8 +37,8 @@ public class GestionnairePlacement {
 
     /**
      * Option permettant de posé les bâteaux aléatoirement
-     * @param vueOcean
-     * Grille du joueur
+     *
+     * @param vueOcean Grille du joueur
      */
     public void placerMesBateauxAleatoirement(GrilleUI vueOcean) {
         viderGrille(vueOcean);
@@ -63,13 +63,10 @@ public class GestionnairePlacement {
 
     /**
      * permet de déplacer les bâteaux sur la grille
-     * @param grille
-     * paramètre de la grille
-     * @param x
-     * Paramètre position sur les abscisses x
-     * @param y
-     * Paramètre position sur les ordonné y
-     * @return
+     *
+     * @return données du navire en déplacement.
+     * <li>Ex. : Destroyer horizontal -> "Destroyer;true",
+     * <li>Ex. : Sous-marin vertical -> "Sous-marin;false",
      */
     public String gererDragStartOcean(GrilleUI grille, int x, int y) {
         if (controleur.isPhaseBataille()) return null;
@@ -87,16 +84,8 @@ public class GestionnairePlacement {
 
     /**
      * Permet d'avoir un aperçu du bâteau et de son placement sur la grille
-     * @param grille
-     * paramètre de la grille
-     * @param x
-     * paramètre de la position x
-     * @param y
-     * paramètre de la position y
-     * @param nomNavire
-     *Nom du navire qu'on déplace
-     * @param h
-     *Orientation du bâteau
+     *
+     * @param h Orientation du bâteau : true -> horizontal, false -> vertical // 🚨 TODO: aurait pu être une enum
      */
     public void gererDragOverOcean(GrilleUI grille, int x, int y, String nomNavire, boolean h) {
         if (controleur.isPhaseBataille()) return;
@@ -112,17 +101,9 @@ public class GestionnairePlacement {
     }
 
     /**
-     *Déposer les navires sur la grille
-     * @param grille
-     * Paramètre de la grille
-     * @param x
-     * Paramètre de la position x
-     * @param y
-     * paramètre de la position y
-     * @param nomNavire
-     *Nom du navire qu'on pose sur la grille
-     * @param h
-     *Orientation du bâteau
+     * Déposer les navires sur la grille
+     *
+     * @param h Orientation du bâteau : true -> horizontal, false -> vertical // 🚨 TODO: aurait pu être une enum
      */
     public void gererDragDroppedOcean(GrilleUI grille, int x, int y, String nomNavire, boolean h) {
         if (controleur.isPhaseBataille()) return;
@@ -140,8 +121,8 @@ public class GestionnairePlacement {
 
     /**
      * cherche les vaisseaux restants
-     * @param nom
-     * Nom du vaisseau
+     *
+     * @param nom Nom du vaisseau
      */
     private Vaisseau trouverVaisseauRestant(String nom) {
         return controleur.getFlotteRestante().stream().filter(v -> v.getNom().equals(nom)).findFirst().orElse(null);
@@ -149,12 +130,6 @@ public class GestionnairePlacement {
 
     /**
      * vérifie si un vaisseau s'étend vers la gauche ou la droite
-     * @param x
-     * Paramètre de la position x
-     * @param y
-     * paramètre de la position y
-     * @param navire
-     * Représente le vaisseau "navire"
      */
     private boolean estVaisseauHorizontal(int x, int y, Vaisseau navire) {
         GrilleOcean ocean = controleur.getEtat().getJoueur1().getGrilleOcean();

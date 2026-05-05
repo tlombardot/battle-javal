@@ -241,15 +241,6 @@ public class MenuUI extends Pane {
 
     /**
      * Lancement de l'écran de chargement
-     * @param mode
-     *
-     * @param sauvegarde
-     *
-     * @param idPartie
-     *
-     */
-    /**
-     * Lancement de l'écran de chargement
      */
     private void lancerEcranLoading(ModeJeu mode, EtatJeu sauvegarde, int idPartie, ConfigPartie config) {
         isActive = false;
