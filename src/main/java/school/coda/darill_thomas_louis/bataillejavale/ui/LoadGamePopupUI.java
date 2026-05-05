@@ -14,6 +14,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import school.coda.darill_thomas_louis.bataillejavale.core.model.EtatJeu;
+// 🚨 import inutilisé
 import school.coda.darill_thomas_louis.bataillejavale.core.model.ModeJeu;
 import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.PartieRepository;
 import school.coda.darill_thomas_louis.bataillejavale.ui.utils.FontUtils;
