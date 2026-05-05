@@ -45,8 +45,8 @@ public class CustomMessageBoxUI extends StackPane {
         btnOk.setFont(FontUtils.getPolice(14));
         btnOk.setPrefSize(120, 40);
         btnOk.setStyle("-fx-background-color: transparent; -fx-text-fill: #ff3333; -fx-border-color: #ff3333; -fx-border-width: 1px; -fx-cursor: hand;");
-        btnOk.setOnMouseEntered(e -> btnOk.setStyle("-fx-background-color: #ff333333; -fx-text-fill: #ff3333; -fx-border-color: #ff3333; -fx-border-width: 1px; -fx-cursor: hand;"));
-        btnOk.setOnMouseExited(e -> btnOk.setStyle("-fx-background-color: transparent; -fx-text-fill: #ff3333; -fx-border-color: #ff3333; -fx-border-width: 1px; -fx-cursor: hand;"));
+        btnOk.setOnMouseEntered(_ -> btnOk.setStyle("-fx-background-color: #ff333333; -fx-text-fill: #ff3333; -fx-border-color: #ff3333; -fx-border-width: 1px; -fx-cursor: hand;"));
+        btnOk.setOnMouseExited(_ -> btnOk.setStyle("-fx-background-color: transparent; -fx-text-fill: #ff3333; -fx-border-color: #ff3333; -fx-border-width: 1px; -fx-cursor: hand;"));
 
         btnOk.setOnAction(_ -> UIUtils.fermerFenetre(this, menuParent, actionApresOk));
 

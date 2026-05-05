@@ -28,7 +28,6 @@ import school.coda.darill_thomas_louis.bataillejavale.infrastructure.database.Jo
 import school.coda.darill_thomas_louis.bataillejavale.ui.utils.FontUtils;
 import school.coda.darill_thomas_louis.bataillejavale.ui.utils.UIUtils;
 
-import java.awt.event.KeyEvent;
 import java.util.Objects;
 
 public class ParametresUI extends StackPane {
@@ -200,7 +199,7 @@ public class ParametresUI extends StackPane {
         slider.setPrefWidth(350);
         slider.setStyle("-fx-control-inner-background: #111; -fx-accent: #00ffff;");
 
-        slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+        slider.valueProperty().addListener((_, _, newValue) -> {
             prefs.volumeMusique = newValue.doubleValue();
             ConfigPartie configTempo = new ConfigPartie(prefs);
             GestionnaireAudio.getInstance().setConfig(configTempo);
@@ -267,7 +266,7 @@ public class ParametresUI extends StackPane {
             scaleAnim.play();
         });
 
-        conteneurExit.setOnMouseClicked(e -> fermerFenetre(menuParent, actionFermeture));
+        conteneurExit.setOnMouseClicked(_ -> fermerFenetre(menuParent, actionFermeture));
 
         return conteneurExit;
     }
@@ -288,7 +287,7 @@ public class ParametresUI extends StackPane {
             btn.setEffect(null);
         });
 
-        btn.setOnAction(e -> action.run());
+        btn.setOnAction(_ -> action.run());
         return btn;
     }
 
