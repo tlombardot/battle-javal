@@ -35,6 +35,7 @@ public class VaisseauUI extends Pane {
 
     private final Vaisseau navire;
     private boolean estHorizontal = true;
+    // 🚨 peut être converti en variable locale
     private final DropShadow glowEffect;
     private Group dessinHolographique;
 
