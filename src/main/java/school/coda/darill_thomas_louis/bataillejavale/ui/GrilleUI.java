@@ -27,6 +27,7 @@ public class GrilleUI extends StackPane {
     private final String couleurThemeHex;
     private AnimationTimer effetPulsation;
 
+    // 🚨 peut être converti en variable locale
     private final GridPane grilleCases = new GridPane();
     private final Pane coucheBateaux = new Pane();
 
