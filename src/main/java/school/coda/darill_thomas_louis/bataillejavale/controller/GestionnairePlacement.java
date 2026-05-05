@@ -140,6 +140,12 @@ public class GestionnairePlacement {
      */
     private Vaisseau trouverVaisseauRestant(String nom) {
         return controleur.getFlotteRestante().stream().filter(v -> v.getNom().equals(nom)).findFirst().orElse(null);
+
+        // 💡 Lisibilité pourrait être améliorée en sautant des lignes après chaque transformation
+        // return controleur.getFlotteRestante().stream()
+        //                .filter(v -> v.getNom().equals(nom))
+        //                .findFirst()
+        //                .orElse(null);
     }
 
     /**
