@@ -308,15 +308,6 @@ public class PlateauDeJeu {
     private GrilleUI creerGrilleOcean() {
         GrilleUI grille = new GrilleUI(COLOR_CYAN_HEX);
         grille.setListener(new GrilleUI.GrilleListener() {
-            // 🚨 méthode vide
-            @Override
-            public void onCaseLeftClick(int x, int y) {
-            }
-
-            // 🚨 méthode vide
-            @Override
-            public void onCaseRightClick(int x, int y) {
-            }
 
             @Override
             public String onDragStart(int x, int y) {
@@ -347,27 +338,6 @@ public class PlateauDeJeu {
             @Override
             public void onCaseLeftClick(int x, int y) {
                 controleur.gererTirJoueur(x, y);
-            }
-
-            @Override
-            public void onCaseRightClick(int x, int y) {
-            }
-
-            @Override
-            public void onDragOver(int x, int y, String n, boolean h) {
-            }
-
-            @Override
-            public void onDragDropped(int x, int y, String n, boolean h) {
-            }
-
-            @Override
-            public void onDragExited() {
-            }
-
-            @Override
-            public String onDragStart(int x, int y) {
-                return null;
             }
         });
         return radar;

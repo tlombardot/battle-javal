@@ -32,12 +32,12 @@ public class GrilleUI extends StackPane {
     private final Pane coucheBateaux = new Pane();
 
     public interface GrilleListener {
-        void onCaseLeftClick(int x, int y);
-        void onCaseRightClick(int x, int y);
-        void onDragOver(int x, int y, String nomNavire, boolean estHorizontal);
-        void onDragDropped(int x, int y, String nomNavire, boolean estHorizontal);
-        void onDragExited();
-        String onDragStart(int x, int y);
+        default void onCaseLeftClick(int x, int y){};
+        default void onCaseRightClick(int x, int y){};
+        default void onDragOver(int x, int y, String nomNavire, boolean estHorizontal){};
+        default void onDragDropped(int x, int y, String nomNavire, boolean estHorizontal){};
+        default void onDragExited(){};
+        default String onDragStart(int x, int y){return null;};
     }
 
     private GrilleListener listener;
