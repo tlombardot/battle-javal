@@ -69,8 +69,6 @@ public class PartieControleur {
             moteur.rejoindrePartieMulti(idPartie, etat);
             demarrerBataille(false);
             demarrerPollingTourAdversaire();
-        } else if (modeActuel == ModeJeu.REPLAY) {
-            demarrerBataille(tourJoueur);
         }
         // 🚨 Code "au cas où" - le mode Replay n'est pas implémenté
         // else if (modeActuel == ModeJeu.REPLAY) {
