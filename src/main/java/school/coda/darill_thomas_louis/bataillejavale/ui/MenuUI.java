@@ -301,10 +301,15 @@ public class MenuUI extends Pane {
     }
 
     private class TechButton {
+        // 🚨 peut être final
         StackPane visual;
+        // 🚨 peut être final
         Polygon techBand;
+        // 🚨 peut être final
         Text textNode;
+        // 🚨 peut être final
         Runnable action;
+        // 🚨 peut être final
         FadeTransition pulseAnimation;
 
         public TechButton(String text, Runnable action) {
