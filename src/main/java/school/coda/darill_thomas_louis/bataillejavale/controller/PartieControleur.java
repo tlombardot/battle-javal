@@ -72,6 +72,10 @@ public class PartieControleur {
         } else if (modeActuel == ModeJeu.REPLAY) {
             demarrerBataille(tourJoueur);
         }
+        // 🚨 Code "au cas où" - le mode Replay n'est pas implémenté
+        // else if (modeActuel == ModeJeu.REPLAY) {
+        //     demarrerBataille(tourJoueur);
+        // }
     }
 
     private void demarrerBataille(boolean aMoi) {
