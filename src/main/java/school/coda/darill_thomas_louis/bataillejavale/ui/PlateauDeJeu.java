@@ -200,6 +200,7 @@ public class PlateauDeJeu {
         scrollBateaux.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollBateaux.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
+        // 💡 La couleur pourrait être dans une constante comme c'est fait pour les autres
         btnPret = styleBouton("DÉMARRER BATAILLE", "#32cd32");
         btnPret.setDisable(true);
         btnPret.setOnAction(_ -> controleur.passerEnModeBataille(true));
