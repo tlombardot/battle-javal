@@ -18,6 +18,8 @@ import java.util.List;
  */
 public class PartieControleur {
 
+    private static final int COMPUTER_DELAY_MS = 100;
+
     private final PlateauDeJeu vue;
     private final MoteurJeu moteur = new MoteurJeu();
 
@@ -30,6 +32,7 @@ public class PartieControleur {
     private boolean tourJoueur = false;
     private TimerAction pollingTimer;
 
+    // 🚨 peut être converti en variable locale
     private ConfigPartie config;
     private GestionnaireEvenements gestionnaireEvenements;
 
@@ -89,8 +92,10 @@ public class PartieControleur {
         } else {
             tourJoueur = false;
             vue.bloquerTour("TOUR ADVERSE...", "RÉFLEXION ENNEMIE...");
-            if (modeActuel == ModeJeu.SOLO) FXGL.getGameTimer().runOnceAfter(this::riposteDuCPU, Duration.seconds(1.0));
-            else demarrerPollingTourAdversaire();
+            if (modeActuel == ModeJeu.SOLO) {
+                FXGL.getGameTimer()
+                        .runOnceAfter(this::riposteDuCPU, Duration.millis(COMPUTER_DELAY_MS));
+            } else demarrerPollingTourAdversaire();
         }
     }
 
