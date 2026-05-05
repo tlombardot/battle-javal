@@ -287,12 +287,14 @@ public class MenuUI extends Pane {
             FXGL.getGameScene().clearUINodes();
             System.out.println("Lancement de la partie en mode : " + mode);
 
-            GestionnaireAudio.getInstance().stopperTout();
-
             PlateauDeJeu plateau;
             if (sauvegarde == null) {
+                // Menu de placement (on garde la musique du menu)
                 plateau = new PlateauDeJeu(mode, config);
             } else {
+                // Directement dans la partie en cours
+                // GestionnaireAudio.getInstance().stopperTout();
+                // Menu de placement (on déclenche la musique de bataille)
                 plateau = new PlateauDeJeu(mode, sauvegarde, idPartie, config);
             }
 
