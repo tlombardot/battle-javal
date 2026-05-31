@@ -76,11 +76,17 @@ public class GestionnaireEvenements {
             do {
                 x1 = random.nextInt(10);
                 y1 = random.nextInt(10);
-            } while (etat.getJoueur2().getGrilleRadar().getHistoriqueTirs()[x1][y1] != null);
+            }
+            // 🚨 Demeter law / 💩 Code smell : Feature envy
+            // Voir : https://refactoring.guru/fr/smells/feature-envy
+            while (etat.getJoueur2().getGrilleRadar().getHistoriqueTirs()[x1][y1] != null);
 
+            // 🚨 Demeter law / 💩 Code smell : Feature envy
             ResultatTir res1 = etat.getJoueur1().getGrilleOcean().recevoirTir(x1, y1);
+            // 🚨 Demeter law / 💩 Code smell : Feature envy
             etat.getJoueur2().getGrilleRadar().enregistrerTir(x1, y1, res1);
 
+            // 🚨 Demeter law / 💩 Code smell : Feature envy
             vue.afficherImpactMeteore(x1, y1, res1, etat.getJoueur1().getGrilleOcean().getVaisseauAt(x1, y1), false);
 
 
@@ -88,11 +94,16 @@ public class GestionnaireEvenements {
             do {
                 x2 = random.nextInt(10);
                 y2 = random.nextInt(10);
-            } while (etat.getJoueur1().getGrilleRadar().getHistoriqueTirs()[x2][y2] != null);
+            }
+            // 🚨 Demeter law / 💩 Code smell : Feature envy
+            while (etat.getJoueur1().getGrilleRadar().getHistoriqueTirs()[x2][y2] != null);
 
+            // 🚨 Demeter law / 💩 Code smell : Feature envy
             ResultatTir res2 = etat.getJoueur2().getGrilleOcean().recevoirTir(x2, y2);
+            // 🚨 Demeter law / 💩 Code smell : Feature envy
             etat.getJoueur1().getGrilleRadar().enregistrerTir(x2, y2, res2);
 
+            // 🚨 Demeter law / 💩 Code smell : Feature envy
             vue.afficherImpactMeteore(x2, y2, res2, etat.getJoueur2().getGrilleOcean().getVaisseauAt(x2, y2), true);
         }
 

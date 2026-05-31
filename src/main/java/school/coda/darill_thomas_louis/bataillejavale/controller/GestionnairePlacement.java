@@ -27,10 +27,14 @@ public class GestionnairePlacement {
      * @param vueOcean Grille du joueur
      */
     public void viderGrille(GrilleUI vueOcean) {
+        // 🚨 Demeter law / 💩 Code smell : Feature envy
+        // Voir : https://refactoring.guru/fr/smells/feature-envy
         controleur.getEtat().getJoueur1().getGrilleOcean().vider();
+        // 🚨 Demeter law / 💩 Code smell : Feature envy
         controleur.getEtat().getJoueur1().getFlotte().clear();
         controleur.setFlotteRestante(new MoteurJeu().genererFlotteStandard());
         vue.actualiserMenuBateaux();
+        // 🚨 Demeter law / 💩 Code smell : Feature envy
         vueOcean.rafraichir(controleur.getEtat().getJoueur1().getGrilleOcean());
         vue.getBtnPret().setDisable(true);
     }
@@ -50,6 +54,7 @@ public class GestionnairePlacement {
                 boolean h = random.nextBoolean();
                 if (controleur.getEtat().getJoueur1().getGrilleOcean().placerVaisseau(navire, x, y, h)) {
                     navire.placer(x, y, h);
+                    // 🚨 Demeter law / 💩 Code smell : Feature envy
                     controleur.getEtat().getJoueur1().getFlotte().add(navire);
                     place = true;
                 }
@@ -57,6 +62,7 @@ public class GestionnairePlacement {
         }
         controleur.getFlotteRestante().clear();
         vue.actualiserMenuBateaux();
+        // 🚨 Demeter law / 💩 Code smell : Feature envy
         vueOcean.rafraichir(controleur.getEtat().getJoueur1().getGrilleOcean());
         vue.getBtnPret().setDisable(false);
     }
@@ -73,13 +79,13 @@ public class GestionnairePlacement {
         Vaisseau navire = controleur.getEtat().getJoueur1().getGrilleOcean().getVaisseauAt(x, y);
         if (navire == null) return null;
         boolean h = estVaisseauHorizontal(x, y, navire);
-        // TODO: apply demeter law
+        // 🚨 Demeter law / 💩 Code smell : Feature envy
         controleur.getEtat().getJoueur1().getGrilleOcean().retirerVaisseau(navire);
-        // TODO: apply demeter law
+        // 🚨 Demeter law / 💩 Code smell : Feature envy
         controleur.getEtat().getJoueur1().getFlotte().remove(navire);
         controleur.getFlotteRestante().add(navire);
         vue.actualiserMenuBateaux();
-        // TODO: apply demeter law
+        // 🚨 Demeter law / 💩 Code smell : Feature envy
         grille.rafraichir(controleur.getEtat().getJoueur1().getGrilleOcean());
         vue.getBtnPret().setDisable(true);
         return navire.getNom() + ";" + h;
@@ -94,9 +100,9 @@ public class GestionnairePlacement {
         if (controleur.isPhaseBataille()) return;
         Vaisseau navire = trouverVaisseauRestant(nomNavire);
         if (navire == null) return;
-        // TODO: apply demeter law
+        // 🚨 Demeter law / 💩 Code smell : Feature envy
         grille.rafraichir(controleur.getEtat().getJoueur1().getGrilleOcean());
-        // TODO: apply demeter law
+        // 🚨 Demeter law / 💩 Code smell : Feature envy
         boolean valide = controleur.getEtat().getJoueur1().getGrilleOcean().estPlacementValide(navire, x, y, h);
         Color c = valide ? Color.color(0, 1, 0, 0.6) : Color.color(1, 0, 0, 0.6);
         for (int i = 0; i < navire.getTaille(); i++) {
@@ -114,22 +120,22 @@ public class GestionnairePlacement {
         if (controleur.isPhaseBataille()) return;
         Vaisseau navire = trouverVaisseauRestant(nomNavire);
         if (navire == null) {
-            // TODO: apply demeter law
+            // 🚨 Demeter law / 💩 Code smell : Feature envy
             grille.rafraichir(controleur.getEtat().getJoueur1().getGrilleOcean());
             return;
         }
-        // TODO: apply demeter law
+        // 🚨 Demeter law / 💩 Code smell : Feature envy
         if (controleur.getEtat().getJoueur1().getGrilleOcean().placerVaisseau(navire, x, y, h)) {
             navire.placer(x, y, h);
-            // TODO: apply demeter law
+            // 🚨 Demeter law / 💩 Code smell : Feature envy
             controleur.getEtat().getJoueur1().getFlotte().add(navire);
-            // TODO: apply demeter law
+            // 🚨 Demeter law / 💩 Code smell : Feature envy
             controleur.getFlotteRestante().remove(navire);
             vue.retirerVaisseauZoneSelection(nomNavire);
         }
-        // TODO: apply demeter law
+        // 🚨 Demeter law / 💩 Code smell : Feature envy
         grille.rafraichir(controleur.getEtat().getJoueur1().getGrilleOcean());
-        // TODO: apply demeter law
+        // 🚨 Demeter law / 💩 Code smell : Feature envy
         if (controleur.getFlotteRestante().isEmpty()) vue.getBtnPret().setDisable(false);
     }
 
@@ -152,7 +158,7 @@ public class GestionnairePlacement {
      * vérifie si un vaisseau s'étend vers la gauche ou la droite
      */
     private boolean estVaisseauHorizontal(int x, int y, Vaisseau navire) {
-        // TODO: apply demeter law
+        // 🚨 Demeter law / 💩 Code smell : Feature envy
         GrilleOcean ocean = controleur.getEtat().getJoueur1().getGrilleOcean();
         return (x + 1 < 10 && ocean.getVaisseauAt(x + 1, y) == navire) || (x - 1 >= 0 && ocean.getVaisseauAt(x - 1, y) == navire);
 

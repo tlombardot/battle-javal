@@ -84,6 +84,8 @@ public class PartieControleur {
 
     public void gererTirJoueur(int x, int y) {
         if (!phaseBataille || !tourJoueur) return;
+        // 🚨 Demeter law / 💩 Code smell : Feature envy
+        // Voir : https://refactoring.guru/fr/smells/feature-envy
         if (etat.getJoueur1().getGrilleRadar().getHistoriqueTirs()[x][y] != null) return;
 
         MoteurJeu.RapportTir rapport = moteur.executerTirJoueur(etat, idPartie, x, y, modeActuel == ModeJeu.MULTI_INVITE);
