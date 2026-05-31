@@ -441,6 +441,7 @@ public class PlateauDeJeu {
     public void afficherImpactVisuel(int x, int y, ResultatTir res, Vaisseau cible, boolean moiTire) {
         GrilleUI grille = moiTire ? vueRadar : vueOcean;
 
+        // 🚨 Eviter d'abbréger les noms de variable : res -> resultatTir
         if (res == ResultatTir.RATE) {
             grille.colorierCase(x, y, moiTire ? Color.WHITE : Color.LIGHTCYAN);
             sideBar.ajouterLog((moiTire ? "Tir allié" : "Tir ennemi") + " en " + (char) ('A' + y) + "-" + (x + 1) + " : Raté", "RATE");
