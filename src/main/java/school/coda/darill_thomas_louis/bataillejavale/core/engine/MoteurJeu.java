@@ -46,6 +46,7 @@ public class MoteurJeu {
 
     // --- STRUCTURE DE RETOUR POUR L'UI ---
 
+    // 💡 Pourrait être un record déclaré en dehors de la classe de moteur de jeu
     public static class RapportTir {
         public int x, y;
         public ResultatTir resultat;
